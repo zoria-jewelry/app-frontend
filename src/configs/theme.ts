@@ -1,45 +1,47 @@
-import { createTheme } from '@mui/material';
+import { createTheme, type Theme } from '@mui/material';
 
-export const applicationTheme = createTheme({
+export const applicationTheme: Theme = createTheme({
     typography: {
         body1: {
             fontFamily: 'Inter, sans-serif',
-            fontSize: 16,
+            fontSize: 20,
             fontWeight: 'normal',
+            color: '#1d1d1d',
         },
         body2: {
             fontFamily: 'Inter, sans-serif',
-            fontSize: 14,
+            fontSize: 18,
             fontWeight: 'lighter',
+            color: '#333333',
         },
         button: {
             fontFamily: 'Inter, sans-serif',
             fontSize: 16,
-            fontWeight: '500',
+            fontWeight: 900,
         },
         h1: {
-            fontFamily: 'Playfair Display, serif',
-            fontSize: 24,
+            fontFamily: 'Merriweather, serif',
+            fontSize: 40,
             fontWeight: 700,
         },
         h2: {
-            fontFamily: 'Playfair Display, serif',
-            fontSize: 22,
+            fontFamily: 'Merriweather, serif',
+            fontSize: 32,
             fontWeight: 600,
         },
         h3: {
-            fontFamily: 'Playfair Display, serif',
-            fontSize: 20,
+            fontFamily: 'Merriweather, serif',
+            fontSize: 28,
             fontWeight: 500,
         },
         h4: {
-            fontFamily: 'Playfair Display, serif',
-            fontSize: 18,
+            fontFamily: 'Merriweather, serif',
+            fontSize: 24,
             fontWeight: 400,
         },
         h5: {
-            fontFamily: 'Playfair Display, serif',
-            fontSize: 16,
+            fontFamily: 'Merriweather, serif',
+            fontSize: 20,
             fontWeight: 400,
         },
     },
@@ -63,6 +65,7 @@ export const applicationTheme = createTheme({
         warning: {
             main: '#ffc985',
             contrastText: '#000',
+            light: '#ffd54f',
         },
         // info: {}, // TODO: for toast messages?
         success: {
@@ -84,6 +87,14 @@ export const applicationTheme = createTheme({
     },
     components: {
         MuiButton: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 10,
+                    height: '3rem',
+                    paddingLeft: '2rem',
+                    paddingRight: '2rem',
+                },
+            },
             defaultProps: {
                 size: 'medium',
             },
@@ -91,6 +102,14 @@ export const applicationTheme = createTheme({
         MuiPaper: {
             defaultProps: {
                 square: false,
+            },
+        },
+        MuiAppBar: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: '#3e4e50',
+                    color: '#fff',
+                },
             },
         },
     },

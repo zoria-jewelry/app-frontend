@@ -1,0 +1,7 @@
+.burgerMenuIcon {
+    font-size: 24px;
+}
+
+.burgerMenuIcon:hover {
+    cursor: pointer;
+}
