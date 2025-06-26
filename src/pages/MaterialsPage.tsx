@@ -20,7 +20,7 @@ import { MaterialsApiClient } from '../api/materialsApiClient.ts';
 
 const MaterialsPage = () => {
     const theme = useTheme();
-    const [page, setPage] = useState<number>(1);
+    const [page, setPage] = useState<number>(0);
     const [total, setTotal] = useState<number>(0);
     const [entries, setEntries] = useState<MaterialDto[]>([]);
 
