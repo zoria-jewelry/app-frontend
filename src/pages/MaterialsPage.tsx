@@ -52,7 +52,11 @@ const MaterialsPage = () => {
                     <Typography variant="h2">Каталог матеріалів</Typography>
                 </Grid>
                 <Grid>
-                    <Button variant="contained" color="primary">
+                    <Button
+                        style={{ marginBottom: theme.spacing(1) }}
+                        variant="contained"
+                        color="primary"
+                    >
                         Новий матеріал
                     </Button>
                 </Grid>
