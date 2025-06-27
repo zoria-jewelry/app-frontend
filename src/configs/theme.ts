@@ -112,6 +112,23 @@ export const applicationTheme: Theme = createTheme({
                 },
             },
         },
+        MuiTableHead: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: '#b7cfd2',
+                    borderTopLeftRadius: 10,
+                    borderTopRightRadius: 10,
+                },
+            },
+        },
+        MuiTablePagination: {
+            styleOverrides: {
+                root: {
+                    color: '#1d1d1d',
+                    fontSize: 18,
+                },
+            },
+        },
     },
     spacing: (factor: number) => `${0.25 * factor}rem`,
 });
