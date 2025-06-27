@@ -63,21 +63,27 @@ const MaterialsPage = () => {
                 style={{
                     minWidth: '350px',
                     maxHeight: '500px',
-                    borderRadius: '10px',
                     overflow: 'auto',
+                    paddingRight: '10px',
+                    boxSizing: 'content-box',
                 }}
             >
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <TableCell style={{ backgroundColor: '#b7cfd2' }} width="24px">
+                            <TableCell
+                                style={{ backgroundColor: '#b7cfd2', borderTopLeftRadius: 10 }}
+                                width="80px"
+                            >
                                 ID
                             </TableCell>
                             <TableCell style={{ backgroundColor: '#b7cfd2' }} width="600px">
                                 Назва
                             </TableCell>
-                            <TableCell style={{ backgroundColor: '#b7cfd2' }}>
-                                Вартість (грн. за грам)
+                            <TableCell
+                                style={{ backgroundColor: '#b7cfd2', borderTopRightRadius: 10 }}
+                            >
+                                Вартість (грн за гр.)
                             </TableCell>
                         </TableRow>
                     </TableHead>

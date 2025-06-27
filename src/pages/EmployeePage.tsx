@@ -95,14 +95,18 @@ const EmployeePage = () => {
                 style={{
                     minWidth: '350px',
                     maxHeight: '500px',
-                    borderRadius: '10px',
                     overflow: 'auto',
+                    paddingRight: '10px',
+                    boxSizing: 'content-box',
                 }}
             >
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <TableCell style={{ backgroundColor: '#b7cfd2' }} width="80px">
+                            <TableCell
+                                style={{ backgroundColor: '#b7cfd2', borderTopLeftRadius: 10 }}
+                                width="80px"
+                            >
                                 ID
                             </TableCell>
                             <TableCell style={{ backgroundColor: '#b7cfd2' }} width="600px">
@@ -111,7 +115,9 @@ const EmployeePage = () => {
                             <TableCell style={{ backgroundColor: '#b7cfd2' }} width="200px">
                                 Номер телефону
                             </TableCell>
-                            <TableCell style={{ backgroundColor: '#b7cfd2' }}></TableCell>
+                            <TableCell
+                                style={{ backgroundColor: '#b7cfd2', borderTopRightRadius: 10 }}
+                            ></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

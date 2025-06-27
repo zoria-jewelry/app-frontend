@@ -112,15 +112,6 @@ export const applicationTheme: Theme = createTheme({
                 },
             },
         },
-        MuiTableHead: {
-            styleOverrides: {
-                root: {
-                    backgroundColor: '#b7cfd2',
-                    borderTopLeftRadius: 10,
-                    borderTopRightRadius: 10,
-                },
-            },
-        },
         MuiTablePagination: {
             styleOverrides: {
                 root: {
