@@ -7,6 +7,7 @@ import commonStyles from './styles/Common.module.css';
 import HeaderComponent from './components/HeaderComponent.tsx';
 import { Box } from '@mui/material';
 import PublicRoutes from './auth/PublicRoutes.tsx';
+import EmployeePage from './pages/EmployeePage.tsx';
 
 const App = () => {
     const path = useLocation();
@@ -19,6 +20,7 @@ const App = () => {
                 {/* Authenticated user */}
                 <Route element={<PrivateRoutes />}>
                     <Route path="/materials" element={<MaterialsPage />} />
+                    <Route path="/employees" element={<EmployeePage />} />
                     <Route path="/*" element={<Navigate to="/materials" />} />
                 </Route>
                 {/* Guests */}

@@ -90,7 +90,7 @@ export const applicationTheme: Theme = createTheme({
             styleOverrides: {
                 root: {
                     borderRadius: 10,
-                    height: '3rem',
+                    height: '2.8rem',
                     paddingLeft: '2rem',
                     paddingRight: '2rem',
                 },

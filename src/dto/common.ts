@@ -8,11 +8,3 @@ export interface Pageable<T> {
     page: number;
     perPage: number;
 }
-
-export interface MaterialDto {
-    id: number;
-    name: string;
-    price: number;
-}
-
-export interface MaterialsListDto extends Pageable<MaterialDto> {}

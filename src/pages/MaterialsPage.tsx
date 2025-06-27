@@ -15,7 +15,7 @@ import {
 import paperStyles from '../styles/Paper.module.css';
 import commonStyles from '../styles/Common.module.css';
 import { useEffect, useState } from 'react';
-import type { MaterialDto } from '../dto/common.ts';
+import type { MaterialDto } from '../dto/materials.ts';
 import { MaterialsApiClient } from '../api/materialsApiClient.ts';
 
 const MaterialsPage = () => {
