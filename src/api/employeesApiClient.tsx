@@ -10,4 +10,13 @@ export class EmployeesApiClient extends AbstractApiClient {
         // TODO: use me - const res = await this.apiRequest<{ pages: EmployeesListDto[] }>({});
         // return res?.pages[page];
     }
+
+    public static async getArchived(page: number): Promise<EmployeesListDto | undefined> {
+        console.log(`EmployeesApiClient.getArchived: page - ${page}`);
+        const response = await fetch('/employees.json');
+        const json = (await response.json()) as unknown as { pages: EmployeesListDto[] };
+        return json.pages[page];
+        // TODO: use me - const res = await this.apiRequest<{ pages: EmployeesListDto[] }>({});
+        // return res?.pages[page];
+    }
 }

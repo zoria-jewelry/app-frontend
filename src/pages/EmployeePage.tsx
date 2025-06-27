@@ -19,7 +19,8 @@ import paperStyles from '../styles/Paper.module.css';
 import commonStyles from '../styles/Common.module.css';
 import ArchiveIcon from '@mui/icons-material/Inventory2Outlined';
 import { EmployeesApiClient } from '../api/employeesApiClient.tsx';
-import DialogComponent from '../components/DialogComponent.tsx';
+import DialogComponent from '../components/modal/DialogComponent.tsx';
+import EmployeesArchiveComponent from '../components/modal/EmployeesArchiveComponent.tsx';
 
 const EmployeePage = () => {
     const theme = useTheme();
@@ -27,15 +28,17 @@ const EmployeePage = () => {
     const [total, setTotal] = useState<number>(0);
     const [entries, setEntries] = useState<EmployeeDto[]>([]);
 
-    const [employeeToArchiveId, setEmployeeToArchiveId] = useState<number | null>(null);
+    const [employeeToArchive, setEmployeeToArchive] = useState<EmployeeDto | null>(null);
     const [isArchiveDialogOpened, setIsArchiveDialogOpened] = useState<boolean>(false);
 
-    const handleOpenArchiveEmployeeDialog = (id: number) => {
+    const [isArchiveOpened, setIsArchiveOpened] = useState<boolean>(false);
+
+    const handleOpenArchiveEmployeeDialog = (employee: EmployeeDto) => {
         setIsArchiveDialogOpened(true);
-        setEmployeeToArchiveId(id);
+        setEmployeeToArchive(employee);
     };
 
-    const handleArchiveEmployee = (id: number | null) => {
+    const handleArchiveEmployee = (id?: number) => {
         setIsArchiveDialogOpened(false);
         console.log(`Archive employee ${id}`);
         // TODO: call archive endpoint
@@ -72,6 +75,7 @@ const EmployeePage = () => {
                     <Button
                         variant="contained"
                         color="secondary"
+                        onClick={() => setIsArchiveOpened(true)}
                         style={{ marginRight: theme.spacing(4), marginBottom: theme.spacing(1) }}
                     >
                         Відкрити архів
@@ -98,7 +102,7 @@ const EmployeePage = () => {
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <TableCell style={{ backgroundColor: '#b7cfd2' }} width="24px">
+                            <TableCell style={{ backgroundColor: '#b7cfd2' }} width="80px">
                                 ID
                             </TableCell>
                             <TableCell style={{ backgroundColor: '#b7cfd2' }} width="600px">
@@ -130,7 +134,7 @@ const EmployeePage = () => {
                                     }}
                                 >
                                     <IconButton
-                                        onClick={() => handleOpenArchiveEmployeeDialog(employee.id)}
+                                        onClick={() => handleOpenArchiveEmployeeDialog(employee)}
                                     >
                                         <ArchiveIcon />
                                     </IconButton>
@@ -151,12 +155,21 @@ const EmployeePage = () => {
                     border: 0,
                 }}
             />
+
+            {/* Archive user modal window */}
             <DialogComponent
                 handleClose={() => setIsArchiveDialogOpened(false)}
-                handleAction={() => handleArchiveEmployee(employeeToArchiveId)}
+                handleAction={() => handleArchiveEmployee(employeeToArchive?.id)}
                 isOpen={isArchiveDialogOpened}
-                dialogText="Ви впевнені, що хочете архівувати працівника?"
+                dialogText={`Ви впевнені, що хочете архівувати працівника ${employeeToArchive?.name}?`}
                 actionButtonText="Архівувати"
+                actionButtonVariant="error"
+            />
+
+            {/* Employees archive modal window */}
+            <EmployeesArchiveComponent
+                handleClose={() => setIsArchiveOpened(false)}
+                isOpen={isArchiveOpened}
             />
         </Paper>
     );

@@ -1,16 +1,8 @@
-import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
-import { styled } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import { Button, DialogActions, DialogContent, Typography } from '@mui/material';
-
-export interface DialogComponentProps {
-    handleClose: () => void;
-    handleAction: () => void;
-    isOpen: boolean;
-    dialogText: string;
-    actionButtonText: string;
-}
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -25,6 +17,15 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
         paddingTop: 0,
     },
 }));
+
+export interface DialogComponentProps {
+    handleClose: () => void;
+    handleAction: () => void;
+    isOpen: boolean;
+    dialogText: string;
+    actionButtonText: string;
+    actionButtonVariant: 'primary' | 'secondary' | 'error';
+}
 
 const DialogComponent = (props: DialogComponentProps) => {
     return (
