@@ -69,21 +69,45 @@ const EmployeePage = () => {
                     <Typography variant="h2">Працівники</Typography>
                 </Grid>
                 <Grid>
-                    <Button variant="contained" color="primary">
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        style={{ marginRight: theme.spacing(4), marginBottom: theme.spacing(1) }}
+                    >
+                        Відкрити архів
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        style={{ marginBottom: theme.spacing(1) }}
+                    >
                         Новий працівник
                     </Button>
                 </Grid>
             </Grid>
 
             {/* Data table */}
-            <TableContainer style={{ minWidth: '350px', borderRadius: '10px', overflow: 'hidden' }}>
-                <Table>
+            <TableContainer
+                style={{
+                    minWidth: '350px',
+                    maxHeight: '500px',
+                    borderRadius: '10px',
+                    overflow: 'auto',
+                }}
+            >
+                <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>ПІБ</TableCell>
-                            <TableCell>Номер телефону</TableCell>
-                            <TableCell width={4}></TableCell>
+                            <TableCell style={{ backgroundColor: '#b7cfd2' }} width="24px">
+                                ID
+                            </TableCell>
+                            <TableCell style={{ backgroundColor: '#b7cfd2' }} width="600px">
+                                ПІБ
+                            </TableCell>
+                            <TableCell style={{ backgroundColor: '#b7cfd2' }} width="200px">
+                                Номер телефону
+                            </TableCell>
+                            <TableCell style={{ backgroundColor: '#b7cfd2' }}></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -98,7 +122,13 @@ const EmployeePage = () => {
                                 <TableCell>
                                     <Typography variant="body2">{employee.phone}</Typography>
                                 </TableCell>
-                                <TableCell>
+                                <TableCell
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        justifyContent: 'flex-end',
+                                    }}
+                                >
                                     <IconButton
                                         onClick={() => handleOpenArchiveEmployeeDialog(employee.id)}
                                     >

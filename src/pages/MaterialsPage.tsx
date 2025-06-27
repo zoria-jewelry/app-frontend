@@ -59,13 +59,26 @@ const MaterialsPage = () => {
             </Grid>
 
             {/* Data table */}
-            <TableContainer style={{ minWidth: '350px', borderRadius: '10px', overflow: 'hidden' }}>
-                <Table>
+            <TableContainer
+                style={{
+                    minWidth: '350px',
+                    maxHeight: '500px',
+                    borderRadius: '10px',
+                    overflow: 'auto',
+                }}
+            >
+                <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Назва</TableCell>
-                            <TableCell>Вартість (грн. за грам)</TableCell>
+                            <TableCell style={{ backgroundColor: '#b7cfd2' }} width="24px">
+                                ID
+                            </TableCell>
+                            <TableCell style={{ backgroundColor: '#b7cfd2' }} width="600px">
+                                Назва
+                            </TableCell>
+                            <TableCell style={{ backgroundColor: '#b7cfd2' }}>
+                                Вартість (грн. за грам)
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
