@@ -141,6 +141,8 @@ const EmployeePage = () => {
                                 >
                                     <IconButton
                                         onClick={() => handleOpenArchiveEmployeeDialog(employee)}
+                                        size="small"
+                                        style={{ padding: 0 }}
                                     >
                                         <ArchiveIcon />
                                     </IconButton>

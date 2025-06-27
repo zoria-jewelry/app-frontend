@@ -154,7 +154,11 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
                                         justifyContent: 'flex-end',
                                     }}
                                 >
-                                    <IconButton onClick={() => handleUnarchiveClick(employee)}>
+                                    <IconButton
+                                        size="small"
+                                        style={{ padding: 0 }}
+                                        onClick={() => handleUnarchiveClick(employee)}
+                                    >
                                         <UnarchiveIcon />
                                     </IconButton>
                                 </TableCell>
