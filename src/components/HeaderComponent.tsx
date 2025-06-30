@@ -4,7 +4,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 import iconsStyles from '../styles/Icons.module.css';
 import commonStyles from '../styles/Common.module.css';
 
-const HeaderComponent = () => {
+export interface HeaderComponentProps {
+    toggleOpenSidebar: () => void;
+}
+
+const HeaderComponent = (props: HeaderComponentProps) => {
     const theme: Theme = useTheme();
     return (
         <AppBar
@@ -16,6 +20,7 @@ const HeaderComponent = () => {
                 <MenuIcon
                     className={iconsStyles.burgerMenuIcon}
                     style={{ width: 40, height: 40 }}
+                    onClick={props.toggleOpenSidebar}
                 />
                 <Typography variant="h2">Zoria</Typography>
             </Box>
