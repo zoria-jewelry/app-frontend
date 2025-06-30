@@ -120,6 +120,17 @@ export const applicationTheme: Theme = createTheme({
                 },
             },
         },
+        MuiDrawer: {
+            styleOverrides: {
+                root: {
+                    '& .MuiListItem-root:hover': {
+                        ':hover': {
+                            backgroundColor: '#b7cfd2',
+                        },
+                    },
+                },
+            },
+        },
     },
     spacing: (factor: number) => `${0.25 * factor}rem`,
 });
