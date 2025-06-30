@@ -15,7 +15,7 @@ import {
 import paperStyles from '../styles/Paper.module.css';
 import commonStyles from '../styles/Common.module.css';
 import { useEffect, useState } from 'react';
-import type { MaterialDto } from '../dto/common.ts';
+import type { MaterialDto } from '../dto/materials.ts';
 import { MaterialsApiClient } from '../api/materialsApiClient.ts';
 
 const MaterialsPage = () => {
@@ -52,20 +52,43 @@ const MaterialsPage = () => {
                     <Typography variant="h2">Каталог матеріалів</Typography>
                 </Grid>
                 <Grid>
-                    <Button variant="contained" color="primary">
+                    <Button
+                        style={{ marginBottom: theme.spacing(1) }}
+                        variant="contained"
+                        color="primary"
+                    >
                         Новий матеріал
                     </Button>
                 </Grid>
             </Grid>
 
             {/* Data table */}
-            <TableContainer style={{ minWidth: '350px', borderRadius: '10px', overflow: 'hidden' }}>
-                <Table>
+            <TableContainer
+                style={{
+                    minWidth: '350px',
+                    maxHeight: '500px',
+                    overflow: 'auto',
+                    paddingRight: '10px',
+                    boxSizing: 'content-box',
+                }}
+            >
+                <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Назва</TableCell>
-                            <TableCell>Вартість (грн. за грам)</TableCell>
+                            <TableCell
+                                style={{ backgroundColor: '#b7cfd2', borderTopLeftRadius: 10 }}
+                                width="80px"
+                            >
+                                ID
+                            </TableCell>
+                            <TableCell style={{ backgroundColor: '#b7cfd2' }} width="600px">
+                                Назва
+                            </TableCell>
+                            <TableCell
+                                style={{ backgroundColor: '#b7cfd2', borderTopRightRadius: 10 }}
+                            >
+                                Вартість (грн за гр.)
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

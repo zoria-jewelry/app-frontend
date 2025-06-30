@@ -90,7 +90,7 @@ export const applicationTheme: Theme = createTheme({
             styleOverrides: {
                 root: {
                     borderRadius: 10,
-                    height: '3rem',
+                    height: '2.8rem',
                     paddingLeft: '2rem',
                     paddingRight: '2rem',
                 },
@@ -109,15 +109,6 @@ export const applicationTheme: Theme = createTheme({
                 root: {
                     backgroundColor: '#3e4e50',
                     color: '#fff',
-                },
-            },
-        },
-        MuiTableHead: {
-            styleOverrides: {
-                root: {
-                    backgroundColor: '#b7cfd2',
-                    borderTopLeftRadius: 10,
-                    borderTopRightRadius: 10,
                 },
             },
         },
