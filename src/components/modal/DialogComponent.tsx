@@ -70,7 +70,7 @@ const DialogComponent = (props: DialogComponentProps) => {
                 </Button>
                 <Button
                     variant="contained"
-                    color="error"
+                    color={props.actionButtonVariant}
                     onClick={props.handleAction}
                     style={{
                         flexGrow: 1,

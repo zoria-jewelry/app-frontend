@@ -31,6 +31,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
+        overflowX: 'hidden',
     },
     '& .MuiDialogActions-root': {
         padding: theme.spacing(10),
@@ -177,6 +178,7 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
                     marginTop: theme.spacing(4),
                     border: 0,
                     alignSelf: 'center',
+                    overflow: 'visible',
                 }}
             />
 
