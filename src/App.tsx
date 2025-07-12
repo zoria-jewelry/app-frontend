@@ -6,7 +6,6 @@ import MaterialsPage from './pages/MaterialsPage.tsx';
 import commonStyles from './styles/Common.module.css';
 import HeaderComponent from './components/HeaderComponent.tsx';
 import { Box } from '@mui/material';
-import PublicRoutes from './auth/PublicRoutes.tsx';
 import EmployeePage from './pages/EmployeePage.tsx';
 import Sidebar from './components/Sidebar.tsx';
 import { useState } from 'react';
@@ -35,7 +34,7 @@ const App = () => {
                     <Route path="/*" element={<Navigate to="/materials" />} />
                 </Route>
                 {/* Guests */}
-                <Route element={<PublicRoutes />}>
+                <Route element={<PrivateRoutes />}>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="*" element={<Navigate to="/login" />} />
                 </Route>
