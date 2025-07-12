@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type CreateEmployeeFormData, createEmployeeSchema } from '../../validation/schemas.ts';
+import { type CreateMaterialFormData, createMaterialSchema } from '../../validation/schemas.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -22,7 +22,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        width: '800px',
+        width: '1000px',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -34,12 +34,12 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-export interface CreateEmployeeComponentProps {
+export interface CreateMaterialComponentProps {
     handleClose: () => void;
     isOpen: boolean;
 }
 
-const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
+const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
     const theme = useTheme();
 
     const {
@@ -48,12 +48,12 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
         clearErrors,
         reset,
         formState: { errors },
-    } = useForm<CreateEmployeeFormData>({
-        resolver: zodResolver(createEmployeeSchema),
+    } = useForm<CreateMaterialFormData>({
+        resolver: zodResolver(createMaterialSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
-            fullName: '',
-            phoneNumber: '',
+            name: '',
+            price: 0,
         },
     });
 
@@ -63,7 +63,7 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
         props.handleClose();
     };
 
-    const onSubmit = (data: CreateEmployeeFormData) => {
+    const onSubmit = (data: CreateMaterialFormData) => {
         console.log(data);
         // TODO: call API Endpoint
         handleClose();
@@ -92,21 +92,21 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
 
             {/* Form title */}
             <Typography variant="h3" textAlign="center">
-                Новий працівник
+                Новий матеріал
             </Typography>
 
             {/* The form */}
             <form onSubmit={handleSubmit(onSubmit)} style={{ marginTop: theme.spacing(8) }}>
                 <FormControl fullWidth>
-                    <FormLabel htmlFor="full-name">ПІБ</FormLabel>
+                    <FormLabel htmlFor="name">Назва</FormLabel>
                     <TextField
-                        id="full-name"
-                        placeholder="Шевченко Тарас Григорович"
+                        id="name"
+                        placeholder="Золото 585"
                         fullWidth
                         margin="normal"
                         defaultValue=""
-                        {...register('fullName')}
-                        error={!!errors.fullName}
+                        {...register('name')}
+                        error={!!errors.name}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -115,22 +115,23 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
                         }}
                     />
                     <FormHelperText
-                        error={!!errors.fullName}
+                        error={!!errors.name}
                         sx={{ margin: 0, marginBottom: theme.spacing(2), minHeight: '30px' }}
                     >
-                        {errors?.fullName?.message}
+                        {errors?.name?.message}
                     </FormHelperText>
                 </FormControl>
                 <FormControl fullWidth>
-                    <FormLabel htmlFor="phone-number">Номер телефону</FormLabel>
+                    <FormLabel htmlFor="price">Вартість (грн за г.)</FormLabel>
                     <TextField
-                        id="phone-number"
-                        placeholder="+380961234567"
+                        id="price"
+                        placeholder="1234.00"
+                        type="number"
                         fullWidth
                         margin="normal"
                         defaultValue=""
-                        {...register('phoneNumber')}
-                        error={!!errors.phoneNumber}
+                        {...register('price', { valueAsNumber: true })}
+                        error={!!errors.price}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -138,11 +139,8 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
                             },
                         }}
                     />
-                    <FormHelperText
-                        error={!!errors.phoneNumber}
-                        sx={{ margin: 0, minHeight: '30px' }}
-                    >
-                        {errors?.phoneNumber?.message}
+                    <FormHelperText error={!!errors.price} sx={{ margin: 0, minHeight: '30px' }}>
+                        {errors?.price?.message}
                     </FormHelperText>
                 </FormControl>
                 <FormControl
@@ -162,4 +160,4 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
     );
 };
 
-export default CreateEmployeeComponent;
+export default CreateMaterialComponent;
