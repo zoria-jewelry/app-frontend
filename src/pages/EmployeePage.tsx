@@ -21,6 +21,7 @@ import ArchiveIcon from '@mui/icons-material/Inventory2Outlined';
 import { EmployeesApiClient } from '../api/employeesApiClient.tsx';
 import DialogComponent from '../components/modal/DialogComponent.tsx';
 import EmployeesArchiveComponent from '../components/modal/EmployeesArchiveComponent.tsx';
+import CreateEmployeeComponent from '../components/modal/CreateEmployeeComponent.tsx';
 
 const EmployeePage = () => {
     const theme = useTheme();
@@ -32,6 +33,8 @@ const EmployeePage = () => {
     const [isArchiveDialogOpened, setIsArchiveDialogOpened] = useState<boolean>(false);
 
     const [isArchiveOpened, setIsArchiveOpened] = useState<boolean>(false);
+
+    const [isCreateComponentOpened, setIsCreateComponentOpened] = useState<boolean>(false);
 
     const handleOpenArchiveEmployeeDialog = (employee: EmployeeDto) => {
         setIsArchiveDialogOpened(true);
@@ -84,6 +87,7 @@ const EmployeePage = () => {
                         variant="contained"
                         color="primary"
                         style={{ marginBottom: theme.spacing(1) }}
+                        onClick={() => setIsCreateComponentOpened(true)}
                     >
                         Новий працівник
                     </Button>
@@ -178,6 +182,12 @@ const EmployeePage = () => {
             <EmployeesArchiveComponent
                 handleClose={() => setIsArchiveOpened(false)}
                 isOpen={isArchiveOpened}
+            />
+
+            {/* Add new employee modal window */}
+            <CreateEmployeeComponent
+                handleClose={() => setIsCreateComponentOpened(false)}
+                isOpen={isCreateComponentOpened}
             />
         </Paper>
     );
