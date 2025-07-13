@@ -41,6 +41,7 @@ const LoginPage = () => {
             setIsLoading((prev) => !prev);
             navigate('/materials'); // TODO: change to '/statistics' for owner and '/work-units' for manager
         }, 3000);
+        console.log(data);
         // TODO: call API endpoint and set new auth context
     };
 
