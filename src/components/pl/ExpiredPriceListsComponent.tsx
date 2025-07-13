@@ -18,6 +18,7 @@ import { PriceListsApiClient } from '../../api/priceListsApiClient';
 import type { PriceListBundleEntryDto } from '../../dto/price-lists.ts';
 import { toLocalDate } from '../../utils.ts';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import ExpiredPriceListDetailsComponent from '../modal/ExpiredPriceListDetailsComponent.tsx';
 
 const ExpiredPriceListsComponent = () => {
     const theme = useTheme();
@@ -26,7 +27,7 @@ const ExpiredPriceListsComponent = () => {
     const [entries, setEntries] = useState<PriceListBundleEntryDto[]>([]);
     const [total, setTotal] = useState<number>(0);
 
-    const [openedDetailsId, setOpenedDetailsId] = useState<number | null>(null);
+    const [openedList, setOpenedList] = useState<PriceListBundleEntryDto | null>(null);
 
     useEffect(() => {
         PriceListsApiClient.getClosed(page).then((closedLists) => {
@@ -90,7 +91,7 @@ const ExpiredPriceListsComponent = () => {
                                     <TableCell>{toLocalDate(entry.endDate)}</TableCell>
                                     <TableCell>
                                         <IconButton
-                                            onClick={() => setOpenedDetailsId(entry.id)}
+                                            onClick={() => setOpenedList(entry)}
                                             size="small"
                                             style={{ padding: 0 }}
                                         >
@@ -113,6 +114,13 @@ const ExpiredPriceListsComponent = () => {
                     marginTop: theme.spacing(4),
                     border: 0,
                 }}
+            />
+
+            <ExpiredPriceListDetailsComponent
+                priceListId={openedList?.id}
+                handleClose={() => setOpenedList(null)}
+                startDate={openedList?.startDate}
+                endDate={openedList?.endDate}
             />
         </Paper>
     );
