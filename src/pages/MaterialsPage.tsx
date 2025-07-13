@@ -88,7 +88,11 @@ const MaterialsPage = () => {
                                 Назва
                             </TableCell>
                             <TableCell
-                                style={{ backgroundColor: '#b7cfd2', borderTopRightRadius: 10 }}
+                                style={{
+                                    backgroundColor: '#b7cfd2',
+                                    borderTopRightRadius: 10,
+                                    textAlign: 'right',
+                                }}
                             >
                                 Вартість (грн за г)
                             </TableCell>
@@ -103,8 +107,10 @@ const MaterialsPage = () => {
                                 <TableCell>
                                     <Typography variant="body2">{material.name}</Typography>
                                 </TableCell>
-                                <TableCell>
-                                    <Typography variant="body2">{material.price}</Typography>
+                                <TableCell sx={{ textAlign: 'right' }}>
+                                    <Typography variant="body2">
+                                        {(Math.floor(material.price * 100) / 100).toFixed(2)}
+                                    </Typography>
                                 </TableCell>
                             </TableRow>
                         ))}
