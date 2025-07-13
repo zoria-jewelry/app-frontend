@@ -1,6 +1,7 @@
 import type { Pageable } from './common.ts';
 
 export interface PriceListEntryDto {
+    materialId: number;
     materialName: string;
     materialPrice: number;
 }

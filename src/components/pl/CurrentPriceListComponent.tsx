@@ -17,6 +17,7 @@ import { useEffect, useState } from 'react';
 import { PriceListsApiClient } from '../../api/priceListsApiClient.ts';
 import type { PriceListEntryDto } from '../../dto/price-lists.ts';
 import { toLocalDate } from '../../utils.ts';
+import CreatePriceListComponent from '../modal/CreatePriceListComponent.tsx';
 
 const CurrentPriceListComponent = () => {
     const theme = useTheme();
@@ -24,6 +25,8 @@ const CurrentPriceListComponent = () => {
     const [entries, setEntries] = useState<PriceListEntryDto[]>([]);
     const [activeListId, setActiveListId] = useState<number | undefined>(undefined);
     const [activeListStartDate, setActiveListStartDate] = useState<Date | undefined>(undefined);
+
+    const [isCreationFormOpened, setIsCreationFormOpened] = useState<boolean>(false);
 
     useEffect(() => {
         PriceListsApiClient.getActiveListDetails().then((priceList) => {
@@ -62,6 +65,7 @@ const CurrentPriceListComponent = () => {
                 <Grid>
                     <Button
                         style={{ marginBottom: theme.spacing(1) }}
+                        onClick={() => setIsCreationFormOpened(true)}
                         variant="contained"
                         color="primary"
                     >
@@ -108,6 +112,11 @@ const CurrentPriceListComponent = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            <CreatePriceListComponent
+                isOpen={isCreationFormOpened}
+                handleClose={() => setIsCreationFormOpened(false)}
+            />
         </Paper>
     );
 };
