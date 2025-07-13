@@ -72,7 +72,6 @@ const MaterialsPage = () => {
                     minWidth: '350px',
                     maxHeight: '500px',
                     overflow: 'auto',
-                    paddingRight: '10px',
                     boxSizing: 'content-box',
                 }}
             >

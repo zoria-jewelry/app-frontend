@@ -18,7 +18,7 @@ import type { EmployeeDto } from '../dto/employees.ts';
 import paperStyles from '../styles/Paper.module.css';
 import commonStyles from '../styles/Common.module.css';
 import ArchiveIcon from '@mui/icons-material/Inventory2Outlined';
-import { EmployeesApiClient } from '../api/employeesApiClient.tsx';
+import { EmployeesApiClient } from '../api/employeesApiClient.ts';
 import DialogComponent from '../components/modal/DialogComponent.tsx';
 import EmployeesArchiveComponent from '../components/modal/EmployeesArchiveComponent.tsx';
 import CreateEmployeeComponent from '../components/modal/CreateEmployeeComponent.tsx';
@@ -100,7 +100,6 @@ const EmployeePage = () => {
                     minWidth: '350px',
                     maxHeight: '500px',
                     overflow: 'auto',
-                    paddingRight: '10px',
                     boxSizing: 'content-box',
                 }}
             >

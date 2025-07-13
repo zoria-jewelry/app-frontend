@@ -14,7 +14,7 @@ import {
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
 import type { EmployeeDto } from '../../dto/employees.ts';
 import { useEffect, useState } from 'react';
-import { EmployeesApiClient } from '../../api/employeesApiClient.tsx';
+import { EmployeesApiClient } from '../../api/employeesApiClient.ts';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import DialogComponent from './DialogComponent.tsx';
@@ -112,7 +112,6 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
                     maxHeight: '450px',
                     overflow: 'auto',
                     marginTop: theme.spacing(4),
-                    paddingRight: '10px',
                     boxSizing: 'content-box',
                 }}
             >
