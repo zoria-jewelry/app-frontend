@@ -17,12 +17,15 @@ import commonStyles from '../styles/Common.module.css';
 import { useEffect, useState } from 'react';
 import type { MaterialDto } from '../dto/materials.ts';
 import { MaterialsApiClient } from '../api/materialsApiClient.ts';
+import CreateMaterialComponent from '../components/modal/CreateMaterialComponent.tsx';
 
 const MaterialsPage = () => {
     const theme = useTheme();
     const [page, setPage] = useState<number>(0);
     const [total, setTotal] = useState<number>(0);
     const [entries, setEntries] = useState<MaterialDto[]>([]);
+
+    const [isCreateMaterialModalOpen, setIsCreateMaterialModalOpen] = useState<boolean>(false);
 
     useEffect(() => {
         MaterialsApiClient.get(page).then((materialsList) => {
@@ -53,6 +56,7 @@ const MaterialsPage = () => {
                 </Grid>
                 <Grid>
                     <Button
+                        onClick={() => setIsCreateMaterialModalOpen(true)}
                         style={{ marginBottom: theme.spacing(1) }}
                         variant="contained"
                         color="primary"
@@ -118,6 +122,11 @@ const MaterialsPage = () => {
                     marginTop: theme.spacing(4),
                     border: 0,
                 }}
+            />
+
+            <CreateMaterialComponent
+                handleClose={() => setIsCreateMaterialModalOpen(false)}
+                isOpen={isCreateMaterialModalOpen}
             />
         </Paper>
     );

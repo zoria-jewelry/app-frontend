@@ -17,11 +17,35 @@ const HeaderComponent = (props: HeaderComponentProps) => {
             style={{ marginBottom: theme.spacing(10), padding: theme.spacing(5) }}
         >
             <Box className={commonStyles.flexRow} style={{ gap: theme.spacing(5) }}>
-                <MenuIcon
-                    className={iconsStyles.burgerMenuIcon}
-                    style={{ width: 40, height: 40 }}
+                <Box
+                    sx={{
+                        width: 50,
+                        height: 50,
+                        border: '2px solid white',
+                        transition: 'transform 0.15s ease',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'relative',
+                        cursor: 'pointer',
+                        '&:hover': {
+                            transform: 'rotate(45deg)',
+                            '& .menu-icon': {
+                                transform: 'rotate(-45deg)',
+                            },
+                        },
+                    }}
                     onClick={props.toggleOpenSidebar}
-                />
+                >
+                    <MenuIcon
+                        className={`menu-icon ${iconsStyles.burgerMenuIcon}`}
+                        sx={{
+                            width: 30,
+                            height: 30,
+                            transition: 'transform 0.15s ease',
+                        }}
+                    />
+                </Box>
                 <Typography variant="h2">Zoria</Typography>
             </Box>
         </AppBar>

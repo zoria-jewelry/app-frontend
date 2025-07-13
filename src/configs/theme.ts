@@ -131,6 +131,20 @@ export const applicationTheme: Theme = createTheme({
                 },
             },
         },
+        MuiFormHelperText: {
+            styleOverrides: {
+                root: {
+                    fontSize: 18,
+                },
+            },
+        },
+        MuiFormLabel: {
+            styleOverrides: {
+                root: {
+                    fontSize: 18,
+                },
+            },
+        },
     },
     spacing: (factor: number) => `${0.25 * factor}rem`,
 });
