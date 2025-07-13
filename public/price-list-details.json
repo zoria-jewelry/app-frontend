@@ -1,0 +1,56 @@
+{
+    "id": 25,
+    "startDate": "2025-07-12",
+    "entries": [
+        {
+            "materialId": 1,
+            "materialName": "Золото 525",
+            "materialPrice": "1243.50"
+        },
+        {
+            "materialId": 2,
+            "materialName": "Золото 585",
+            "materialPrice": "1320.75"
+        },
+        {
+            "materialId": 3,
+            "materialName": "Срібло 925",
+            "materialPrice": "98.20"
+        },
+        {
+            "materialId": 4,
+            "materialName": "Платина 950",
+            "materialPrice": "2450.00"
+        },
+        {
+            "materialId": 5,
+            "materialName": "Паладій 999",
+            "materialPrice": "2675.30"
+        },
+        {
+            "materialId": 6,
+            "materialName": "Мідь Червона",
+            "materialPrice": "45.10"
+        },
+        {
+            "materialId": 7,
+            "materialName": "Латунь",
+            "materialPrice": "78.40"
+        },
+        {
+            "materialId": 8,
+            "materialName": "Бронза",
+            "materialPrice": "84.90"
+        },
+        {
+            "materialId": 9,
+            "materialName": "Золото 750",
+            "materialPrice": "1580.00"
+        },
+        {
+            "materialId": 10,
+            "materialName": "Срібло 800",
+            "materialPrice": "90.00"
+        }
+    ]
+}

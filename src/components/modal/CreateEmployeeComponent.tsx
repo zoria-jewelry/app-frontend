@@ -96,7 +96,11 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
             </Typography>
 
             {/* The form */}
-            <form onSubmit={handleSubmit(onSubmit)} style={{ marginTop: theme.spacing(8) }}>
+            <form
+                onSubmit={handleSubmit(onSubmit)}
+                style={{ marginTop: theme.spacing(8) }}
+                noValidate
+            >
                 <FormControl fullWidth>
                     <FormLabel htmlFor="full-name">ПІБ</FormLabel>
                     <TextField

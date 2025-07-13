@@ -9,6 +9,7 @@ import { Box } from '@mui/material';
 import EmployeePage from './pages/EmployeePage.tsx';
 import Sidebar from './components/Sidebar.tsx';
 import { useState } from 'react';
+import PriceListsPage from './pages/PriceListsPage.tsx';
 
 const App = () => {
     const path = useLocation();
@@ -31,6 +32,7 @@ const App = () => {
                 <Route element={<PrivateRoutes />}>
                     <Route path="/materials" element={<MaterialsPage />} />
                     <Route path="/employees" element={<EmployeePage />} />
+                    <Route path="/pricing" element={<PriceListsPage />} />
                     <Route path="/*" element={<Navigate to="/materials" />} />
                 </Route>
                 {/* Guests */}

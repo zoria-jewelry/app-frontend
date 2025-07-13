@@ -11,6 +11,7 @@ import { styled } from '@mui/material/styles';
 import { Divider, IconButton } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { useNavigate } from 'react-router-dom';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -43,12 +44,12 @@ const Sidebar = (props: SidebarProps) => {
             <Divider />
             {/* Sidebar buttons */}
             <List>
-                <ListItem key="Employees" disablePadding>
-                    <ListItemButton onClick={() => navigate('/employees')}>
+                <ListItem key="PriceLists" disablePadding>
+                    <ListItemButton onClick={() => navigate('/pricing')}>
                         <ListItemIcon>
-                            <EmployeesIcon />
+                            <LocalOfferIcon />
                         </ListItemIcon>
-                        <ListItemText secondary="Працівники" />
+                        <ListItemText secondary="Прайс-листи" />
                     </ListItemButton>
                 </ListItem>
                 <ListItem key="Materials" disablePadding>
@@ -57,6 +58,14 @@ const Sidebar = (props: SidebarProps) => {
                             <DiamondIcon />
                         </ListItemIcon>
                         <ListItemText secondary="Каталог матеріалів" />
+                    </ListItemButton>
+                </ListItem>
+                <ListItem key="Employees" disablePadding>
+                    <ListItemButton onClick={() => navigate('/employees')}>
+                        <ListItemIcon>
+                            <EmployeesIcon />
+                        </ListItemIcon>
+                        <ListItemText secondary="Працівники" />
                     </ListItemButton>
                 </ListItem>
             </List>

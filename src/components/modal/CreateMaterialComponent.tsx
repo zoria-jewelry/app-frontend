@@ -96,7 +96,11 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
             </Typography>
 
             {/* The form */}
-            <form onSubmit={handleSubmit(onSubmit)} style={{ marginTop: theme.spacing(8) }}>
+            <form
+                onSubmit={handleSubmit(onSubmit)}
+                style={{ marginTop: theme.spacing(8) }}
+                noValidate
+            >
                 <FormControl fullWidth>
                     <FormLabel htmlFor="name">Назва</FormLabel>
                     <TextField
@@ -122,7 +126,7 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
                     </FormHelperText>
                 </FormControl>
                 <FormControl fullWidth>
-                    <FormLabel htmlFor="price">Вартість (грн за г.)</FormLabel>
+                    <FormLabel htmlFor="price">Вартість (грн за г)</FormLabel>
                     <TextField
                         id="price"
                         placeholder="1234.00"
