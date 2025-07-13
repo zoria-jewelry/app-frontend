@@ -60,6 +60,7 @@ const LoginPage = () => {
                 className={paperStyles.paper}
                 sx={{
                     maxWidth: '500px',
+                    height: 'fit-content',
                     borderRadius: '25px',
                 }}
             >
