@@ -94,6 +94,7 @@ const CurrentPriceListComponent = () => {
                             <TableCell
                                 style={{ backgroundColor: '#b7cfd2', borderTopRightRadius: 10 }}
                                 width="20%"
+                                sx={{ textAlign: 'right' }}
                             >
                                 Вартість (грн за г)
                             </TableCell>
