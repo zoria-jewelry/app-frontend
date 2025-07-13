@@ -90,7 +90,7 @@ const MaterialsPage = () => {
                             <TableCell
                                 style={{ backgroundColor: '#b7cfd2', borderTopRightRadius: 10 }}
                             >
-                                Вартість (грн за гр.)
+                                Вартість (грн за г)
                             </TableCell>
                         </TableRow>
                     </TableHead>

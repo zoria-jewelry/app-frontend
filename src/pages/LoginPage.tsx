@@ -69,6 +69,7 @@ const LoginPage = () => {
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     style={{ padding: theme.spacing(4), margin: 0 }}
+                    noValidate
                 >
                     <FormControl
                         fullWidth

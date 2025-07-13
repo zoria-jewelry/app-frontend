@@ -143,7 +143,7 @@ const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
                     return (
                         <FormControl fullWidth key={key}>
                             <FormLabel htmlFor={`material-${key}`}>
-                                {`${entry.materialName} (грн за гр.)`}
+                                {`${entry.materialName} (грн за г)`}
                             </FormLabel>
                             <TextField
                                 id={`material-${key}`}
