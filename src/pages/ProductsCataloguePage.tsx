@@ -18,6 +18,7 @@ import type { ProductEntryDto } from '../dto/products.ts';
 import { ProductsApiClient } from '../api/productsApiClient.ts';
 import SearchBar from '../components/SearchBar.tsx';
 import CreateProductComponent from '../components/modal/CreateProductComponent.tsx';
+import DialogComponent from '../components/modal/DialogComponent.tsx';
 
 const ProductsCataloguePage = () => {
     const theme = useTheme();
@@ -26,6 +27,8 @@ const ProductsCataloguePage = () => {
     const [searchPhrase, setSearchPhrase] = useState<string>('');
 
     const [isCreateProductModalOpen, setIsCreateProductModalOpen] = useState<boolean>(false);
+
+    const [productToArchive, setProductToArchive] = useState<ProductEntryDto | null>(null);
 
     const isXs = useMediaQuery(theme.breakpoints.down('sm')); // <600px
     const isSm = useMediaQuery(theme.breakpoints.between('sm', 'md')); // 600–900px
@@ -37,6 +40,12 @@ const ProductsCataloguePage = () => {
     else if (isSm)
         cardPercentWidth = '48%'; // 2 per row
     else if (isMd) cardPercentWidth = '31.5%'; // 3 per row
+
+    const handleArchiveProduct = (id?: number) => {
+        setProductToArchive(null);
+        console.log(`Archive product ${id}`);
+        // TODO: call archive endpoint
+    };
 
     useEffect(() => {
         ProductsApiClient.getAll(searchPhrase).then((products) => {
@@ -114,6 +123,7 @@ const ProductsCataloguePage = () => {
                             }}
                         >
                             <IconButton
+                                onClick={() => setProductToArchive(p)}
                                 sx={{
                                     backgroundColor: 'white',
                                     position: 'absolute',
@@ -150,6 +160,17 @@ const ProductsCataloguePage = () => {
                 isOpen={isCreateProductModalOpen}
                 handleClose={() => setIsCreateProductModalOpen(false)}
             />
+
+            {productToArchive && (
+                <DialogComponent
+                    handleClose={() => setProductToArchive(null)}
+                    handleAction={() => handleArchiveProduct(productToArchive?.id)}
+                    isOpen={!!productToArchive}
+                    dialogText={`Ви впевнені, що хочете архівувати виріб "${productToArchive?.name}"?`}
+                    actionButtonText="Архівувати"
+                    actionButtonVariant="error"
+                />
+            )}
         </Paper>
     );
 };
