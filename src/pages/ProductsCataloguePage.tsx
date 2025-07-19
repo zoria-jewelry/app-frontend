@@ -17,6 +17,7 @@ import { useEffect, useState } from 'react';
 import type { ProductEntryDto } from '../dto/products.ts';
 import { ProductsApiClient } from '../api/productsApiClient.ts';
 import SearchBar from '../components/SearchBar.tsx';
+import CreateProductComponent from '../components/modal/CreateProductComponent.tsx';
 
 const ProductsCataloguePage = () => {
     const theme = useTheme();
@@ -74,6 +75,7 @@ const ProductsCataloguePage = () => {
                         variant="contained"
                         color="primary"
                         sx={{ marginTop: theme.spacing(isXs ? 2 : 0) }}
+                        onClick={() => setIsCreateProductModalOpen(true)}
                     >
                         НОВИЙ ВИРІБ
                     </Button>
@@ -143,6 +145,11 @@ const ProductsCataloguePage = () => {
                     </Box>
                 ))}
             </Box>
+
+            <CreateProductComponent
+                isOpen={isCreateProductModalOpen}
+                handleClose={() => setIsCreateProductModalOpen(false)}
+            />
         </Paper>
     );
 };

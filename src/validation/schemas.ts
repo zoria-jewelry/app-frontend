@@ -23,3 +23,10 @@ export const signinSchema = z.object({
 });
 
 export type SigninFormData = z.infer<typeof signinSchema>;
+
+export const createProductSchema = z.object({
+    name: z.string().nonempty('Це поле є обовʼязковим'),
+    pictureBase64: z.string().optional(),
+});
+
+export type CreateProductFormData = z.infer<typeof createProductSchema>;
