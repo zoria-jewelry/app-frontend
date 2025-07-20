@@ -55,6 +55,7 @@ const CreateProductComponent = (props: CreateProductComponentProps) => {
         reValidateMode: 'onSubmit',
         defaultValues: {
             name: '',
+            article: '',
             pictureBase64: undefined,
         },
     });
@@ -137,6 +138,30 @@ const CreateProductComponent = (props: CreateProductComponentProps) => {
                         sx={{ margin: 0, marginBottom: theme.spacing(2), minHeight: '30px' }}
                     >
                         {errors?.name?.message}
+                    </FormHelperText>
+                </FormControl>
+                <FormControl fullWidth>
+                    <FormLabel htmlFor="article">Артикул</FormLabel>
+                    <TextField
+                        id="article"
+                        placeholder="1102-10015/1(2,0)"
+                        fullWidth
+                        margin="normal"
+                        defaultValue=""
+                        {...register('article')}
+                        error={!!errors.article}
+                        sx={{
+                            margin: 0,
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '6px',
+                            },
+                        }}
+                    />
+                    <FormHelperText
+                        error={!!errors.article}
+                        sx={{ margin: 0, marginBottom: theme.spacing(2), minHeight: '30px' }}
+                    >
+                        {errors?.article?.message}
                     </FormHelperText>
                 </FormControl>
                 <FormControl fullWidth>

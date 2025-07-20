@@ -19,6 +19,7 @@ import { ProductsApiClient } from '../api/productsApiClient.ts';
 import SearchBar from '../components/SearchBar.tsx';
 import CreateProductComponent from '../components/modal/CreateProductComponent.tsx';
 import DialogComponent from '../components/modal/DialogComponent.tsx';
+import ProductsArchiveComponent from '../components/modal/ProductsArchiveComponent.tsx';
 
 const ProductsCataloguePage = () => {
     const theme = useTheme();
@@ -28,6 +29,7 @@ const ProductsCataloguePage = () => {
 
     const [isCreateProductModalOpen, setIsCreateProductModalOpen] = useState<boolean>(false);
 
+    const [isArchiveOpened, setIsArchiveOpened] = useState<boolean>(false);
     const [productToArchive, setProductToArchive] = useState<ProductEntryDto | null>(null);
 
     const isXs = useMediaQuery(theme.breakpoints.down('sm')); // <600px
@@ -79,6 +81,17 @@ const ProductsCataloguePage = () => {
                 <Typography variant="h2">Каталог виробів</Typography>
 
                 <Box display="flex" flexDirection="row" flexWrap="wrap">
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        sx={{
+                            marginTop: theme.spacing(isXs ? 2 : 0),
+                            marginRight: theme.spacing(2),
+                        }}
+                        onClick={() => setIsArchiveOpened(true)}
+                    >
+                        Відкрити архів
+                    </Button>
                     <SearchBar consumer={setSearchPhrase} />
                     <Button
                         variant="contained"
@@ -171,6 +184,11 @@ const ProductsCataloguePage = () => {
                     actionButtonVariant="error"
                 />
             )}
+
+            <ProductsArchiveComponent
+                handleClose={() => setIsArchiveOpened(false)}
+                isOpen={isArchiveOpened}
+            />
         </Paper>
     );
 };
