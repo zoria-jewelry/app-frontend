@@ -26,8 +26,8 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        minWidth: '80%',
-        minHeight: '80%',
+        minWidth: '70%',
+        height: '90vh',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -109,7 +109,6 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
             <TableContainer
                 style={{
                     minWidth: '350px',
-                    maxHeight: '450px',
                     overflow: 'auto',
                     marginTop: theme.spacing(4),
                     boxSizing: 'content-box',
@@ -131,6 +130,7 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
                                 Номер телефону
                             </TableCell>
                             <TableCell
+                                width="50px"
                                 style={{ backgroundColor: '#b7cfd2', borderTopRightRadius: 10 }}
                             ></TableCell>
                         </TableRow>
@@ -147,13 +147,7 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
                                 <TableCell>
                                     <Typography variant="body2">{employee.phone}</Typography>
                                 </TableCell>
-                                <TableCell
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        justifyContent: 'flex-end',
-                                    }}
-                                >
+                                <TableCell width="50px">
                                     <IconButton
                                         size="small"
                                         style={{ padding: 0 }}
