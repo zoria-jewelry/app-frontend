@@ -1,4 +1,5 @@
 import {
+    Box,
     Button,
     Grid,
     IconButton,
@@ -11,6 +12,7 @@ import {
     TablePagination,
     TableRow,
     Typography,
+    useMediaQuery,
     useTheme,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
@@ -21,6 +23,7 @@ import commonStyles from '../styles/Common.module.css';
 import InfoIcon from '@mui/icons-material/InfoOutline';
 import { useNavigate } from 'react-router-dom';
 import CreateCustomerComponent from '../components/modal/CreateCustomerComponent.tsx';
+import SearchBar from '../components/SearchBar.tsx';
 
 const CustomersPage = () => {
     const theme = useTheme();
@@ -30,10 +33,18 @@ const CustomersPage = () => {
     const [total, setTotal] = useState<number>(0);
     const [entries, setEntries] = useState<CustomerDto[]>([]);
 
+    const [searchPhrase, setSearchPhrase] = useState<string>('');
+
     const [isCreateComponentOpened, setIsCreateComponentOpened] = useState<boolean>(false);
 
+    const isXs = useMediaQuery(theme.breakpoints.down('sm')); // <600px
+
     useEffect(() => {
-        CustomersApiClient.get(page).then((customersList) => {
+        setPage(0);
+    }, [searchPhrase]);
+
+    useEffect(() => {
+        CustomersApiClient.get(page, searchPhrase).then((customersList) => {
             if (!customersList) {
                 // TODO: add toast
             } else {
@@ -41,7 +52,7 @@ const CustomersPage = () => {
                 setTotal(customersList.total);
             }
         });
-    }, [page]);
+    }, [page, searchPhrase]);
 
     return (
         <Paper
@@ -60,14 +71,18 @@ const CustomersPage = () => {
                     <Typography variant="h2">Клієнти</Typography>
                 </Grid>
                 <Grid>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        style={{ marginBottom: theme.spacing(1) }}
-                        onClick={() => setIsCreateComponentOpened(true)}
-                    >
-                        Додати клієнта
-                    </Button>
+                    <Box display="flex" flexDirection="row" flexWrap="wrap">
+                        <SearchBar consumer={setSearchPhrase} />
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            style={{ marginBottom: theme.spacing(1) }}
+                            sx={{ marginTop: theme.spacing(isXs ? 2 : 0) }}
+                            onClick={() => setIsCreateComponentOpened(true)}
+                        >
+                            Додати клієнта
+                        </Button>
+                    </Box>
                 </Grid>
             </Grid>
 
@@ -119,7 +134,7 @@ const CustomersPage = () => {
                                 </TableCell>
                                 <TableCell>
                                     <IconButton
-                                        onClick={() => navigate(`/customers/${customer.id}`)}
+                                        onClick={() => navigate(`/customers`)} // TODO: fixme
                                         size="small"
                                         style={{ padding: 0 }}
                                     >
