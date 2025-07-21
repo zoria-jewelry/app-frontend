@@ -12,6 +12,7 @@ import { Divider, IconButton } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { useNavigate } from 'react-router-dom';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import CustomerIcon from '@mui/icons-material/Portrait';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -44,6 +45,14 @@ const Sidebar = (props: SidebarProps) => {
             <Divider />
             {/* Sidebar buttons */}
             <List>
+                <ListItem key="Customers" disablePadding>
+                    <ListItemButton onClick={() => navigate('/customers')}>
+                        <ListItemIcon>
+                            <CustomerIcon />
+                        </ListItemIcon>
+                        <ListItemText secondary="Клієнти" />
+                    </ListItemButton>
+                </ListItem>
                 <ListItem key="PriceLists" disablePadding>
                     <ListItemButton onClick={() => navigate('/pricing')}>
                         <ListItemIcon>

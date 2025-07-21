@@ -23,3 +23,13 @@ export const signinSchema = z.object({
 });
 
 export type SigninFormData = z.infer<typeof signinSchema>;
+
+export const createCustomerSchema = z.object({
+    fullName: z.string().nonempty('Це поле є обовʼязковим'),
+    phone: z
+        .string()
+        .nonempty('Це поле є обовʼязковим')
+        .regex(/^\s*(\+38)?\d{10}\s*$/im, { message: 'Неправильний формат' }),
+});
+
+export type CreateCustomerFormData = z.infer<typeof createCustomerSchema>;
