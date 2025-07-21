@@ -12,6 +12,7 @@ import { Divider, IconButton } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { useNavigate } from 'react-router-dom';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 import CustomerIcon from '@mui/icons-material/Portrait';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -75,6 +76,14 @@ const Sidebar = (props: SidebarProps) => {
                             <EmployeesIcon />
                         </ListItemIcon>
                         <ListItemText secondary="Працівники" />
+                    </ListItemButton>
+                </ListItem>
+                <ListItem key="Products" disablePadding>
+                    <ListItemButton onClick={() => navigate('/products')}>
+                        <ListItemIcon>
+                            <ListAltIcon />
+                        </ListItemIcon>
+                        <ListItemText secondary="Каталог виробів" />
                     </ListItemButton>
                 </ListItem>
             </List>

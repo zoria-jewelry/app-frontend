@@ -11,6 +11,7 @@ import Sidebar from './components/Sidebar.tsx';
 import { useState } from 'react';
 import PriceListsPage from './pages/PriceListsPage.tsx';
 import CustomersPage from './pages/CustomersPage.tsx';
+import ProductsCataloguePage from './pages/ProductsCataloguePage.tsx';
 
 const App = () => {
     const path = useLocation();
@@ -35,6 +36,7 @@ const App = () => {
                     <Route path="/materials" element={<MaterialsPage />} />
                     <Route path="/employees" element={<EmployeePage />} />
                     <Route path="/pricing" element={<PriceListsPage />} />
+                    <Route path="/products" element={<ProductsCataloguePage />} />
                     <Route path="/*" element={<Navigate to="/materials" />} />
                 </Route>
                 {/* Guests */}
