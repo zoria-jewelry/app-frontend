@@ -10,6 +10,7 @@ import EmployeePage from './pages/EmployeePage.tsx';
 import Sidebar from './components/Sidebar.tsx';
 import { useState } from 'react';
 import PriceListsPage from './pages/PriceListsPage.tsx';
+import CustomersPage from './pages/CustomersPage.tsx';
 import ProductsCataloguePage from './pages/ProductsCataloguePage.tsx';
 
 const App = () => {
@@ -31,6 +32,7 @@ const App = () => {
                 <Route path="/demo" element={<ThemeDemoPage />} />
                 {/* Authenticated user */}
                 <Route element={<PrivateRoutes />}>
+                    <Route path="/customers" element={<CustomersPage />} />
                     <Route path="/materials" element={<MaterialsPage />} />
                     <Route path="/employees" element={<EmployeePage />} />
                     <Route path="/pricing" element={<PriceListsPage />} />

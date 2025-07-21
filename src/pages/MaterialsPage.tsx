@@ -41,7 +41,7 @@ const MaterialsPage = () => {
     return (
         <Paper
             className={`${paperStyles.paper} ${commonStyles.flexColumn}`}
-            style={{ gap: theme.spacing(4), borderRadius: '10px' }}
+            style={{ gap: theme.spacing(4), borderRadius: '10px', maxHeight: '80vh' }}
         >
             {/* Page name and button */}
             <Grid
@@ -70,7 +70,6 @@ const MaterialsPage = () => {
             <TableContainer
                 style={{
                     minWidth: '350px',
-                    maxHeight: '500px',
                     overflow: 'auto',
                     boxSizing: 'content-box',
                 }}
@@ -126,6 +125,7 @@ const MaterialsPage = () => {
                 style={{
                     marginTop: theme.spacing(4),
                     border: 0,
+                    overflow: 'visible',
                 }}
             />
 

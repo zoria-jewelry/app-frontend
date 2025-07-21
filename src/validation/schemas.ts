@@ -31,3 +31,13 @@ export const createProductSchema = z.object({
 });
 
 export type CreateProductFormData = z.infer<typeof createProductSchema>;
+
+export const createCustomerSchema = z.object({
+    fullName: z.string().nonempty('Це поле є обовʼязковим'),
+    phone: z
+        .string()
+        .nonempty('Це поле є обовʼязковим')
+        .regex(/^\s*(\+38)?\d{10}\s*$/im, { message: 'Неправильний формат' }),
+});
+
+export type CreateCustomerFormData = z.infer<typeof createCustomerSchema>;
