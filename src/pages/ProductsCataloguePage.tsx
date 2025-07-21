@@ -161,7 +161,7 @@ const ProductsCataloguePage = () => {
                                     {p.name}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                    {p.article}
+                                    АРТ: {p.article}
                                 </Typography>
                             </CardContent>
                         </Card>
