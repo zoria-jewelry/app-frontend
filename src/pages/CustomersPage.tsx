@@ -134,7 +134,7 @@ const CustomersPage = () => {
                                 </TableCell>
                                 <TableCell>
                                     <IconButton
-                                        onClick={() => navigate(`/customers`)} // TODO: fixme
+                                        onClick={() => navigate(`/customers/${customer.id}`)}
                                         size="small"
                                         style={{ padding: 0 }}
                                     >

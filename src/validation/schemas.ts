@@ -41,3 +41,13 @@ export const createCustomerSchema = z.object({
 });
 
 export type CreateCustomerFormData = z.infer<typeof createCustomerSchema>;
+
+export const updateCustomerInfoSchema = z.object({
+    fullName: z.string().nonempty('Це поле є обовʼязковим'),
+    phone: z
+        .string()
+        .nonempty('Це поле є обовʼязковим')
+        .regex(/^\s*(\+38)?\d{10}\s*$/im, { message: 'Неправильний формат' }),
+});
+
+export type UpdateCustomerInfoFromData = z.infer<typeof updateCustomerInfoSchema>;

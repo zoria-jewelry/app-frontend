@@ -49,6 +49,21 @@ const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
     // Keep schema as reference since it's dynamic.....
     const schemaRef = useRef<z.ZodObject<Record<string, z.ZodString>>>(z.object({}));
 
+    type CreatePriceListDto = z.infer<typeof schemaRef.current>;
+
+    const {
+        register,
+        handleSubmit,
+        clearErrors,
+        reset,
+        formState: { errors },
+    } = useForm<CreatePriceListDto>({
+        resolver: async (values, context, options) =>
+            await zodResolver(schemaRef.current)(values, context, options),
+        reValidateMode: 'onSubmit',
+        defaultValues: {},
+    });
+
     useEffect(() => {
         PriceListsApiClient.getActiveListDetails().then((priceList) => {
             if (priceList) {
@@ -79,21 +94,6 @@ const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
             }
         });
     }, []);
-
-    type CreatePriceListDto = z.infer<typeof schemaRef.current>;
-
-    const {
-        register,
-        handleSubmit,
-        clearErrors,
-        reset,
-        formState: { errors },
-    } = useForm<CreatePriceListDto>({
-        resolver: async (values, context, options) =>
-            await zodResolver(schemaRef.current)(values, context, options),
-        reValidateMode: 'onSubmit',
-        defaultValues: {},
-    });
 
     const handleClose = () => {
         reset();

@@ -1,5 +1,5 @@
 import { AbstractApiClient } from './abstractApiClient.ts';
-import type { CustomerDto, CustomerListDto } from '../dto/customers.ts';
+import type { CustomerBalanceDto, CustomerDto, CustomerListDto } from '../dto/customers.ts';
 
 export class CustomersApiClient extends AbstractApiClient {
     public static async get(
@@ -25,5 +25,21 @@ export class CustomersApiClient extends AbstractApiClient {
         };
         // TODO: use me - const res = await this.apiRequest<{ pages: CustomerListDto[] }>({});
         // return res?.pages[page];
+    }
+
+    public static async getInfoById(id: number): Promise<CustomerDto | undefined> {
+        console.log(`CustomersApiClient.getInfoById: ${id}`);
+        const response = await fetch(`/customers.json`);
+        const json = (await response.json()) as unknown as { entries: CustomerDto[] };
+
+        return json.entries.find((e) => e.id === id);
+    }
+
+    public static async getCustomerBalanceById(
+        id: number,
+    ): Promise<CustomerBalanceDto | undefined> {
+        console.log(`CustomersApiClient.getCustomerBalanceById: ${id}`);
+        const response = await fetch(`/customer-balance.json`);
+        return (await response.json()) as unknown as CustomerBalanceDto;
     }
 }
