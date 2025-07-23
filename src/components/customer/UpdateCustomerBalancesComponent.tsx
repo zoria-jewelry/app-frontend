@@ -64,6 +64,7 @@ const UpdateCustomerBalancesComponent = () => {
     }, []);
 
     const onSubmit = (data: { [key: string]: string }) => {
+        console.log(data['']);
         clearErrors();
         reset();
     };
