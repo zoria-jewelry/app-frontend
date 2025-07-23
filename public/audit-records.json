@@ -1,0 +1,164 @@
+{
+    "entries": [
+        {
+            "id": 1,
+            "time": "2025-07-23T10:15:00Z",
+            "actorFullName": "Панов Максим Ігорович",
+            "affectedCustomerId": 1,
+            "affectedCustomerFullName": "Недашківська Валерія Віталіївна",
+            "description": "Клієнт доніс борг по матеріалах та забрав валюту, що вносив у заставу",
+            "entryRows": [
+                { "materialName": "Золото 585", "delta": 450.65 },
+                { "materialName": "Золото 750", "delta": 0 },
+                { "materialName": "Паладій 850", "delta": 0 },
+                { "materialName": "Платина 950", "delta": 0 },
+                { "materialName": "Срібло 925", "delta": 0 },
+                { "materialName": "Валюта (грн)", "delta": -50000.0, "isMoney": true }
+            ]
+        },
+        {
+            "id": 2,
+            "time": "2025-07-22T14:30:00Z",
+            "actorFullName": "Панов Максим Ігорович",
+            "affectedCustomerId": 2,
+            "affectedCustomerFullName": "Шевченко Андрій Петрович",
+            "description": "Прийнято новий матеріал у заставу",
+            "entryRows": [
+                { "materialName": "Золото 585", "delta": 0 },
+                { "materialName": "Золото 750", "delta": 0 },
+                { "materialName": "Паладій 850", "delta": 0 },
+                { "materialName": "Платина 950", "delta": 300.0 },
+                { "materialName": "Срібло 925", "delta": 0 },
+                { "materialName": "Валюта (грн)", "delta": 2000.0, "isMoney": true }
+            ]
+        },
+        {
+            "id": 3,
+            "time": "2025-07-21T09:00:00Z",
+            "actorFullName": "Панов Максим Ігорович",
+            "affectedCustomerId": null,
+            "affectedCustomerFullName": null,
+            "description": "Списання матеріалу через псування",
+            "entryRows": [
+                { "materialName": "Золото 585", "delta": 0 },
+                { "materialName": "Золото 750", "delta": 0 },
+                { "materialName": "Паладій 850", "delta": 0 },
+                { "materialName": "Платина 950", "delta": 0 },
+                { "materialName": "Срібло 925", "delta": 0 },
+                { "materialName": "Валюта (грн)", "delta": 0, "isMoney": true }
+            ]
+        },
+        {
+            "id": 4,
+            "time": "2025-07-20T18:45:00Z",
+            "actorFullName": "Панов Максим Ігорович",
+            "affectedCustomerId": 3,
+            "affectedCustomerFullName": "Коваль Олена Миколаївна",
+            "description": "Повернення частини застави клієнту",
+            "entryRows": [
+                { "materialName": "Золото 585", "delta": 0 },
+                { "materialName": "Золото 750", "delta": -100.0 },
+                { "materialName": "Паладій 850", "delta": 0 },
+                { "materialName": "Платина 950", "delta": 0 },
+                { "materialName": "Срібло 925", "delta": 0 },
+                { "materialName": "Валюта (грн)", "delta": -20000.0, "isMoney": true }
+            ]
+        },
+        {
+            "id": 5,
+            "time": "2025-07-19T11:10:00Z",
+            "actorFullName": "Панов Максим Ігорович",
+            "affectedCustomerId": 4,
+            "affectedCustomerFullName": "Гриценко Микита Сергійович",
+            "description": "Внесення нової валюти під заставу",
+            "entryRows": [
+                { "materialName": "Золото 585", "delta": 0 },
+                { "materialName": "Золото 750", "delta": 0 },
+                { "materialName": "Паладій 850", "delta": 0 },
+                { "materialName": "Платина 950", "delta": 0 },
+                { "materialName": "Срібло 925", "delta": 0 },
+                { "materialName": "Валюта (грн)", "delta": 1500.0, "isMoney": true }
+            ]
+        },
+        {
+            "id": 6,
+            "time": "2025-07-18T16:20:00Z",
+            "actorFullName": "Панов Максим Ігорович",
+            "affectedCustomerId": 2,
+            "affectedCustomerFullName": "Шевченко Андрій Петрович",
+            "description": "Донарахування відсотків за користування заставою",
+            "entryRows": [
+                { "materialName": "Золото 585", "delta": 0 },
+                { "materialName": "Золото 750", "delta": 0 },
+                { "materialName": "Паладій 850", "delta": 0 },
+                { "materialName": "Платина 950", "delta": 0 },
+                { "materialName": "Срібло 925", "delta": 0 },
+                { "materialName": "Валюта (грн)", "delta": 2500.0, "isMoney": true }
+            ]
+        },
+        {
+            "id": 7,
+            "time": "2025-07-17T08:30:00Z",
+            "actorFullName": "Панов Максим Ігорович",
+            "affectedCustomerId": 5,
+            "affectedCustomerFullName": "Литвиненко Катерина Олександрівна",
+            "description": "Оновлення оціночної вартості золота",
+            "entryRows": [
+                { "materialName": "Золото 585", "delta": 50.0 },
+                { "materialName": "Золото 750", "delta": 0 },
+                { "materialName": "Паладій 850", "delta": 0 },
+                { "materialName": "Платина 950", "delta": 0 },
+                { "materialName": "Срібло 925", "delta": 0 },
+                { "materialName": "Валюта (грн)", "delta": 0, "isMoney": true }
+            ]
+        },
+        {
+            "id": 8,
+            "time": "2025-07-16T19:55:00Z",
+            "actorFullName": "Панов Максим Ігорович",
+            "affectedCustomerId": null,
+            "affectedCustomerFullName": null,
+            "description": "Технічне коригування залишків після інвентаризації",
+            "entryRows": [
+                { "materialName": "Золото 585", "delta": 0 },
+                { "materialName": "Золото 750", "delta": 0 },
+                { "materialName": "Паладій 850", "delta": 0 },
+                { "materialName": "Платина 950", "delta": 0 },
+                { "materialName": "Срібло 925", "delta": -30.0 },
+                { "materialName": "Валюта (грн)", "delta": 100.0, "isMoney": true }
+            ]
+        },
+        {
+            "id": 9,
+            "time": "2025-07-15T13:40:00Z",
+            "actorFullName": "Панов Максим Ігорович",
+            "affectedCustomerId": 6,
+            "affectedCustomerFullName": "Данилюк Володимир Ігорович",
+            "description": "Повне погашення боргу клієнтом та закриття застави",
+            "entryRows": [
+                { "materialName": "Золото 585", "delta": -200.0 },
+                { "materialName": "Золото 750", "delta": 0 },
+                { "materialName": "Паладій 850", "delta": 0 },
+                { "materialName": "Платина 950", "delta": 0 },
+                { "materialName": "Срібло 925", "delta": 0 },
+                { "materialName": "Валюта (грн)", "delta": -100000.0, "isMoney": true }
+            ]
+        },
+        {
+            "id": 10,
+            "time": "2025-07-14T09:05:00Z",
+            "actorFullName": "Панов Максим Ігорович",
+            "affectedCustomerId": 7,
+            "affectedCustomerFullName": "Сидоренко Марія Павлівна",
+            "description": "Додаткове внесення срібла у заставу",
+            "entryRows": [
+                { "materialName": "Золото 585", "delta": 0 },
+                { "materialName": "Золото 750", "delta": 0 },
+                { "materialName": "Паладій 850", "delta": 0 },
+                { "materialName": "Платина 950", "delta": 0 },
+                { "materialName": "Срібло 925", "delta": 200.0 },
+                { "materialName": "Валюта (грн)", "delta": 0, "isMoney": true }
+            ]
+        }
+    ]
+}

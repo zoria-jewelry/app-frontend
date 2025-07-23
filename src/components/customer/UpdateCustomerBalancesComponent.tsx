@@ -64,7 +64,6 @@ const UpdateCustomerBalancesComponent = () => {
     }, []);
 
     const onSubmit = (data: { [key: string]: string }) => {
-        console.log(data);
         clearErrors();
         reset();
     };
@@ -89,7 +88,6 @@ const UpdateCustomerBalancesComponent = () => {
         >
             {/* Each customer balance entry, fetched from the backend */}
             {balances.map((entry) => {
-                console.log(entry);
                 const key = String(entry.materialId);
                 return (
                     <FormControl fullWidth key={key}>

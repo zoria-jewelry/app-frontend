@@ -4,6 +4,7 @@ import paperStyles from '../styles/Paper.module.css';
 import commonStyles from '../styles/Common.module.css';
 import UpdateCustomerInfoComponent from '../components/customer/UpdateCustomerInfoComponent.tsx';
 import UpdateCustomerBalancesComponent from '../components/customer/UpdateCustomerBalancesComponent.tsx';
+import CustomerAuditRecordsComponent from '../components/customer/CustomerAuditRecordsComponent.tsx';
 
 const CustomerInfoPage = () => {
     const theme = useTheme();
@@ -16,7 +17,7 @@ const CustomerInfoPage = () => {
     return (
         <Box width="85%">
             <Box
-                height="50vh"
+                height={isMd ? 'fit-content' : '50vh'}
                 display="flex"
                 flexDirection="row"
                 flexWrap="wrap"
@@ -56,10 +57,18 @@ const CustomerInfoPage = () => {
                     gap: theme.spacing(4),
                     width: '100%',
                     marginTop: theme.spacing(4),
-                    minHeight: '40vh',
+                    maxHeight: '40vh',
                     borderRadius: '10px',
+                    overflow: 'scroll',
+                    alignItems: 'stretch',
+                    paddingBottom: theme.spacing(4),
                 }}
-            ></Paper>
+            >
+                <Typography variant="h3" textAlign="left" width="100%">
+                    Історія змін
+                </Typography>
+                <CustomerAuditRecordsComponent />
+            </Paper>
             <Paper
                 className={`${paperStyles.paper} ${commonStyles.flexColumn}`}
                 sx={{
