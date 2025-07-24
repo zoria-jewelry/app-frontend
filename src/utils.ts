@@ -22,3 +22,6 @@ export const toLocalDateTime = (date?: string | Date | null) => {
         second: 'numeric',
     });
 };
+
+export const toFixedNumber = (value: number, decimals: number) =>
+    (Math.floor(value * 100) / 100).toFixed(decimals);

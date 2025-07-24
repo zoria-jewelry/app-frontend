@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import type { AuditRecord } from '../../dto/audit.ts';
 import { CustomersApiClient } from '../../api/customersApiClient.ts';
 import { Box, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { toLocalDateTime } from '../../utils.ts';
+import { toFixedNumber, toLocalDateTime } from '../../utils.ts';
 
 const CustomerAuditRecordsComponent = () => {
     const theme = useTheme();
@@ -72,7 +72,7 @@ const CustomerAuditRecordsComponent = () => {
                                     key={entry.materialName}
                                     variant="body1"
                                     color="textSecondary"
-                                >{`${entry.materialName}: ${entry.delta > 0 ? '+' : ''}${entry.delta} ${entry.isMoney ? 'грн' : 'г'}`}</Typography>
+                                >{`${entry.materialName}: ${entry.delta > 0 ? '+' : ''}${toFixedNumber(entry.delta, entry.isMoney ? 2 : 3)} ${entry.isMoney ? 'грн' : 'г'}`}</Typography>
                             ))}
                         </Box>
                     </Box>
