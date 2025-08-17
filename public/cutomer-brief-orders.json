@@ -1,0 +1,221 @@
+{
+    "pages": [
+        {
+            "entries": [
+                {
+                    "id": 23,
+                    "creationDate": "2025-07-23T14:30:00Z",
+                    "completionDate": null,
+                    "status": "IN_PROGRESS",
+                    "entries": [
+                        { "productId": 1, "productName": "Обручка з діамантами", "count": 2 },
+                        { "productId": 5, "productName": "Браслет зі срібла 925", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 22,
+                    "creationDate": "2025-07-22T12:45:00Z",
+                    "completionDate": null,
+                    "status": "IN_PROGRESS",
+                    "entries": [
+                        { "productId": 2, "productName": "Сережки з сапфірами", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 21,
+                    "creationDate": "2025-07-21T09:10:00Z",
+                    "completionDate": null,
+                    "status": "IN_PROGRESS",
+                    "entries": [
+                        { "productId": 3, "productName": "Кулон з рубіном", "count": 3 },
+                        { "productId": 7, "productName": "Перстень з топазом", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 20,
+                    "creationDate": "2025-07-20T15:20:00Z",
+                    "completionDate": "2025-07-22T11:00:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        { "productId": 4, "productName": "Ланцюжок золотий 585", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 19,
+                    "creationDate": "2025-07-19T11:00:00Z",
+                    "completionDate": "2025-07-20T13:30:00Z",
+                    "status": "CANCELED",
+                    "entries": [{ "productId": 6, "productName": "Брошка з перлами", "count": 2 }]
+                },
+                {
+                    "id": 18,
+                    "creationDate": "2025-07-18T08:15:00Z",
+                    "completionDate": "2025-07-19T16:20:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        { "productId": 8, "productName": "Сережки золоті без каменів", "count": 2 },
+                        { "productId": 9, "productName": "Кольє з діамантами", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 17,
+                    "creationDate": "2025-07-17T14:40:00Z",
+                    "completionDate": "2025-07-18T09:50:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        { "productId": 10, "productName": "Підвіска зі смарагдом", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 16,
+                    "creationDate": "2025-07-16T10:00:00Z",
+                    "completionDate": "2025-07-17T08:30:00Z",
+                    "status": "CANCELED",
+                    "entries": [
+                        { "productId": 11, "productName": "Каблучка платинова", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 15,
+                    "creationDate": "2025-07-15T09:00:00Z",
+                    "completionDate": "2025-07-16T14:20:00Z",
+                    "status": "COMPLETED",
+                    "entries": [{ "productId": 12, "productName": "Срібна обручка", "count": 2 }]
+                },
+                {
+                    "id": 14,
+                    "creationDate": "2025-07-14T08:00:00Z",
+                    "completionDate": "2025-07-15T10:30:00Z",
+                    "status": "CANCELED",
+                    "entries": [
+                        { "productId": 13, "productName": "Золотий браслет", "count": 1 },
+                        { "productId": 14, "productName": "Сережки з перлами", "count": 1 }
+                    ]
+                }
+            ],
+            "total": 23,
+            "perPage": 10,
+            "page": 0
+        },
+        {
+            "entries": [
+                {
+                    "id": 13,
+                    "creationDate": "2025-07-13T12:10:00Z",
+                    "completionDate": "2025-07-14T15:00:00Z",
+                    "status": "COMPLETED",
+                    "entries": [{ "productId": 15, "productName": "Ланцюжок срібний", "count": 1 }]
+                },
+                {
+                    "id": 12,
+                    "creationDate": "2025-07-12T09:30:00Z",
+                    "completionDate": "2025-07-13T10:00:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        { "productId": 16, "productName": "Перстень зі смарагдом", "count": 2 }
+                    ]
+                },
+                {
+                    "id": 11,
+                    "creationDate": "2025-07-11T08:40:00Z",
+                    "completionDate": "2025-07-12T09:30:00Z",
+                    "status": "CANCELED",
+                    "entries": [{ "productId": 17, "productName": "Сережки з топазом", "count": 1 }]
+                },
+                {
+                    "id": 10,
+                    "creationDate": "2025-07-10T15:15:00Z",
+                    "completionDate": "2025-07-11T13:00:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        { "productId": 18, "productName": "Кулон зі срібла", "count": 1 },
+                        { "productId": 19, "productName": "Золотий кулон", "count": 2 }
+                    ]
+                },
+                {
+                    "id": 9,
+                    "creationDate": "2025-07-09T10:30:00Z",
+                    "completionDate": "2025-07-10T12:00:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        { "productId": 20, "productName": "Каблучка з діамантами", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 8,
+                    "creationDate": "2025-07-08T14:20:00Z",
+                    "completionDate": "2025-07-09T16:00:00Z",
+                    "status": "CANCELED",
+                    "entries": [
+                        { "productId": 21, "productName": "Сережки з цирконієм", "count": 2 }
+                    ]
+                },
+                {
+                    "id": 7,
+                    "creationDate": "2025-07-07T09:50:00Z",
+                    "completionDate": "2025-07-08T11:00:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        { "productId": 22, "productName": "Кольє зі смарагдом", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 6,
+                    "creationDate": "2025-07-06T07:30:00Z",
+                    "completionDate": "2025-07-07T08:00:00Z",
+                    "status": "COMPLETED",
+                    "entries": [{ "productId": 23, "productName": "Золотий перстень", "count": 2 }]
+                },
+                {
+                    "id": 5,
+                    "creationDate": "2025-07-05T12:15:00Z",
+                    "completionDate": "2025-07-06T09:20:00Z",
+                    "status": "CANCELED",
+                    "entries": [
+                        { "productId": 24, "productName": "Підвіска золотого кольору", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 4,
+                    "creationDate": "2025-07-04T10:00:00Z",
+                    "completionDate": "2025-07-05T11:10:00Z",
+                    "status": "COMPLETED",
+                    "entries": [{ "productId": 25, "productName": "Срібний браслет", "count": 1 }]
+                }
+            ],
+            "total": 23,
+            "perPage": 10,
+            "page": 1
+        },
+        {
+            "entries": [
+                {
+                    "id": 3,
+                    "creationDate": "2025-07-03T14:10:00Z",
+                    "completionDate": "2025-07-04T13:00:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        { "productId": 26, "productName": "Сережки з діамантами", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "creationDate": "2025-07-02T11:20:00Z",
+                    "completionDate": "2025-07-03T12:00:00Z",
+                    "status": "CANCELED",
+                    "entries": [{ "productId": 27, "productName": "Золотий ланцюжок", "count": 2 }]
+                },
+                {
+                    "id": 1,
+                    "creationDate": "2025-07-01T09:00:00Z",
+                    "completionDate": "2025-07-02T10:00:00Z",
+                    "status": "COMPLETED",
+                    "entries": [{ "productId": 28, "productName": "Перстень срібний", "count": 1 }]
+                }
+            ],
+            "total": 23,
+            "perPage": 10,
+            "page": 2
+        }
+    ]
+}

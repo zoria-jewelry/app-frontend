@@ -1,3 +1,5 @@
+import { OrderStatus } from './dto/orders.ts';
+
 export const toLocalDate = (date?: string | Date | null) => {
     if (!date) {
         return null;
@@ -25,3 +27,14 @@ export const toLocalDateTime = (date?: string | Date | null) => {
 
 export const toFixedNumber = (value: number, decimals: number) =>
     (Math.floor(value * 100) / 100).toFixed(decimals);
+
+export const orderStatusToHumanText = (status: OrderStatus) => {
+    switch (status) {
+        case OrderStatus.IN_PROGRESS:
+            return 'У процесі';
+        case OrderStatus.COMPLETED:
+            return 'Виконано';
+        case OrderStatus.CANCELED:
+            return 'Скасовано';
+    }
+};

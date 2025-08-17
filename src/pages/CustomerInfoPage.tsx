@@ -1,18 +1,41 @@
-// import { useParams } from 'react-router-dom';
-import { Box, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Button, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
 import paperStyles from '../styles/Paper.module.css';
 import commonStyles from '../styles/Common.module.css';
 import UpdateCustomerInfoComponent from '../components/customer/UpdateCustomerInfoComponent.tsx';
 import UpdateCustomerBalancesComponent from '../components/customer/UpdateCustomerBalancesComponent.tsx';
 import CustomerAuditRecordsComponent from '../components/customer/CustomerAuditRecordsComponent.tsx';
+import OrdersTable from '../components/common/OrdersTable.tsx';
+import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import type { OrdersListDto } from '../dto/orders.ts';
+import { OrdersApiClient } from '../api/ordersApiClient.ts';
+import SearchBar from '../components/SearchBar.tsx';
+import FilterIcon from '@mui/icons-material/TuneOutlined';
+import IconButton from '@mui/material/IconButton';
 
 const CustomerInfoPage = () => {
     const theme = useTheme();
 
-    // const params = useParams();
-    // const customerId: number | null = params.customerId ? Number(params.customerId) : null;
+    const [ordersPage, setOrdersPage] = useState<number>(0);
+    const [orders, setOrders] = useState<OrdersListDto | undefined>(undefined);
+    const [orderSearchPhrase, setOrderSearchPhrase] = useState<string>('');
+
+    const params = useParams();
+    const customerId: number | null = params.customerId ? Number(params.customerId) : null;
 
     const isMd = useMediaQuery(theme.breakpoints.down('md')); // < 900px
+
+    useEffect(() => {
+        if (customerId) {
+            OrdersApiClient.getByCustomerId(customerId, ordersPage).then((orders) => {
+                if (orders) {
+                    setOrders(orders);
+                } else {
+                    // TODO: add toast?
+                }
+            });
+        }
+    }, [ordersPage, customerId]);
 
     return (
         <Box width="85%">
@@ -77,7 +100,52 @@ const CustomerInfoPage = () => {
                     marginTop: theme.spacing(4),
                     minHeight: '40vh',
                 }}
-            ></Paper>
+            >
+                <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    width="100%"
+                    flexWrap="wrap"
+                    gap={2}
+                >
+                    <Typography variant="h3" textAlign="left">
+                        Замовлення
+                    </Typography>
+
+                    <Box
+                        display="flex"
+                        flexDirection={{ xs: 'column', sm: 'row' }}
+                        alignItems={{ xs: 'stretch', sm: 'center' }}
+                        gap={2}
+                        width={{ xs: '100%', sm: 'auto' }}
+                    >
+                        <Box
+                            display="flex"
+                            flexDirection="row"
+                            alignItems="center"
+                            width="100%"
+                            gap={1}
+                            flex={1}
+                        >
+                            <IconButton size="large">
+                                <FilterIcon />
+                            </IconButton>
+                            <SearchBar consumer={setOrderSearchPhrase} />
+                        </Box>
+
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{ minWidth: { sm: '200px' } }}
+                        >
+                            Нове замовлення
+                        </Button>
+                    </Box>
+                </Box>
+
+                {orders && <OrdersTable orders={orders} setPage={setOrdersPage} />}
+            </Paper>
         </Box>
     );
 };

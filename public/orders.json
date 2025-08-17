@@ -1,0 +1,293 @@
+{
+    "pages": [
+        {
+            "entries": [
+                {
+                    "id": 1,
+                    "creationDate": "2025-08-01T10:15:00Z",
+                    "completionDate": null,
+                    "status": "IN_PROGRESS",
+                    "entries": [
+                        { "productId": 101, "productName": "Каблучка з золота 585", "count": 1 },
+                        { "productId": 102, "productName": "Сережки зі срібла 925", "count": 2 }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "creationDate": "2025-08-03T12:45:00Z",
+                    "completionDate": null,
+                    "status": "IN_PROGRESS",
+                    "entries": [
+                        { "productId": 103, "productName": "Браслет з платини 950", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "creationDate": "2025-08-05T09:30:00Z",
+                    "completionDate": null,
+                    "status": "IN_PROGRESS",
+                    "entries": [
+                        {
+                            "productId": 104,
+                            "productName": "Ланцюжок з червоного золота 585",
+                            "count": 1
+                        },
+                        { "productId": 105, "productName": "Кулон зі срібла 999", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 4,
+                    "creationDate": "2025-07-15T14:00:00Z",
+                    "completionDate": "2025-07-20T16:30:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        { "productId": 106, "productName": "Каблучка із золота 525", "count": 2 }
+                    ]
+                },
+                {
+                    "id": 5,
+                    "creationDate": "2025-07-18T08:20:00Z",
+                    "completionDate": "2025-07-22T18:00:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        {
+                            "productId": 107,
+                            "productName": "Сережки з білого золота 585",
+                            "count": 1
+                        },
+                        {
+                            "productId": 108,
+                            "productName": "Підвіска з жовтого золота 585",
+                            "count": 1
+                        }
+                    ]
+                },
+                {
+                    "id": 6,
+                    "creationDate": "2025-07-21T10:10:00Z",
+                    "completionDate": "2025-07-25T19:00:00Z",
+                    "status": "CANCELED",
+                    "entries": [
+                        { "productId": 109, "productName": "Каблучка з паладію 500", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 7,
+                    "creationDate": "2025-07-23T09:00:00Z",
+                    "completionDate": "2025-07-30T13:30:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        { "productId": 110, "productName": "Браслет із золота 750", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 8,
+                    "creationDate": "2025-07-25T11:15:00Z",
+                    "completionDate": "2025-07-28T17:45:00Z",
+                    "status": "CANCELED",
+                    "entries": [
+                        { "productId": 111, "productName": "Ланцюжок зі срібла 925", "count": 2 }
+                    ]
+                },
+                {
+                    "id": 9,
+                    "creationDate": "2025-07-27T15:40:00Z",
+                    "completionDate": "2025-07-29T20:00:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        { "productId": 112, "productName": "Каблучка з золота 585", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 10,
+                    "creationDate": "2025-07-30T07:55:00Z",
+                    "completionDate": "2025-08-02T09:00:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        { "productId": 113, "productName": "Сережки зі срібла 999", "count": 2 }
+                    ]
+                }
+            ],
+            "total": 23,
+            "page": 0,
+            "perPage": 10
+        },
+        {
+            "entries": [
+                {
+                    "id": 11,
+                    "creationDate": "2025-08-01T08:00:00Z",
+                    "completionDate": "2025-08-04T12:00:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        {
+                            "productId": 114,
+                            "productName": "Браслет зі срібла чорненого 925",
+                            "count": 1
+                        }
+                    ]
+                },
+                {
+                    "id": 12,
+                    "creationDate": "2025-08-02T10:20:00Z",
+                    "completionDate": "2025-08-05T14:00:00Z",
+                    "status": "CANCELED",
+                    "entries": [
+                        { "productId": 115, "productName": "Каблучка з платини 900", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 13,
+                    "creationDate": "2025-08-03T09:15:00Z",
+                    "completionDate": "2025-08-07T18:30:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        { "productId": 116, "productName": "Підвіска з паладію 950", "count": 1 }
+                    ]
+                },
+                {
+                    "id": 14,
+                    "creationDate": "2025-08-04T11:30:00Z",
+                    "completionDate": "2025-08-06T16:00:00Z",
+                    "status": "CANCELED",
+                    "entries": [
+                        {
+                            "productId": 117,
+                            "productName": "Каблучка із рожевого золота 585",
+                            "count": 1
+                        }
+                    ]
+                },
+                {
+                    "id": 15,
+                    "creationDate": "2025-08-05T14:45:00Z",
+                    "completionDate": "2025-08-08T19:20:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        {
+                            "productId": 118,
+                            "productName": "Кулон із білого золота 750",
+                            "count": 1
+                        },
+                        {
+                            "productId": 119,
+                            "productName": "Сережки зі срібла матового 925",
+                            "count": 1
+                        }
+                    ]
+                },
+                {
+                    "id": 16,
+                    "creationDate": "2025-08-06T13:00:00Z",
+                    "completionDate": "2025-08-10T17:15:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        {
+                            "productId": 120,
+                            "productName": "Браслет із зеленого золота 585",
+                            "count": 1
+                        }
+                    ]
+                },
+                {
+                    "id": 17,
+                    "creationDate": "2025-08-07T12:00:00Z",
+                    "completionDate": "2025-08-12T14:10:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        {
+                            "productId": 121,
+                            "productName": "Підвіска зі срібла з родієм",
+                            "count": 1
+                        }
+                    ]
+                },
+                {
+                    "id": 18,
+                    "creationDate": "2025-08-08T09:45:00Z",
+                    "completionDate": "2025-08-13T11:00:00Z",
+                    "status": "CANCELED",
+                    "entries": [
+                        {
+                            "productId": 122,
+                            "productName": "Каблучка з платини з домішками",
+                            "count": 1
+                        }
+                    ]
+                },
+                {
+                    "id": 19,
+                    "creationDate": "2025-08-09T15:20:00Z",
+                    "completionDate": "2025-08-14T19:30:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        {
+                            "productId": 123,
+                            "productName": "Сережки з паладію з домішками",
+                            "count": 1
+                        }
+                    ]
+                },
+                {
+                    "id": 20,
+                    "creationDate": "2025-08-10T10:25:00Z",
+                    "completionDate": "2025-08-15T12:40:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        {
+                            "productId": 124,
+                            "productName": "Каблучка із червоного золота 750",
+                            "count": 1
+                        }
+                    ]
+                }
+            ],
+            "total": 23,
+            "page": 1,
+            "perPage": 10
+        },
+        {
+            "entries": [
+                {
+                    "id": 21,
+                    "creationDate": "2025-08-11T08:30:00Z",
+                    "completionDate": "2025-08-16T09:45:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        {
+                            "productId": 125,
+                            "productName": "Ланцюжок зі срібла з емаллю",
+                            "count": 1
+                        }
+                    ]
+                },
+                {
+                    "id": 22,
+                    "creationDate": "2025-08-12T11:10:00Z",
+                    "completionDate": "2025-08-17T14:20:00Z",
+                    "status": "CANCELED",
+                    "entries": [
+                        {
+                            "productId": 126,
+                            "productName": "Каблучка з платини антикварної",
+                            "count": 1
+                        }
+                    ]
+                },
+                {
+                    "id": 23,
+                    "creationDate": "2025-08-13T13:00:00Z",
+                    "completionDate": "2025-08-18T18:00:00Z",
+                    "status": "COMPLETED",
+                    "entries": [
+                        { "productId": 127, "productName": "Сережки із золота 585", "count": 1 },
+                        { "productId": 128, "productName": "Кулон зі срібла 925", "count": 1 }
+                    ]
+                }
+            ],
+            "total": 23,
+            "page": 2,
+            "perPage": 10
+        }
+    ]
+}
