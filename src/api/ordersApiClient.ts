@@ -24,4 +24,9 @@ export class OrdersApiClient extends AbstractApiClient {
         // TODO: use me - const res = await this.apiRequest<{ pages: OrdersListDto[] }>({});
         // return res?.pages[page];
     }
+
+    public static async cancelOrder(orderId: number): Promise<void> {
+        console.log(`OrdersApiClient.cancelOrder: orderId - ${orderId}`);
+        // TODO: use me - const res = await this.apiRequest<void>({});
+    }
 }

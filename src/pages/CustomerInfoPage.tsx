@@ -4,7 +4,7 @@ import commonStyles from '../styles/Common.module.css';
 import UpdateCustomerInfoComponent from '../components/customer/UpdateCustomerInfoComponent.tsx';
 import UpdateCustomerBalancesComponent from '../components/customer/UpdateCustomerBalancesComponent.tsx';
 import CustomerAuditRecordsComponent from '../components/customer/CustomerAuditRecordsComponent.tsx';
-import OrdersTable from '../components/common/OrdersTable.tsx';
+import OrdersTableComponent from '../components/common/OrdersTableComponent.tsx';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import type { OrdersListDto } from '../dto/orders.ts';
@@ -12,7 +12,7 @@ import { OrdersApiClient, type OrdersFilterData } from '../api/ordersApiClient.t
 import SearchBar from '../components/SearchBar.tsx';
 import FilterIcon from '@mui/icons-material/TuneOutlined';
 import IconButton from '@mui/material/IconButton';
-import OrdersFilterModal from '../components/modal/OrdersFilter.tsx';
+import OrdersFilterModal from "../components/modal/OrdersFilterComponent.tsx";
 
 const CustomerInfoPage = () => {
     const theme = useTheme();
@@ -161,7 +161,7 @@ const CustomerInfoPage = () => {
                     </Box>
                 </Box>
 
-                {orders && <OrdersTable orders={orders} setPage={setOrdersPage} />}
+                {orders && <OrdersTableComponent orders={orders} setPage={setOrdersPage} />}
             </Paper>
 
             <OrdersFilterModal

@@ -10,18 +10,30 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
-import { type OrdersListDto, OrderStatus } from '../../dto/orders.ts';
+import {type OrderBriefInfoDto, type OrdersListDto, OrderStatus} from '../../dto/orders.ts';
 import IconButton from '@mui/material/IconButton';
 import InfoIcon from '@mui/icons-material/Info';
 import EditIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
 import { orderStatusToHumanText, toLocalDateTime } from '../../utils.ts';
+import DialogComponent from "../modal/DialogComponent.tsx";
+import {useState} from "react";
+import {OrdersApiClient} from "../../api/ordersApiClient.ts";
 
 export interface OrdersTableProps {
     orders: OrdersListDto;
     setPage: (page: number) => void;
 }
 
-const OrdersTable = ({ orders, setPage }: OrdersTableProps) => {
+const OrdersTableComponent = ({ orders, setPage }: OrdersTableProps) => {
+    const [orderToCancel, setOrderToCancel] = useState<OrderBriefInfoDto | undefined>();
+
+    const handleCancelOrder = (id?: number) => {
+        if (id) {
+            OrdersApiClient.cancelOrder(id).then(_ => console.log(`Order №${id} was cancelled`));
+        }
+        setOrderToCancel(undefined);
+    };
+
     return (
         <>
             <TableContainer
@@ -143,7 +155,7 @@ const OrdersTable = ({ orders, setPage }: OrdersTableProps) => {
                                                 <Button variant="contained" color="primary">
                                                     Завершити
                                                 </Button>
-                                                <Button variant="contained" color="secondary">
+                                                <Button variant="contained" color="secondary" onClick={() => setOrderToCancel(order)}>
                                                     Скасувати
                                                 </Button>
                                             </>
@@ -177,8 +189,20 @@ const OrdersTable = ({ orders, setPage }: OrdersTableProps) => {
                 rowsPerPage={10}
                 sx={{ mt: 2, border: 0 }}
             />
+
+            {
+                orderToCancel &&
+                <DialogComponent
+                    handleClose={() => setOrderToCancel(undefined)}
+                    handleAction={() => handleCancelOrder(orderToCancel?.id)}
+                    isOpen={!!orderToCancel}
+                    dialogText={`Ви впевнені, що хочете скасувати замовлення №${orderToCancel?.id}?`}
+                    actionButtonText="Скасувати"
+                    actionButtonVariant="error"
+                />
+            }
         </>
     );
 };
 
-export default OrdersTable;
+export default OrdersTableComponent;
