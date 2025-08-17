@@ -8,17 +8,21 @@ import OrdersTable from '../components/common/OrdersTable.tsx';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import type { OrdersListDto } from '../dto/orders.ts';
-import { OrdersApiClient } from '../api/ordersApiClient.ts';
+import { OrdersApiClient, type OrdersFilterData } from '../api/ordersApiClient.ts';
 import SearchBar from '../components/SearchBar.tsx';
 import FilterIcon from '@mui/icons-material/TuneOutlined';
 import IconButton from '@mui/material/IconButton';
+import OrdersFilterModal from '../components/modal/OrdersFilter.tsx';
 
 const CustomerInfoPage = () => {
     const theme = useTheme();
 
     const [ordersPage, setOrdersPage] = useState<number>(0);
-    const [orders, setOrders] = useState<OrdersListDto | undefined>(undefined);
+    const [orders, setOrders] = useState<OrdersListDto | undefined>();
     const [orderSearchPhrase, setOrderSearchPhrase] = useState<string>('');
+
+    const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
+    const [ordersFilterData, setOrdersFilterData] = useState<OrdersFilterData | undefined>();
 
     const params = useParams();
     const customerId: number | null = params.customerId ? Number(params.customerId) : null;
@@ -26,8 +30,17 @@ const CustomerInfoPage = () => {
     const isMd = useMediaQuery(theme.breakpoints.down('md')); // < 900px
 
     useEffect(() => {
+        setOrdersPage(0);
+    }, [ordersFilterData]);
+
+    useEffect(() => {
         if (customerId) {
-            OrdersApiClient.getByCustomerId(customerId, ordersPage).then((orders) => {
+            OrdersApiClient.getByCustomerId(
+                customerId,
+                orderSearchPhrase,
+                ordersFilterData,
+                ordersPage,
+            ).then((orders) => {
                 if (orders) {
                     setOrders(orders);
                 } else {
@@ -35,7 +48,7 @@ const CustomerInfoPage = () => {
                 }
             });
         }
-    }, [ordersPage, customerId]);
+    }, [ordersPage, orderSearchPhrase, customerId]);
 
     return (
         <Box width="85%">
@@ -128,7 +141,11 @@ const CustomerInfoPage = () => {
                             gap={1}
                             flex={1}
                         >
-                            <IconButton size="large">
+                            <IconButton
+                                size="large"
+                                onClick={() => setIsFilterModalOpen(true)}
+                                aria-label="Filter"
+                            >
                                 <FilterIcon />
                             </IconButton>
                             <SearchBar consumer={setOrderSearchPhrase} />
@@ -146,6 +163,12 @@ const CustomerInfoPage = () => {
 
                 {orders && <OrdersTable orders={orders} setPage={setOrdersPage} />}
             </Paper>
+
+            <OrdersFilterModal
+                open={isFilterModalOpen}
+                onClose={() => setIsFilterModalOpen(false)}
+                onApply={setOrdersFilterData}
+            />
         </Box>
     );
 };

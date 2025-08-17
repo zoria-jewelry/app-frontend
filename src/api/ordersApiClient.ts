@@ -1,12 +1,23 @@
 import { AbstractApiClient } from './abstractApiClient.ts';
-import type { OrdersListDto } from '../dto/orders.ts';
+import { type OrdersListDto, OrderStatus } from '../dto/orders.ts';
+
+export interface OrdersFilterData {
+    fromDate?: Date;
+    toDate?: Date;
+    statuses?: OrderStatus[];
+    executorsIds?: number[];
+}
 
 export class OrdersApiClient extends AbstractApiClient {
     public static async getByCustomerId(
         customerId: number,
+        phrase: string,
+        filterData: OrdersFilterData | undefined,
         page: number,
     ): Promise<OrdersListDto | undefined> {
-        console.log(`OrdersApiClient.getByCustomerId: customerId - ${customerId}, page - ${page}`);
+        console.log(
+            `OrdersApiClient.getByCustomerId: customerId - ${customerId}, phrase - ${phrase}, filterData - ${JSON.stringify(filterData)} page - ${page}`,
+        );
         const response = await fetch('/orders.json');
         const json = (await response.json()) as unknown as { pages: OrdersListDto[] };
         return json.pages[page];
