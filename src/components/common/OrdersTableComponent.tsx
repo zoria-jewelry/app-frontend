@@ -10,14 +10,14 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
-import {type OrderBriefInfoDto, type OrdersListDto, OrderStatus} from '../../dto/orders.ts';
+import { type OrderBriefInfoDto, type OrdersListDto, OrderStatus } from '../../dto/orders.ts';
 import IconButton from '@mui/material/IconButton';
 import InfoIcon from '@mui/icons-material/Info';
 import EditIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
 import { orderStatusToHumanText, toLocalDateTime } from '../../utils.ts';
-import DialogComponent from "../modal/DialogComponent.tsx";
-import {useState} from "react";
-import {OrdersApiClient} from "../../api/ordersApiClient.ts";
+import DialogComponent from '../modal/DialogComponent.tsx';
+import { useState } from 'react';
+import { OrdersApiClient } from '../../api/ordersApiClient.ts';
 
 export interface OrdersTableProps {
     orders: OrdersListDto;
@@ -29,7 +29,7 @@ const OrdersTableComponent = ({ orders, setPage }: OrdersTableProps) => {
 
     const handleCancelOrder = (id?: number) => {
         if (id) {
-            OrdersApiClient.cancelOrder(id).then(_ => console.log(`Order №${id} was cancelled`));
+            OrdersApiClient.cancelOrder(id).then((_) => console.log(`Order №${id} was cancelled`));
         }
         setOrderToCancel(undefined);
     };
@@ -155,7 +155,11 @@ const OrdersTableComponent = ({ orders, setPage }: OrdersTableProps) => {
                                                 <Button variant="contained" color="primary">
                                                     Завершити
                                                 </Button>
-                                                <Button variant="contained" color="secondary" onClick={() => setOrderToCancel(order)}>
+                                                <Button
+                                                    variant="contained"
+                                                    color="secondary"
+                                                    onClick={() => setOrderToCancel(order)}
+                                                >
                                                     Скасувати
                                                 </Button>
                                             </>
@@ -190,8 +194,7 @@ const OrdersTableComponent = ({ orders, setPage }: OrdersTableProps) => {
                 sx={{ mt: 2, border: 0 }}
             />
 
-            {
-                orderToCancel &&
+            {orderToCancel && (
                 <DialogComponent
                     handleClose={() => setOrderToCancel(undefined)}
                     handleAction={() => handleCancelOrder(orderToCancel?.id)}
@@ -200,7 +203,7 @@ const OrdersTableComponent = ({ orders, setPage }: OrdersTableProps) => {
                     actionButtonText="Скасувати"
                     actionButtonVariant="error"
                 />
-            }
+            )}
         </>
     );
 };
