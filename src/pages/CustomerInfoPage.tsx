@@ -13,6 +13,7 @@ import SearchBar from '../components/SearchBar.tsx';
 import FilterIcon from '@mui/icons-material/TuneOutlined';
 import IconButton from '@mui/material/IconButton';
 import OrdersFilterModal from '../components/modal/OrdersFilterComponent.tsx';
+import CreateOrderComponent from '../components/modal/CreateOrderComponent.tsx';
 
 const CustomerInfoPage = () => {
     const theme = useTheme();
@@ -23,6 +24,8 @@ const CustomerInfoPage = () => {
 
     const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
     const [ordersFilterData, setOrdersFilterData] = useState<OrdersFilterData | undefined>();
+
+    const [isCreateOrderModalOpen, setIsCreateOrderModalOpen] = useState<boolean>(false);
 
     const params = useParams();
     const customerId: number | null = params.customerId ? Number(params.customerId) : null;
@@ -154,6 +157,7 @@ const CustomerInfoPage = () => {
                         <Button
                             variant="contained"
                             color="primary"
+                            onClick={() => setIsCreateOrderModalOpen(true)}
                             sx={{ minWidth: { sm: '200px' } }}
                         >
                             Нове замовлення
@@ -168,6 +172,11 @@ const CustomerInfoPage = () => {
                 open={isFilterModalOpen}
                 onClose={() => setIsFilterModalOpen(false)}
                 onApply={setOrdersFilterData}
+            />
+
+            <CreateOrderComponent
+                handleClose={() => setIsCreateOrderModalOpen(false)}
+                isOpen={isCreateOrderModalOpen}
             />
         </Box>
     );

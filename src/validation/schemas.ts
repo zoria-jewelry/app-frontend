@@ -51,3 +51,37 @@ export const updateCustomerInfoSchema = z.object({
 });
 
 export type UpdateCustomerInfoFromData = z.infer<typeof updateCustomerInfoSchema>;
+
+export const orderPositionSchema = z.object({
+    productId: z.number({ error: 'Оберіть виріб' }),
+    size: z.number({ error: 'Введіть число' }).multipleOf(0.01, { error: 'Неправильний формат' }),
+    number: z.number({ error: 'Введіть кількість виробів' }).int({ error: 'Введіть ціле число' }),
+    notes: z.string().optional(),
+});
+
+export const createOrderSchema = z.object({
+    metalId: z.number({ error: 'Оберіть матеріал' }),
+    workPrice: z
+        .number({ error: 'Введіть число' })
+        .positive({ error: 'Вартість роботи повинна бути додатною' })
+        .multipleOf(0.01, { error: 'Неправильний формат' }),
+    positions: z
+        .array(orderPositionSchema)
+        .nonempty({ error: 'Список товарів не може бути порожнім' })
+        .nonoptional({ error: 'Список товарів не може бути порожнім' }),
+    executorsIds: z
+        .array(z.number().positive())
+        .min(1, { error: 'Оберіть хоча б одного виконавця' }),
+});
+
+export interface CreateOrderFormData {
+    metalId: number;
+    workPrice: number;
+    positions: {
+        productId: number | null;
+        size: number | null;
+        number: number | null;
+        notes?: string | null;
+    }[];
+    executorsIds: number[];
+}
