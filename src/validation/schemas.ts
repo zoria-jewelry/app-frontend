@@ -53,9 +53,15 @@ export const updateCustomerInfoSchema = z.object({
 export type UpdateCustomerInfoFromData = z.infer<typeof updateCustomerInfoSchema>;
 
 export const orderPositionSchema = z.object({
-    productId: z.number({ error: 'Оберіть виріб' }),
-    size: z.number({ error: 'Введіть число' }).multipleOf(0.01, { error: 'Неправильний формат' }),
-    number: z.number({ error: 'Введіть кількість виробів' }).int({ error: 'Введіть ціле число' }),
+    productId: z.number({ error: 'Оберіть виріб' }).nullish(),
+    size: z
+        .number({ error: 'Введіть число' })
+        .multipleOf(0.01, { error: 'Неправильний формат' })
+        .nullish(),
+    number: z
+        .number({ error: 'Введіть кількість виробів' })
+        .int({ error: 'Введіть ціле число' })
+        .nullish(),
     notes: z.string().optional(),
 });
 
@@ -74,14 +80,4 @@ export const createOrderSchema = z.object({
         .min(1, { error: 'Оберіть хоча б одного виконавця' }),
 });
 
-export interface CreateOrderFormData {
-    metalId: number;
-    workPrice: number;
-    positions: {
-        productId: number | null;
-        size: number | null;
-        number: number | null;
-        notes?: string | null;
-    }[];
-    executorsIds: number[];
-}
+export type CreateOrderFormData = z.infer<typeof createOrderSchema>;
