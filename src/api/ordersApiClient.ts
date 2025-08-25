@@ -25,8 +25,8 @@ export class OrdersApiClient extends AbstractApiClient {
         // return res?.pages[page];
     }
 
-    public static async cancelOrder(orderId: number): Promise<void> {
-        console.log(`OrdersApiClient.cancelOrder: orderId - ${orderId}`);
+    public static async cancelOrder(orderId: number, reason: string): Promise<void> {
+        console.log(`OrdersApiClient.cancelOrder: orderId - ${orderId}, reason - ${reason}`);
         // TODO: use me - const res = await this.apiRequest<void>({});
     }
 }

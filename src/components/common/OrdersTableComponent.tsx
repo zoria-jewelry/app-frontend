@@ -15,9 +15,8 @@ import IconButton from '@mui/material/IconButton';
 import InfoIcon from '@mui/icons-material/Info';
 import EditIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
 import { orderStatusToHumanText, toLocalDateTime } from '../../utils.ts';
-import DialogComponent from '../modal/DialogComponent.tsx';
 import { useState } from 'react';
-import { OrdersApiClient } from '../../api/ordersApiClient.ts';
+import CancelOrderComponent from '../modal/CancelOrderComponent.tsx';
 
 export interface OrdersTableProps {
     orders: OrdersListDto;
@@ -26,13 +25,6 @@ export interface OrdersTableProps {
 
 const OrdersTableComponent = ({ orders, setPage }: OrdersTableProps) => {
     const [orderToCancel, setOrderToCancel] = useState<OrderBriefInfoDto | undefined>();
-
-    const handleCancelOrder = (id?: number) => {
-        if (id) {
-            OrdersApiClient.cancelOrder(id).then((_) => console.log(`Order №${id} was cancelled`));
-        }
-        setOrderToCancel(undefined);
-    };
 
     return (
         <>
@@ -198,13 +190,10 @@ const OrdersTableComponent = ({ orders, setPage }: OrdersTableProps) => {
             />
 
             {orderToCancel && (
-                <DialogComponent
-                    handleClose={() => setOrderToCancel(undefined)}
-                    handleAction={() => handleCancelOrder(orderToCancel?.id)}
+                <CancelOrderComponent
                     isOpen={!!orderToCancel}
-                    dialogText={`Ви впевнені, що хочете скасувати замовлення №${orderToCancel?.id}?`}
-                    actionButtonText="Скасувати"
-                    actionButtonVariant="error"
+                    orderId={orderToCancel.id}
+                    handleClose={() => setOrderToCancel(undefined)}
                 />
             )}
         </>
