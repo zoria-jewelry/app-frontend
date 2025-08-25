@@ -187,7 +187,7 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                             sx={{
                                 display: 'flex',
                                 gap: 2,
-                                alignItems: 'center',
+                                alignItems: 'flex-start',
                                 width: '100%',
                                 minWidth: 700,
                                 mt: 2,
@@ -258,9 +258,11 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                                 {...register(`positions.${index}.notes`)}
                                 error={!!errors.positions?.[index]?.notes}
                                 sx={{ flex: 2 }}
+                                multiline
+                                maxRows={4}
                             />
 
-                            <IconButton onClick={() => remove(index)}>
+                            <IconButton onClick={() => remove(index)} sx={{ alignSelf: 'center' }}>
                                 <DeleteIcon />
                             </IconButton>
                         </Box>

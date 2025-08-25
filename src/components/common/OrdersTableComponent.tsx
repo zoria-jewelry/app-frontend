@@ -17,6 +17,7 @@ import EditIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
 import { orderStatusToHumanText, toLocalDateTime } from '../../utils.ts';
 import { useState } from 'react';
 import CancelOrderComponent from '../modal/CancelOrderComponent.tsx';
+import OrderDetailsComponent from '../modal/OrderDetailsComponent.tsx';
 
 export interface OrdersTableProps {
     orders: OrdersListDto;
@@ -25,6 +26,7 @@ export interface OrdersTableProps {
 
 const OrdersTableComponent = ({ orders, setPage }: OrdersTableProps) => {
     const [orderToCancel, setOrderToCancel] = useState<OrderBriefInfoDto | undefined>();
+    const [orderIdForInfoModal, setOrderIdForInfoModal] = useState<number | undefined>();
 
     return (
         <>
@@ -169,7 +171,10 @@ const OrdersTableComponent = ({ orders, setPage }: OrdersTableProps) => {
                                             <EditIcon />
                                         </IconButton>
                                     ) : (
-                                        <IconButton size="large">
+                                        <IconButton
+                                            size="large"
+                                            onClick={() => setOrderIdForInfoModal(order.id)}
+                                        >
                                             <InfoIcon />
                                         </IconButton>
                                     )}
@@ -194,6 +199,14 @@ const OrdersTableComponent = ({ orders, setPage }: OrdersTableProps) => {
                     isOpen={!!orderToCancel}
                     orderId={orderToCancel.id}
                     handleClose={() => setOrderToCancel(undefined)}
+                />
+            )}
+
+            {orderIdForInfoModal && (
+                <OrderDetailsComponent
+                    id={orderIdForInfoModal}
+                    open={!!orderIdForInfoModal}
+                    onClose={() => setOrderIdForInfoModal(undefined)}
                 />
             )}
         </>
