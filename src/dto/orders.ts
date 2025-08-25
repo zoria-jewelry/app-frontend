@@ -17,6 +17,7 @@ export interface OrderBriefInfoDto {
     creationDate: Date;
     completionDate: Date | null;
     status: OrderStatus;
+    cancellationReason?: string;
     entries: OrderBriefInfoEntryDto[];
 }
 

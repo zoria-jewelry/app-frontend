@@ -147,12 +147,15 @@ const OrdersTableComponent = ({ orders, setPage }: OrdersTableProps) => {
                                         gap={1}
                                     >
                                         <Typography variant="body2">
-                                            {orderStatusToHumanText(order.status)}
+                                            <b>{orderStatusToHumanText(order.status)}</b>
+                                            <br />
+                                            {order.status === OrderStatus.CANCELED &&
+                                                ` (${order.cancellationReason ?? 'причина не вказана'})`}
                                         </Typography>
 
                                         {order.status === OrderStatus.IN_PROGRESS && (
                                             <>
-                                                <Button variant="contained" color="primary">
+                                                <Button variant="contained" color="error">
                                                     Завершити
                                                 </Button>
                                                 <Button
