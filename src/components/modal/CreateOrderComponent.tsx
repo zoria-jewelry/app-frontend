@@ -200,6 +200,7 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                                 render={({ field }) => (
                                     <Autocomplete
                                         options={products}
+                                        noOptionsText="Нічого не знайдено"
                                         getOptionLabel={(option) => option.name}
                                         onInputChange={(_, value) => setSearchPhrase(value)}
                                         onChange={(_, value) =>

@@ -53,15 +53,20 @@ export const updateCustomerInfoSchema = z.object({
 export type UpdateCustomerInfoFromData = z.infer<typeof updateCustomerInfoSchema>;
 
 export const orderPositionSchema = z.object({
-    productId: z.number({ error: 'Оберіть виріб' }).nullish(),
+    productId: z
+        .number({ error: 'Оберіть виріб' })
+        .nullish()
+        .refine((val) => val !== null),
     size: z
         .number({ error: 'Введіть число' })
         .multipleOf(0.01, { error: 'Неправильний формат' })
-        .nullish(),
+        .nullish()
+        .refine((val) => val !== null),
     number: z
         .number({ error: 'Введіть кількість виробів' })
         .int({ error: 'Введіть ціле число' })
-        .nullish(),
+        .nullish()
+        .refine((val) => val !== null),
     notes: z.string().optional(),
 });
 
