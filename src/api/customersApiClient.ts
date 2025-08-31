@@ -1,7 +1,6 @@
 import { AbstractApiClient } from './abstractApiClient.ts';
 import type { CustomerBalanceDto, CustomerDto, CustomerListDto } from '../dto/customers.ts';
 import type { CustomerAuditDetailsDto } from '../dto/audit.ts';
-import type { OrdersListDto } from '../dto/orders.ts';
 
 export class CustomersApiClient extends AbstractApiClient {
     public static async get(
@@ -22,7 +21,6 @@ export class CustomersApiClient extends AbstractApiClient {
         return {
             entries: filtered.slice(page * 10, (page + 1) * 10),
             total: filtered.length,
-            perPage: 10,
             page,
         };
         // TODO: use me - const res = await this.apiRequest<{ pages: CustomerListDto[] }>({});
@@ -53,15 +51,5 @@ export class CustomersApiClient extends AbstractApiClient {
         const parsed = (await response.json()) as unknown as CustomerAuditDetailsDto;
         parsed.entries = parsed.entries.filter((e) => !!e.affectedCustomerId);
         return parsed;
-    }
-
-    public static async getCustomerOrders(
-        customerId: number,
-        page: number,
-    ): Promise<OrdersListDto | undefined> {
-        console.log(`CustomersApiClient.getCustomerOrders: ${customerId}, page: ${page}`);
-        const response = await fetch(`/customer-brief-orders.json`);
-        const parsed = (await response.json()) as unknown as { pages: OrdersListDto[] };
-        return parsed.pages[page];
     }
 }

@@ -4,7 +4,7 @@ export interface CustomerDto {
     id: number;
     fullName: string;
     phone: string;
-    activeOrders: boolean;
+    activeOrders: number;
 }
 
 export interface CustomerListDto extends Pageable<CustomerDto> {}

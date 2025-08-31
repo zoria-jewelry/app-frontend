@@ -8,8 +8,8 @@ export const createMaterialSchema = z.object({
 export type CreateMaterialFormData = z.infer<typeof createMaterialSchema>;
 
 export const createEmployeeSchema = z.object({
-    fullName: z.string().nonempty('Це поле є обовʼязковим'),
-    phoneNumber: z
+    name: z.string().nonempty('Це поле є обовʼязковим'),
+    phone: z
         .string()
         .nonempty('Це поле є обовʼязковим')
         .regex(/^\s*(\+38)?\d{10}\s*$/im, { message: 'Неправильний формат' }),

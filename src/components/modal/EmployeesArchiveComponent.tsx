@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
 import type { EmployeeDto } from '../../dto/employees.ts';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { EmployeesApiClient } from '../../api/employeesApiClient.ts';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
@@ -42,6 +42,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export interface EmployeesArchiveComponentProps {
     handleClose: () => void;
     isOpen: boolean;
+    callback: () => void;
 }
 
 const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
@@ -54,17 +55,33 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
 
     const theme = useTheme();
 
+    const loadArchivedEmployees = useCallback(() => {
+        EmployeesApiClient.getArchived(page).then((employeesList) => {
+            if (employeesList) {
+                setEntries(employeesList.entries);
+                setTotal(employeesList.total);
+            }
+        });
+    }, [page]);
+
     const handleUnarchiveClick = (employee: EmployeeDto | null) => {
         setEmployeeToUnarchive(employee);
         setIsUnarchiveDialogOpened(true);
-        console.log(`Unarchiving ${employee?.id}`);
-        // TODO: call unarchive employee endpoint
     };
 
     const handleUnarchiveEmployee = (id?: number) => {
         setIsUnarchiveDialogOpened(false);
         console.log(`Unarchive employee ${id}`);
-        // TODO: call unarchive endpoint
+        if (id) {
+            EmployeesApiClient.removeFromArchive(id).then(() => {
+                if (page === 0) {
+                    loadArchivedEmployees();
+                } else {
+                    setPage(0);
+                }
+                props.callback();
+            });
+        }
     };
 
     const handleClose = () => {
@@ -73,15 +90,10 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
     };
 
     useEffect(() => {
-        EmployeesApiClient.getArchived(page).then((employeesList) => {
-            if (!employeesList) {
-                // TODO: add toast
-            } else {
-                setEntries(employeesList.entries);
-                setTotal(employeesList.total);
-            }
-        });
-    }, [page]);
+        if (props.isOpen) {
+            loadArchivedEmployees();
+        }
+    }, [page, props.isOpen, loadArchivedEmployees]);
 
     return (
         <BootstrapDialog
@@ -163,10 +175,13 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
             </TableContainer>
             <TablePagination
                 count={total}
-                onPageChange={(_, p) => setPage(p)}
+                onPageChange={(_, p) => {
+                    console.log(`SETTING PAGE ${p}`);
+                    setPage(p);
+                }}
                 rowsPerPageOptions={[]}
                 page={page}
-                rowsPerPage={10}
+                rowsPerPage={3}
                 style={{
                     marginTop: theme.spacing(4),
                     border: 0,

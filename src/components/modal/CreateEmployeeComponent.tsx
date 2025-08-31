@@ -14,6 +14,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type CreateEmployeeFormData, createEmployeeSchema } from '../../validation/schemas.ts';
+import { EmployeesApiClient } from '../../api/employeesApiClient.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -37,6 +38,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export interface CreateEmployeeComponentProps {
     handleClose: () => void;
     isOpen: boolean;
+    callback: () => void;
 }
 
 const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
@@ -52,8 +54,8 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
         resolver: zodResolver(createEmployeeSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
-            fullName: '',
-            phoneNumber: '',
+            name: '',
+            phone: '',
         },
     });
 
@@ -65,8 +67,10 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
 
     const onSubmit = (data: CreateEmployeeFormData) => {
         console.log(data);
-        // TODO: call API Endpoint
-        handleClose();
+        EmployeesApiClient.create(data).then(() => {
+            props.callback();
+            handleClose();
+        });
     };
 
     return (
@@ -109,8 +113,8 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
                         fullWidth
                         margin="normal"
                         defaultValue=""
-                        {...register('fullName')}
-                        error={!!errors.fullName}
+                        {...register('name')}
+                        error={!!errors.name}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -119,10 +123,10 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
                         }}
                     />
                     <FormHelperText
-                        error={!!errors.fullName}
+                        error={!!errors.name}
                         sx={{ margin: 0, marginBottom: theme.spacing(2), minHeight: '30px' }}
                     >
-                        {errors?.fullName?.message}
+                        {errors?.name?.message}
                     </FormHelperText>
                 </FormControl>
                 <FormControl fullWidth>
@@ -133,8 +137,8 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
                         fullWidth
                         margin="normal"
                         defaultValue=""
-                        {...register('phoneNumber')}
-                        error={!!errors.phoneNumber}
+                        {...register('phone')}
+                        error={!!errors.phone}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -142,11 +146,8 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
                             },
                         }}
                     />
-                    <FormHelperText
-                        error={!!errors.phoneNumber}
-                        sx={{ margin: 0, minHeight: '30px' }}
-                    >
-                        {errors?.phoneNumber?.message}
+                    <FormHelperText error={!!errors.phone} sx={{ margin: 0, minHeight: '30px' }}>
+                        {errors?.phone?.message}
                     </FormHelperText>
                 </FormControl>
                 <FormControl
