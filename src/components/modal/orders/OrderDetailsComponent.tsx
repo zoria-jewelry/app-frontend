@@ -148,11 +148,10 @@ export default function OrderDetailsComponent({ id, open, onClose }: OrderDetail
                     </TableContainer>
 
                     <Typography variant="body2" mt={4}>
-                        Дата звернення - {toLocalDateTime(order.creationDate)}
+                        Дата звернення - {toLocalDateTime(order.openedAt)}
                     </Typography>
                     <Typography variant="body2">
-                        Дата виконання -{' '}
-                        {order.completionDate ? toLocalDateTime(order.completionDate) : '-'}
+                        Дата виконання - {order.closedAt ? toLocalDateTime(order.closedAt) : '-'}
                     </Typography>
 
                     {/* Summary */}
@@ -287,14 +286,14 @@ export default function OrderDetailsComponent({ id, open, onClose }: OrderDetail
                             </Box>
 
                             <Box flex={1} width="100%">
-                                {order.total && (
+                                {order.totalWithDiscount && (
                                     <>
                                         <Typography
                                             variant="body2"
                                             sx={{ mt: 2 }}
                                             textAlign="right"
                                         >
-                                            Вартість без знижки — <b>{order.subtotal} грн</b>
+                                            Вартість без знижки — <b>{order.total} грн</b>
                                         </Typography>
                                         <Typography variant="body2" textAlign="right">
                                             Знижка — <b>-{order.discount ?? 0} грн</b>
@@ -304,7 +303,9 @@ export default function OrderDetailsComponent({ id, open, onClose }: OrderDetail
                                             sx={{ mt: 1 }}
                                             textAlign="right"
                                         >
-                                            <b>Підсумкова вартість — {order.total} грн</b>
+                                            <b>
+                                                Підсумкова вартість — {order.totalWithDiscount} грн
+                                            </b>
                                         </Typography>
                                     </>
                                 )}

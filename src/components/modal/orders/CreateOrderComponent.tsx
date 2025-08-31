@@ -247,8 +247,8 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                             <TextField
                                 type="number"
                                 placeholder="К-ть"
-                                {...register(`positions.${index}.number`, { valueAsNumber: true })}
-                                error={!!errors.positions?.[index]?.number}
+                                {...register(`positions.${index}.count`, { valueAsNumber: true })}
+                                error={!!errors.positions?.[index]?.count}
                                 sx={{ flex: 0.5, minWidth: 100 }}
                             />
 
@@ -279,7 +279,7 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                         append({
                             productId: null,
                             size: null,
-                            number: null,
+                            count: null,
                             notes: '',
                         })
                     }
