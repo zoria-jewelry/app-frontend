@@ -12,8 +12,8 @@ import { OrdersApiClient, type OrdersFilterData } from '../api/ordersApiClient.t
 import SearchBar from '../components/SearchBar.tsx';
 import FilterIcon from '@mui/icons-material/TuneOutlined';
 import IconButton from '@mui/material/IconButton';
-import OrdersFilterModal from '../components/modal/OrdersFilterComponent.tsx';
-import CreateOrderComponent from '../components/modal/CreateOrderComponent.tsx';
+import OrdersFilterModal from '../components/modal/orders/OrdersFilterComponent.tsx';
+import CreateOrderComponent from '../components/modal/orders/CreateOrderComponent.tsx';
 
 const CustomerInfoPage = () => {
     const theme = useTheme();

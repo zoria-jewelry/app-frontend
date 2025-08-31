@@ -17,7 +17,7 @@ import commonStyles from '../styles/Common.module.css';
 import { useEffect, useState } from 'react';
 import type { MaterialDto } from '../dto/materials.ts';
 import { MaterialsApiClient } from '../api/materialsApiClient.ts';
-import CreateMaterialComponent from '../components/modal/CreateMaterialComponent.tsx';
+import CreateMaterialComponent from '../components/modal/materials/CreateMaterialComponent.tsx';
 import { toFixedNumber } from '../utils.ts';
 
 const MaterialsPage = () => {

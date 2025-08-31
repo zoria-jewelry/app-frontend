@@ -13,10 +13,10 @@ import {
     useTheme,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import type { EmployeeDto } from '../../dto/employees.ts';
-import { EmployeesApiClient } from '../../api/employeesApiClient.ts';
-import type { OrdersFilterData } from '../../api/ordersApiClient.ts';
-import { OrderStatus } from '../../dto/orders.ts';
+import type { EmployeeDto } from '../../../dto/employees.ts';
+import { EmployeesApiClient } from '../../../api/employeesApiClient.ts';
+import type { OrdersFilterData } from '../../../api/ordersApiClient.ts';
+import { OrderStatus } from '../../../dto/orders.ts';
 import ListItemText from '@mui/material/ListItemText';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';

@@ -1,7 +1,7 @@
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import { useForm } from 'react-hook-form';
-import { type CreateProductFormData, createProductSchema } from '../../validation/schemas.ts';
+import { type CreateProductFormData, createProductSchema } from '../../../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';

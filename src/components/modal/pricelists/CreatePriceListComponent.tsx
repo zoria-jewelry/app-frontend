@@ -13,9 +13,9 @@ import {
 } from '@mui/material';
 import z from 'zod';
 import { useEffect, useRef, useState } from 'react';
-import { PriceListsApiClient } from '../../api/priceListsApiClient.ts';
-import { toLocalDate } from '../../utils.ts';
-import type { PriceListEntryDto } from '../../dto/price-lists.ts';
+import { PriceListsApiClient } from '../../../api/priceListsApiClient.ts';
+import { toLocalDate } from '../../../utils.ts';
+import type { PriceListEntryDto } from '../../../dto/price-lists.ts';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 

@@ -11,7 +11,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
 import { useState } from 'react';
-import { OrdersApiClient } from '../../api/ordersApiClient.ts';
+import { OrdersApiClient } from '../../../api/ordersApiClient.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {

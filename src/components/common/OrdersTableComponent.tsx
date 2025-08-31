@@ -16,8 +16,8 @@ import InfoIcon from '@mui/icons-material/Info';
 import EditIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
 import { orderStatusToHumanText, toLocalDateTime } from '../../utils.ts';
 import { useState } from 'react';
-import CancelOrderComponent from '../modal/CancelOrderComponent.tsx';
-import OrderDetailsComponent from '../modal/OrderDetailsComponent.tsx';
+import CancelOrderComponent from '../modal/orders/CancelOrderComponent.tsx';
+import OrderDetailsComponent from '../modal/orders/OrderDetailsComponent.tsx';
 
 export interface OrdersTableProps {
     orders: OrdersListDto;

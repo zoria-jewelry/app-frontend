@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react';
 import { PriceListsApiClient } from '../../api/priceListsApiClient.ts';
 import type { PriceListEntryDto } from '../../dto/price-lists.ts';
 import { toFixedNumber, toLocalDate } from '../../utils.ts';
-import CreatePriceListComponent from '../modal/CreatePriceListComponent.tsx';
+import CreatePriceListComponent from '../modal/pricelists/CreatePriceListComponent.tsx';
 
 const CurrentPriceListComponent = () => {
     const theme = useTheme();

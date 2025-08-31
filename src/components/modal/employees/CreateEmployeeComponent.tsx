@@ -13,8 +13,8 @@ import {
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type CreateEmployeeFormData, createEmployeeSchema } from '../../validation/schemas.ts';
-import { EmployeesApiClient } from '../../api/employeesApiClient.ts';
+import { type CreateEmployeeFormData, createEmployeeSchema } from '../../../validation/schemas.ts';
+import { EmployeesApiClient } from '../../../api/employeesApiClient.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {

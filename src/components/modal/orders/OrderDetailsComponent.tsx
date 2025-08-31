@@ -15,9 +15,9 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
-import { OrdersApiClient } from '../../api/ordersApiClient.ts';
-import type { OrderDto } from '../../dto/orders.ts';
-import { orderStatusToHumanText, toLocalDateTime } from '../../utils.ts';
+import { OrdersApiClient } from '../../../api/ordersApiClient.ts';
+import type { OrderDto } from '../../../dto/orders.ts';
+import { orderStatusToHumanText, toLocalDateTime } from '../../../utils.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialog-container': {

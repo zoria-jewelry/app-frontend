@@ -17,9 +17,9 @@ import { useEffect, useState } from 'react';
 import type { ProductEntryDto } from '../dto/products.ts';
 import { ProductsApiClient } from '../api/productsApiClient.ts';
 import SearchBar from '../components/SearchBar.tsx';
-import CreateProductComponent from '../components/modal/CreateProductComponent.tsx';
+import CreateProductComponent from '../components/modal/products/CreateProductComponent.tsx';
 import DialogComponent from '../components/modal/DialogComponent.tsx';
-import ProductsArchiveComponent from '../components/modal/ProductsArchiveComponent.tsx';
+import ProductsArchiveComponent from '../components/modal/products/ProductsArchiveComponent.tsx';
 
 const ProductsCataloguePage = () => {
     const theme = useTheme();
