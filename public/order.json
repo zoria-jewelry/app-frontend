@@ -1,7 +1,7 @@
 {
     "id": 101,
-    "creationDate": "2025-08-23T14:30:00.000Z",
-    "completionDate": "2025-08-28T18:17:43.000Z",
+    "openedAt": "2025-08-23T14:30:00.000Z",
+    "closedAt": "2025-08-28T18:17:43.000Z",
     "status": "COMPLETED",
     "cancellationReason": null,
     "entries": [
@@ -10,21 +10,21 @@
             "productName": "Золота обручка",
             "productArticle": "RNG-001-RNG",
             "productPictureUrl": "https://cdn.mpanov.com/diamond-ring.webp",
-            "size": 16,
+            "size": 14,
             "count": 2,
             "notes": "Customer requested engraving"
         },
         {
-            "productId": 2,
+            "productId": 5,
             "productName": "Золоте намисто",
             "productArticle": "NCK-002-NCK",
             "productPictureUrl": "https://cdn.mpanov.com/diamond-ring.webp",
-            "size": 45,
+            "size": 42,
             "count": 1,
             "notes": null
         },
         {
-            "productId": 1,
+            "productId": 8,
             "productName": "Золота обручка",
             "productArticle": "RNG-001-RNG",
             "productPictureUrl": "https://cdn.mpanov.com/diamond-ring.webp",
@@ -46,22 +46,24 @@
             "productName": "Золота обручка",
             "productArticle": "RNG-001-RNG",
             "productPictureUrl": "https://cdn.mpanov.com/diamond-ring.webp",
-            "size": 16,
+            "size": 11,
             "count": 2,
             "notes": "Customer requested engraving"
         },
         {
-            "productId": 2,
+            "productId": 5,
             "productName": "Золоте намисто",
             "productArticle": "NCK-002-NCK",
             "productPictureUrl": "https://cdn.mpanov.com/diamond-ring.webp",
-            "size": 45,
+            "size": 22,
             "count": 1,
             "notes": null
         }
     ],
     "executors": ["Панов Максим Ігорович", "Недашківська Валерія Віталіївна"],
+    "executorsIds": [1, 2],
     "materialName": "Золото 585",
+    "materialId": 1,
     "loss": 5,
     "workPrice": 50,
     "totalWeight": 30,
@@ -70,6 +72,6 @@
     "metalWorkPrice": 1470,
     "totalMetalPrice": 1680,
     "discount": 10,
-    "subtotal": 3150,
-    "total": 3140
+    "total": 3150,
+    "totalWithDiscount": 3140
 }

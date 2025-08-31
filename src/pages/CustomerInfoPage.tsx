@@ -6,7 +6,7 @@ import UpdateCustomerBalancesComponent from '../components/customer/UpdateCustom
 import CustomerAuditRecordsComponent from '../components/customer/CustomerAuditRecordsComponent.tsx';
 import OrdersTableComponent from '../components/common/OrdersTableComponent.tsx';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { OrdersListDto } from '../dto/orders.ts';
 import { OrdersApiClient, type OrdersFilterData } from '../api/ordersApiClient.ts';
 import SearchBar from '../components/SearchBar.tsx';
@@ -32,11 +32,7 @@ const CustomerInfoPage = () => {
 
     const isMd = useMediaQuery(theme.breakpoints.down('md')); // < 900px
 
-    useEffect(() => {
-        setOrdersPage(0);
-    }, [ordersFilterData]);
-
-    useEffect(() => {
+    const updateOrdersList = useCallback(() => {
         if (customerId) {
             OrdersApiClient.getByCustomerId(
                 customerId,
@@ -51,6 +47,14 @@ const CustomerInfoPage = () => {
                 }
             });
         }
+    }, [ordersPage]);
+
+    useEffect(() => {
+        setOrdersPage(0);
+    }, [ordersFilterData]);
+
+    useEffect(() => {
+        updateOrdersList();
     }, [ordersPage, orderSearchPhrase, customerId]);
 
     return (
@@ -165,7 +169,13 @@ const CustomerInfoPage = () => {
                     </Box>
                 </Box>
 
-                {orders && <OrdersTableComponent orders={orders} setPage={setOrdersPage} />}
+                {orders && (
+                    <OrdersTableComponent
+                        orders={orders}
+                        setPage={setOrdersPage}
+                        updateCallback={updateOrdersList}
+                    />
+                )}
             </Paper>
 
             <OrdersFilterModal

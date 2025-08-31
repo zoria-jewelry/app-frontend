@@ -18,15 +18,18 @@ import { orderStatusToHumanText, toLocalDateTime } from '../../utils.ts';
 import { useState } from 'react';
 import CancelOrderComponent from '../modal/orders/CancelOrderComponent.tsx';
 import OrderDetailsComponent from '../modal/orders/OrderDetailsComponent.tsx';
+import EditOrderComponent from '../modal/orders/EditOrderComponent.tsx';
 
 export interface OrdersTableProps {
     orders: OrdersListDto;
     setPage: (page: number) => void;
+    updateCallback: () => void;
 }
 
-const OrdersTableComponent = ({ orders, setPage }: OrdersTableProps) => {
+const OrdersTableComponent = ({ orders, setPage, updateCallback }: OrdersTableProps) => {
     const [orderToCancel, setOrderToCancel] = useState<OrderBriefInfoDto | undefined>();
     const [orderIdForInfoModal, setOrderIdForInfoModal] = useState<number | undefined>();
+    const [orderIdForUpdateModal, setOrderIdForUpdateModal] = useState<number | undefined>();
 
     return (
         <>
@@ -120,14 +123,14 @@ const OrdersTableComponent = ({ orders, setPage }: OrdersTableProps) => {
                                 {/* Request date */}
                                 <TableCell align="center">
                                     <Typography variant="body2">
-                                        {toLocalDateTime(order.creationDate) ?? '-'}
+                                        {toLocalDateTime(order.openedAt) ?? '-'}
                                     </Typography>
                                 </TableCell>
 
                                 {/* Completion date */}
                                 <TableCell align="center">
                                     <Typography variant="body2">
-                                        {toLocalDateTime(order.completionDate) ?? '-'}
+                                        {toLocalDateTime(order.closedAt) ?? '-'}
                                     </Typography>
                                 </TableCell>
 
@@ -167,7 +170,10 @@ const OrdersTableComponent = ({ orders, setPage }: OrdersTableProps) => {
                                 {/* Actions */}
                                 <TableCell align="center">
                                     {order.status === OrderStatus.IN_PROGRESS ? (
-                                        <IconButton size="large">
+                                        <IconButton
+                                            size="large"
+                                            onClick={() => setOrderIdForUpdateModal(order.id)}
+                                        >
                                             <EditIcon />
                                         </IconButton>
                                     ) : (
@@ -207,6 +213,15 @@ const OrdersTableComponent = ({ orders, setPage }: OrdersTableProps) => {
                     id={orderIdForInfoModal}
                     open={!!orderIdForInfoModal}
                     onClose={() => setOrderIdForInfoModal(undefined)}
+                />
+            )}
+
+            {orderIdForUpdateModal && (
+                <EditOrderComponent
+                    orderId={orderIdForUpdateModal}
+                    handleClose={() => setOrderIdForUpdateModal(undefined)}
+                    open={!!orderIdForUpdateModal}
+                    callback={updateCallback}
                 />
             )}
         </>

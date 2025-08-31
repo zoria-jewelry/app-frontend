@@ -14,8 +14,8 @@ export interface OrderBriefInfoEntryDto {
 
 export interface OrderBriefInfoDto {
     id: number;
-    creationDate: Date;
-    completionDate: Date | null;
+    openedAt: Date;
+    closedAt: Date | null;
     status: OrderStatus;
     cancellationReason?: string;
     entries: OrderBriefInfoEntryDto[];
@@ -35,14 +35,16 @@ export interface OrderEntryDto {
 
 export interface OrderDto {
     id: number;
-    creationDate: Date;
-    completionDate?: Date | null;
+    openedAt: Date;
+    closedAt?: Date | null;
     status: OrderStatus;
     cancellationReason?: string;
     entries: OrderEntryDto[];
     materialName: string;
+    materialId: number;
 
     executors: string[];
+    executorsIds: number[];
 
     loss?: number; // угар
     workPrice: number; // ціна обробки граму металу
@@ -53,6 +55,6 @@ export interface OrderDto {
     totalMetalPrice?: number; // totalMetalWeight * ціна_металу_за_грам
 
     discount?: number | null;
-    subtotal?: number | null; // сума без знижки
-    total?: number | null; // сума зі знижкою
+    total?: number | null; // сума без знижки
+    totalWithDiscount?: number | null; // сума зі знижкою
 }

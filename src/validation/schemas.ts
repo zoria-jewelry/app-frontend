@@ -62,7 +62,7 @@ export const orderPositionSchema = z.object({
         .multipleOf(0.01, { error: 'Неправильний формат' })
         .nullish()
         .refine((val) => val !== null),
-    number: z
+    count: z
         .number({ error: 'Введіть кількість виробів' })
         .int({ error: 'Введіть ціле число' })
         .nullish()
@@ -70,7 +70,7 @@ export const orderPositionSchema = z.object({
     notes: z.string().optional(),
 });
 
-export const createOrderSchema = z.object({
+export const createUpdateOrderSchema = z.object({
     metalId: z.number({ error: 'Оберіть матеріал' }),
     workPrice: z
         .number({ error: 'Введіть число' })
@@ -85,4 +85,6 @@ export const createOrderSchema = z.object({
         .min(1, { error: 'Оберіть хоча б одного виконавця' }),
 });
 
-export type CreateOrderFormData = z.infer<typeof createOrderSchema>;
+export type CreateOrderFormData = z.infer<typeof createUpdateOrderSchema>;
+
+export type UpdateOrderFormData = z.infer<typeof createUpdateOrderSchema>;

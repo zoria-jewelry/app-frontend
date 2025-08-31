@@ -19,7 +19,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type CreateOrderFormData, createOrderSchema } from '../../../validation/schemas.ts';
+import { type CreateOrderFormData, createUpdateOrderSchema } from '../../../validation/schemas.ts';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useState } from 'react';
 import type { MaterialDto } from '../../../dto/materials.ts';
@@ -60,7 +60,7 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
         control,
         formState: { errors },
     } = useForm<CreateOrderFormData>({
-        resolver: zodResolver(createOrderSchema),
+        resolver: zodResolver(createUpdateOrderSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
             metalId: 0,
