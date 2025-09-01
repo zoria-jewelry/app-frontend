@@ -8,8 +8,8 @@ export const createMaterialSchema = z.object({
 export type CreateMaterialFormData = z.infer<typeof createMaterialSchema>;
 
 export const createEmployeeSchema = z.object({
-    fullName: z.string().nonempty('Це поле є обовʼязковим'),
-    phoneNumber: z
+    name: z.string().nonempty('Це поле є обовʼязковим'),
+    phone: z
         .string()
         .nonempty('Це поле є обовʼязковим')
         .regex(/^\s*(\+38)?\d{10}\s*$/im, { message: 'Неправильний формат' }),
@@ -41,3 +41,50 @@ export const createCustomerSchema = z.object({
 });
 
 export type CreateCustomerFormData = z.infer<typeof createCustomerSchema>;
+
+export const updateCustomerInfoSchema = z.object({
+    fullName: z.string().nonempty('Це поле є обовʼязковим'),
+    phone: z
+        .string()
+        .nonempty('Це поле є обовʼязковим')
+        .regex(/^\s*(\+38)?\d{10}\s*$/im, { message: 'Неправильний формат' }),
+});
+
+export type UpdateCustomerInfoFromData = z.infer<typeof updateCustomerInfoSchema>;
+
+export const orderPositionSchema = z.object({
+    productId: z
+        .number({ error: 'Оберіть виріб' })
+        .nullish()
+        .refine((val) => val !== null),
+    size: z
+        .number({ error: 'Введіть число' })
+        .multipleOf(0.01, { error: 'Неправильний формат' })
+        .nullish()
+        .refine((val) => val !== null),
+    count: z
+        .number({ error: 'Введіть кількість виробів' })
+        .int({ error: 'Введіть ціле число' })
+        .nullish()
+        .refine((val) => val !== null),
+    notes: z.string().optional(),
+});
+
+export const createUpdateOrderSchema = z.object({
+    metalId: z.number({ error: 'Оберіть матеріал' }),
+    workPrice: z
+        .number({ error: 'Введіть число' })
+        .positive({ error: 'Вартість роботи повинна бути додатною' })
+        .multipleOf(0.01, { error: 'Неправильний формат' }),
+    positions: z
+        .array(orderPositionSchema)
+        .nonempty({ error: 'Список товарів не може бути порожнім' })
+        .nonoptional({ error: 'Список товарів не може бути порожнім' }),
+    executorsIds: z
+        .array(z.number().positive())
+        .min(1, { error: 'Оберіть хоча б одного виконавця' }),
+});
+
+export type CreateOrderFormData = z.infer<typeof createUpdateOrderSchema>;
+
+export type UpdateOrderFormData = z.infer<typeof createUpdateOrderSchema>;

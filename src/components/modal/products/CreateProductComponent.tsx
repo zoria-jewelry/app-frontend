@@ -1,5 +1,8 @@
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
+import { useForm } from 'react-hook-form';
+import { type CreateProductFormData, createProductSchema } from '../../../validation/schemas.ts';
+import { zodResolver } from '@hookform/resolvers/zod';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import {
@@ -7,13 +10,12 @@ import {
     FormControl,
     FormHelperText,
     FormLabel,
+    OutlinedInput,
     TextField,
     Typography,
     useTheme,
 } from '@mui/material';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { type CreateEmployeeFormData, createEmployeeSchema } from '../../validation/schemas.ts';
+import type { ChangeEvent } from 'react';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -22,7 +24,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        width: '800px',
+        minWidth: '40%',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -34,26 +36,27 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-export interface CreateEmployeeComponentProps {
-    handleClose: () => void;
+export interface CreateProductComponentProps {
     isOpen: boolean;
+    handleClose: () => void;
 }
 
-const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
+const CreateProductComponent = (props: CreateProductComponentProps) => {
     const theme = useTheme();
-
     const {
         register,
         handleSubmit,
         clearErrors,
         reset,
+        setValue,
         formState: { errors },
-    } = useForm<CreateEmployeeFormData>({
-        resolver: zodResolver(createEmployeeSchema),
+    } = useForm<CreateProductFormData>({
+        resolver: zodResolver(createProductSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
-            fullName: '',
-            phoneNumber: '',
+            name: '',
+            article: '',
+            pictureBase64: undefined,
         },
     });
 
@@ -63,7 +66,19 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
         props.handleClose();
     };
 
-    const onSubmit = (data: CreateEmployeeFormData) => {
+    const handlePhotoChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64String = reader.result as string;
+            setValue('pictureBase64', base64String, { shouldValidate: true });
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const onSubmit = (data: CreateProductFormData) => {
         console.log(data);
         // TODO: call API Endpoint
         handleClose();
@@ -92,7 +107,7 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
 
             {/* Form title */}
             <Typography variant="h3" textAlign="center">
-                Новий працівник
+                Новий виріб
             </Typography>
 
             {/* The form */}
@@ -102,15 +117,15 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
                 noValidate
             >
                 <FormControl fullWidth>
-                    <FormLabel htmlFor="full-name">ПІБ</FormLabel>
+                    <FormLabel htmlFor="name">Назва</FormLabel>
                     <TextField
-                        id="full-name"
-                        placeholder="Шевченко Тарас Григорович"
+                        id="name"
+                        placeholder="Обручка з діамантами"
                         fullWidth
                         margin="normal"
                         defaultValue=""
-                        {...register('fullName')}
-                        error={!!errors.fullName}
+                        {...register('name')}
+                        error={!!errors.name}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -119,22 +134,22 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
                         }}
                     />
                     <FormHelperText
-                        error={!!errors.fullName}
+                        error={!!errors.name}
                         sx={{ margin: 0, marginBottom: theme.spacing(2), minHeight: '30px' }}
                     >
-                        {errors?.fullName?.message}
+                        {errors?.name?.message}
                     </FormHelperText>
                 </FormControl>
                 <FormControl fullWidth>
-                    <FormLabel htmlFor="phone-number">Номер телефону</FormLabel>
+                    <FormLabel htmlFor="article">Артикул</FormLabel>
                     <TextField
-                        id="phone-number"
-                        placeholder="+380961234567"
+                        id="article"
+                        placeholder="1102-10015/1(2,0)"
                         fullWidth
                         margin="normal"
                         defaultValue=""
-                        {...register('phoneNumber')}
-                        error={!!errors.phoneNumber}
+                        {...register('article')}
+                        error={!!errors.article}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -143,18 +158,38 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
                         }}
                     />
                     <FormHelperText
-                        error={!!errors.phoneNumber}
-                        sx={{ margin: 0, minHeight: '30px' }}
+                        error={!!errors.article}
+                        sx={{ margin: 0, marginBottom: theme.spacing(2), minHeight: '30px' }}
                     >
-                        {errors?.phoneNumber?.message}
+                        {errors?.article?.message}
                     </FormHelperText>
+                </FormControl>
+                <FormControl fullWidth>
+                    <FormLabel
+                        htmlFor="photo"
+                        sx={{
+                            color: theme.palette.text.primary,
+                            '&.Mui-focused': {
+                                color: theme.palette.text.primary,
+                            },
+                        }}
+                    >
+                        Фото виробу
+                    </FormLabel>
+                    <OutlinedInput
+                        id="photo"
+                        type="file"
+                        fullWidth
+                        inputProps={{ accept: 'image/*' }}
+                        onChange={handlePhotoChange}
+                    />
                 </FormControl>
                 <FormControl
                     fullWidth
                     style={{
                         display: 'flex',
                         alignItems: 'center',
-                        marginTop: theme.spacing(2),
+                        marginTop: theme.spacing(10),
                     }}
                 >
                     <Button variant="contained" color="primary" type="submit">
@@ -166,4 +201,4 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
     );
 };
 
-export default CreateEmployeeComponent;
+export default CreateProductComponent;

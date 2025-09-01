@@ -13,15 +13,15 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { EmployeeDto } from '../dto/employees.ts';
 import paperStyles from '../styles/Paper.module.css';
 import commonStyles from '../styles/Common.module.css';
 import ArchiveIcon from '@mui/icons-material/Inventory2Outlined';
 import { EmployeesApiClient } from '../api/employeesApiClient.ts';
 import DialogComponent from '../components/modal/DialogComponent.tsx';
-import EmployeesArchiveComponent from '../components/modal/EmployeesArchiveComponent.tsx';
-import CreateEmployeeComponent from '../components/modal/CreateEmployeeComponent.tsx';
+import EmployeesArchiveComponent from '../components/modal/employees/EmployeesArchiveComponent.tsx';
+import CreateEmployeeComponent from '../components/modal/employees/CreateEmployeeComponent.tsx';
 
 const EmployeePage = () => {
     const theme = useTheme();
@@ -36,6 +36,15 @@ const EmployeePage = () => {
 
     const [isCreateComponentOpened, setIsCreateComponentOpened] = useState<boolean>(false);
 
+    const loadEmployees = useCallback(() => {
+        EmployeesApiClient.get(page).then((employeesList) => {
+            if (employeesList) {
+                setEntries(employeesList.entries);
+                setTotal(employeesList.total);
+            }
+        });
+    }, [page]);
+
     const handleOpenArchiveEmployeeDialog = (employee: EmployeeDto) => {
         setIsArchiveDialogOpened(true);
         setEmployeeToArchive(employee);
@@ -43,20 +52,32 @@ const EmployeePage = () => {
 
     const handleArchiveEmployee = (id?: number) => {
         setIsArchiveDialogOpened(false);
-        console.log(`Archive employee ${id}`);
-        // TODO: call archive endpoint
+        if (id) {
+            EmployeesApiClient.moveToArchive(id)
+                .then(() => {
+                    if (page === 0) {
+                        loadEmployees();
+                    } else {
+                        setPage(0);
+                    }
+                })
+                .catch(() => {
+                    // TODO: add toast
+                });
+        }
+    };
+
+    const listUpdateCallback = () => {
+        if (page === 0) {
+            loadEmployees();
+        } else {
+            setPage(0);
+        }
     };
 
     useEffect(() => {
-        EmployeesApiClient.get(page).then((employeesList) => {
-            if (!employeesList) {
-                // TODO: add toast
-            } else {
-                setEntries(employeesList.entries);
-                setTotal(employeesList.total);
-            }
-        });
-    }, [page]);
+        loadEmployees();
+    }, [page, loadEmployees]);
 
     return (
         <Paper
@@ -156,7 +177,10 @@ const EmployeePage = () => {
             </TableContainer>
             <TablePagination
                 count={total}
-                onPageChange={(_, p) => setPage(p)}
+                onPageChange={(_, p) => {
+                    console.log(`SETTING PAGE ${p}`);
+                    setPage(p);
+                }}
                 rowsPerPageOptions={[]}
                 page={page}
                 rowsPerPage={10}
@@ -181,12 +205,14 @@ const EmployeePage = () => {
             <EmployeesArchiveComponent
                 handleClose={() => setIsArchiveOpened(false)}
                 isOpen={isArchiveOpened}
+                callback={listUpdateCallback}
             />
 
             {/* Add new employee modal window */}
             <CreateEmployeeComponent
                 handleClose={() => setIsCreateComponentOpened(false)}
                 isOpen={isCreateComponentOpened}
+                callback={listUpdateCallback}
             />
         </Paper>
     );

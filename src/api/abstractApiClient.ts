@@ -1,7 +1,6 @@
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { config } from '../configs/config.ts';
 import axios from 'axios';
-import type { AbstractResponseDto } from '../dto/common.ts';
 
 const acceptableStatuses: number[] = [200, 201];
 
@@ -20,7 +19,7 @@ export abstract class AbstractApiClient {
 
     protected static async apiRequest<T>(
         cfg: AxiosRequestConfig & { _retry?: boolean } = {},
-    ): Promise<T | void> {
+    ): Promise<T | undefined> {
         cfg.baseURL = cfg.baseURL || config.apiBase;
 
         if (cfg.params) {
@@ -50,9 +49,9 @@ export abstract class AbstractApiClient {
              * no need in explicitly sending them in the request
              *
              * */
-            const resp = await axios.request<AbstractResponseDto<T>>(cfg);
+            const resp = await axios.request<T>(cfg);
             if (acceptableStatuses.includes(resp.status)) {
-                return (resp.data as AbstractResponseDto<T>).payload;
+                return resp.data as T;
             }
         } catch (err: any) {
             const status = err.response?.status;
@@ -69,7 +68,7 @@ export abstract class AbstractApiClient {
                         .then((success) => {
                             this.refreshTokenPromise = null;
                             if (!success) throw new Error('refresh failed');
-                            return;
+                            return undefined;
                         })
                         .catch(() => {
                             this.refreshTokenPromise = null;
@@ -80,15 +79,15 @@ export abstract class AbstractApiClient {
                 cfg._retry = true;
 
                 try {
-                    const retryResp = await axios.request<AbstractResponseDto<T>>(cfg);
+                    const retryResp = await axios.request<T>(cfg);
                     if (!acceptableStatuses.includes(retryResp.status)) {
                         await this.handleError();
-                        return;
+                        return undefined;
                     }
-                    return (retryResp.data as AbstractResponseDto<T>).payload;
+                    return retryResp.data as T;
                 } catch (err: any) {
                     await this.handleError();
-                    return;
+                    return undefined;
                 }
             }
         }
@@ -96,7 +95,7 @@ export abstract class AbstractApiClient {
 
     private static async refreshToken(): Promise<boolean> {
         try {
-            const resp: AxiosResponse<AbstractResponseDto<void>> = await axios.get(
+            const resp: AxiosResponse<undefined> = await axios.get(
                 `${config.apiBase}/public/users/refresh-token`,
             );
 

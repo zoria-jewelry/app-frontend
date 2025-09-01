@@ -6,18 +6,17 @@ import {
     TableCell,
     TableContainer,
     TableHead,
-    TablePagination,
     TableRow,
     Typography,
     useTheme,
 } from '@mui/material';
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
-import type { EmployeeDto } from '../../dto/employees.ts';
 import { useEffect, useState } from 'react';
-import { EmployeesApiClient } from '../../api/employeesApiClient.ts';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
-import DialogComponent from './DialogComponent.tsx';
+import DialogComponent from '../DialogComponent.tsx';
+import type { ProductEntryDto } from '../../../dto/products.ts';
+import { ProductsApiClient } from '../../../api/productsApiClient.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -26,8 +25,8 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        minWidth: '70%',
-        height: '90vh',
+        minWidth: '80%',
+        minHeight: '80%',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -39,49 +38,45 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-export interface EmployeesArchiveComponentProps {
+export interface ProductsArchiveComponentProps {
     handleClose: () => void;
     isOpen: boolean;
 }
 
-const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
-    const [entries, setEntries] = useState<EmployeeDto[]>([]);
-    const [total, setTotal] = useState<number>(0);
-    const [page, setPage] = useState<number>(0);
+const ProductsArchiveComponent = (props: ProductsArchiveComponentProps) => {
+    const [entries, setEntries] = useState<ProductEntryDto[]>([]);
 
     const [isUnarchiveDialogOpened, setIsUnarchiveDialogOpened] = useState<boolean>(false);
-    const [employeeToUnarchive, setEmployeeToUnarchive] = useState<EmployeeDto | null>(null);
+    const [productToUnarchive, setProductToUnarchive] = useState<ProductEntryDto | null>(null);
 
     const theme = useTheme();
 
-    const handleUnarchiveClick = (employee: EmployeeDto | null) => {
-        setEmployeeToUnarchive(employee);
+    const handleUnarchiveClick = (product: ProductEntryDto | null) => {
+        setProductToUnarchive(product);
         setIsUnarchiveDialogOpened(true);
-        console.log(`Unarchiving ${employee?.id}`);
-        // TODO: call unarchive employee endpoint
+        console.log(`Unarchiving product ${product?.id}`);
+        // TODO: call unarchive product endpoint
     };
 
-    const handleUnarchiveEmployee = (id?: number) => {
+    const handleUnarchiveProduct = (id?: number) => {
         setIsUnarchiveDialogOpened(false);
-        console.log(`Unarchive employee ${id}`);
+        console.log(`Unarchive product ${id}`);
         // TODO: call unarchive endpoint
     };
 
     const handleClose = () => {
         props.handleClose();
-        setPage(0);
     };
 
     useEffect(() => {
-        EmployeesApiClient.getArchived(page).then((employeesList) => {
-            if (!employeesList) {
+        ProductsApiClient.getArchived().then((products) => {
+            if (!products) {
                 // TODO: add toast
             } else {
-                setEntries(employeesList.entries);
-                setTotal(employeesList.total);
+                setEntries(products);
             }
         });
-    }, [page]);
+    }, []);
 
     return (
         <BootstrapDialog
@@ -103,12 +98,13 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
             >
                 <CloseIcon />
             </IconButton>
-            <Typography variant="h3">Архів працівників</Typography>
+            <Typography variant="h3">Архів виробів</Typography>
 
-            {/* Archived employees' list */}
+            {/* Archived products' list */}
             <TableContainer
                 style={{
                     minWidth: '350px',
+                    // maxHeight: '450px',
                     overflow: 'auto',
                     marginTop: theme.spacing(4),
                     boxSizing: 'content-box',
@@ -119,39 +115,52 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
                         <TableRow>
                             <TableCell
                                 style={{ backgroundColor: '#b7cfd2', borderTopLeftRadius: 10 }}
-                                width="80px"
+                                width="200px"
                             >
-                                ID
+                                Фото
                             </TableCell>
                             <TableCell style={{ backgroundColor: '#b7cfd2' }} width="400px">
-                                ПІБ
+                                Назва
                             </TableCell>
                             <TableCell style={{ backgroundColor: '#b7cfd2' }} width="200px">
-                                Номер телефону
+                                Артикул
                             </TableCell>
                             <TableCell
-                                width="50px"
                                 style={{ backgroundColor: '#b7cfd2', borderTopRightRadius: 10 }}
+                                width="30px"
                             ></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {entries?.map((employee) => (
-                            <TableRow key={employee.id}>
+                        {entries?.map((product) => (
+                            <TableRow key={product.id}>
                                 <TableCell>
-                                    <Typography variant="body2">{employee.id}</Typography>
+                                    <img
+                                        src={product.pictureUrl ?? '/unknown_product.png'}
+                                        alt={`Зображення ${product.name}`}
+                                        style={{
+                                            width: '100px',
+                                            height: 'auto',
+                                            objectFit: 'contain',
+                                        }}
+                                    />
                                 </TableCell>
                                 <TableCell>
-                                    <Typography variant="body2">{employee.name}</Typography>
+                                    <Typography variant="body2">{product.name}</Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography variant="body2">{employee.phone}</Typography>
+                                    <Typography variant="body2">{product.article}</Typography>
                                 </TableCell>
-                                <TableCell width="50px">
+                                <TableCell
+                                    style={{
+                                        alignItems: 'center',
+                                        height: '100%',
+                                    }}
+                                >
                                     <IconButton
                                         size="small"
                                         style={{ padding: 0 }}
-                                        onClick={() => handleUnarchiveClick(employee)}
+                                        onClick={() => handleUnarchiveClick(product)}
                                     >
                                         <UnarchiveIcon />
                                     </IconButton>
@@ -161,26 +170,13 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <TablePagination
-                count={total}
-                onPageChange={(_, p) => setPage(p)}
-                rowsPerPageOptions={[]}
-                page={page}
-                rowsPerPage={10}
-                style={{
-                    marginTop: theme.spacing(4),
-                    border: 0,
-                    alignSelf: 'center',
-                    overflow: 'visible',
-                }}
-            />
 
-            {/* Unarchive employee modal window */}
+            {/* Unarchive product modal window */}
             <DialogComponent
                 handleClose={() => setIsUnarchiveDialogOpened(false)}
-                handleAction={() => handleUnarchiveEmployee(employeeToUnarchive?.id)}
+                handleAction={() => handleUnarchiveProduct(productToUnarchive?.id)}
                 isOpen={isUnarchiveDialogOpened}
-                dialogText={`Ви впевнені, що хочете розархівувати працівника ${employeeToUnarchive?.name}?`}
+                dialogText={`Ви впевнені, що хочете розархівувати виріб ${productToUnarchive?.name}?`}
                 actionButtonText="Розрхівувати"
                 actionButtonVariant="primary"
             />
@@ -188,4 +184,4 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
     );
 };
 
-export default EmployeesArchiveComponent;
+export default ProductsArchiveComponent;

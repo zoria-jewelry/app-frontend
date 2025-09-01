@@ -1,8 +1,5 @@
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
-import { useForm } from 'react-hook-form';
-import { type CreateProductFormData, createProductSchema } from '../../validation/schemas.ts';
-import { zodResolver } from '@hookform/resolvers/zod';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import {
@@ -10,12 +7,14 @@ import {
     FormControl,
     FormHelperText,
     FormLabel,
-    OutlinedInput,
     TextField,
     Typography,
     useTheme,
 } from '@mui/material';
-import type { ChangeEvent } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { type CreateEmployeeFormData, createEmployeeSchema } from '../../../validation/schemas.ts';
+import { EmployeesApiClient } from '../../../api/employeesApiClient.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -24,7 +23,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        minWidth: '40%',
+        width: '800px',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -36,27 +35,27 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-export interface CreateProductComponentProps {
-    isOpen: boolean;
+export interface CreateEmployeeComponentProps {
     handleClose: () => void;
+    isOpen: boolean;
+    callback: () => void;
 }
 
-const CreateProductComponent = (props: CreateProductComponentProps) => {
+const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
     const theme = useTheme();
+
     const {
         register,
         handleSubmit,
         clearErrors,
         reset,
-        setValue,
         formState: { errors },
-    } = useForm<CreateProductFormData>({
-        resolver: zodResolver(createProductSchema),
+    } = useForm<CreateEmployeeFormData>({
+        resolver: zodResolver(createEmployeeSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
             name: '',
-            article: '',
-            pictureBase64: undefined,
+            phone: '',
         },
     });
 
@@ -66,22 +65,12 @@ const CreateProductComponent = (props: CreateProductComponentProps) => {
         props.handleClose();
     };
 
-    const handlePhotoChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const base64String = reader.result as string;
-            setValue('pictureBase64', base64String, { shouldValidate: true });
-        };
-        reader.readAsDataURL(file);
-    };
-
-    const onSubmit = (data: CreateProductFormData) => {
+    const onSubmit = (data: CreateEmployeeFormData) => {
         console.log(data);
-        // TODO: call API Endpoint
-        handleClose();
+        EmployeesApiClient.create(data).then(() => {
+            props.callback();
+            handleClose();
+        });
     };
 
     return (
@@ -107,7 +96,7 @@ const CreateProductComponent = (props: CreateProductComponentProps) => {
 
             {/* Form title */}
             <Typography variant="h3" textAlign="center">
-                Новий виріб
+                Новий працівник
             </Typography>
 
             {/* The form */}
@@ -117,10 +106,10 @@ const CreateProductComponent = (props: CreateProductComponentProps) => {
                 noValidate
             >
                 <FormControl fullWidth>
-                    <FormLabel htmlFor="name">Назва</FormLabel>
+                    <FormLabel htmlFor="full-name">ПІБ</FormLabel>
                     <TextField
-                        id="name"
-                        placeholder="Обручка з діамантами"
+                        id="full-name"
+                        placeholder="Шевченко Тарас Григорович"
                         fullWidth
                         margin="normal"
                         defaultValue=""
@@ -141,15 +130,15 @@ const CreateProductComponent = (props: CreateProductComponentProps) => {
                     </FormHelperText>
                 </FormControl>
                 <FormControl fullWidth>
-                    <FormLabel htmlFor="article">Артикул</FormLabel>
+                    <FormLabel htmlFor="phone-number">Номер телефону</FormLabel>
                     <TextField
-                        id="article"
-                        placeholder="1102-10015/1(2,0)"
+                        id="phone-number"
+                        placeholder="+380961234567"
                         fullWidth
                         margin="normal"
                         defaultValue=""
-                        {...register('article')}
-                        error={!!errors.article}
+                        {...register('phone')}
+                        error={!!errors.phone}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -157,39 +146,16 @@ const CreateProductComponent = (props: CreateProductComponentProps) => {
                             },
                         }}
                     />
-                    <FormHelperText
-                        error={!!errors.article}
-                        sx={{ margin: 0, marginBottom: theme.spacing(2), minHeight: '30px' }}
-                    >
-                        {errors?.article?.message}
+                    <FormHelperText error={!!errors.phone} sx={{ margin: 0, minHeight: '30px' }}>
+                        {errors?.phone?.message}
                     </FormHelperText>
-                </FormControl>
-                <FormControl fullWidth>
-                    <FormLabel
-                        htmlFor="photo"
-                        sx={{
-                            color: theme.palette.text.primary,
-                            '&.Mui-focused': {
-                                color: theme.palette.text.primary,
-                            },
-                        }}
-                    >
-                        Фото виробу
-                    </FormLabel>
-                    <OutlinedInput
-                        id="photo"
-                        type="file"
-                        fullWidth
-                        inputProps={{ accept: 'image/*' }}
-                        onChange={handlePhotoChange}
-                    />
                 </FormControl>
                 <FormControl
                     fullWidth
                     style={{
                         display: 'flex',
                         alignItems: 'center',
-                        marginTop: theme.spacing(10),
+                        marginTop: theme.spacing(2),
                     }}
                 >
                     <Button variant="contained" color="primary" type="submit">
@@ -201,4 +167,4 @@ const CreateProductComponent = (props: CreateProductComponentProps) => {
     );
 };
 
-export default CreateProductComponent;
+export default CreateEmployeeComponent;

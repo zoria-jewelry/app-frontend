@@ -1,8 +1,8 @@
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import { useEffect, useState } from 'react';
-import { PriceListsApiClient } from '../../api/priceListsApiClient.ts';
-import type { PriceListEntryDto } from '../../dto/price-lists.ts';
+import { PriceListsApiClient } from '../../../api/priceListsApiClient.ts';
+import type { PriceListEntryDto } from '../../../dto/price-lists.ts';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import {
@@ -15,7 +15,7 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
-import { toLocalDate } from '../../utils.ts';
+import { toFixedNumber, toLocalDate } from '../../../utils.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -123,9 +123,7 @@ const ExpiredPriceListDetailsComponent = (props: ExpiredPriceListDetailsProps) =
                                 </TableCell>
                                 <TableCell sx={{ textAlign: 'right' }}>
                                     <Typography variant="body2">
-                                        {(Math.floor(material.materialPrice * 100) / 100).toFixed(
-                                            2,
-                                        )}
+                                        {toFixedNumber(material.materialPrice, 2)}
                                     </Typography>
                                 </TableCell>
                             </TableRow>

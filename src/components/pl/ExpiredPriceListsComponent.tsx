@@ -18,7 +18,7 @@ import { PriceListsApiClient } from '../../api/priceListsApiClient';
 import type { PriceListBundleEntryDto } from '../../dto/price-lists.ts';
 import { toLocalDate } from '../../utils.ts';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import ExpiredPriceListDetailsComponent from '../modal/ExpiredPriceListDetailsComponent.tsx';
+import ExpiredPriceListDetailsComponent from '../modal/pricelists/ExpiredPriceListDetailsComponent.tsx';
 
 const ExpiredPriceListsComponent = () => {
     const theme = useTheme();

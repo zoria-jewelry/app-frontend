@@ -1,7 +1,5 @@
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 import {
     Button,
     FormControl,
@@ -12,8 +10,10 @@ import {
     useTheme,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
+import { type CreateCustomerFormData, createCustomerSchema } from '../../../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type CreateMaterialFormData, createMaterialSchema } from '../../validation/schemas.ts';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -22,7 +22,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        width: '1000px',
+        width: '800px',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -34,12 +34,12 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-export interface CreateMaterialComponentProps {
+export interface CreateEmployeeComponentProps {
     handleClose: () => void;
     isOpen: boolean;
 }
 
-const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
+const CreateCustomerComponent = (props: CreateEmployeeComponentProps) => {
     const theme = useTheme();
 
     const {
@@ -48,12 +48,12 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
         clearErrors,
         reset,
         formState: { errors },
-    } = useForm<CreateMaterialFormData>({
-        resolver: zodResolver(createMaterialSchema),
+    } = useForm<CreateCustomerFormData>({
+        resolver: zodResolver(createCustomerSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
-            name: '',
-            price: 0,
+            fullName: '',
+            phone: '',
         },
     });
 
@@ -63,7 +63,7 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
         props.handleClose();
     };
 
-    const onSubmit = (data: CreateMaterialFormData) => {
+    const onSubmit = (data: CreateCustomerFormData) => {
         console.log(data);
         // TODO: call API Endpoint
         handleClose();
@@ -92,7 +92,7 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
 
             {/* Form title */}
             <Typography variant="h3" textAlign="center">
-                Новий матеріал
+                Додавання клієнта
             </Typography>
 
             {/* The form */}
@@ -102,15 +102,15 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
                 noValidate
             >
                 <FormControl fullWidth>
-                    <FormLabel htmlFor="name">Назва</FormLabel>
+                    <FormLabel htmlFor="full-name">ПІБ</FormLabel>
                     <TextField
-                        id="name"
-                        placeholder="Золото 585"
+                        id="full-name"
+                        placeholder="Шевченко Тарас Григорович"
                         fullWidth
                         margin="normal"
                         defaultValue=""
-                        {...register('name')}
-                        error={!!errors.name}
+                        {...register('fullName')}
+                        error={!!errors.fullName}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -119,23 +119,22 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
                         }}
                     />
                     <FormHelperText
-                        error={!!errors.name}
+                        error={!!errors.fullName}
                         sx={{ margin: 0, marginBottom: theme.spacing(2), minHeight: '30px' }}
                     >
-                        {errors?.name?.message}
+                        {errors?.fullName?.message}
                     </FormHelperText>
                 </FormControl>
                 <FormControl fullWidth>
-                    <FormLabel htmlFor="price">Вартість (грн за г)</FormLabel>
+                    <FormLabel htmlFor="phone-number">Номер телефону</FormLabel>
                     <TextField
-                        id="price"
-                        placeholder="1234.00"
-                        type="number"
+                        id="phone-number"
+                        placeholder="+380961234567"
                         fullWidth
                         margin="normal"
                         defaultValue=""
-                        {...register('price', { valueAsNumber: true })}
-                        error={!!errors.price}
+                        {...register('phone')}
+                        error={!!errors.phone}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -143,8 +142,8 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
                             },
                         }}
                     />
-                    <FormHelperText error={!!errors.price} sx={{ margin: 0, minHeight: '30px' }}>
-                        {errors?.price?.message}
+                    <FormHelperText error={!!errors.phone} sx={{ margin: 0, minHeight: '30px' }}>
+                        {errors?.phone?.message}
                     </FormHelperText>
                 </FormControl>
                 <FormControl
@@ -156,7 +155,7 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
                     }}
                 >
                     <Button variant="contained" color="primary" type="submit">
-                        Зберегти
+                        Додати клієнта
                     </Button>
                 </FormControl>
             </form>
@@ -164,4 +163,4 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
     );
 };
 
-export default CreateMaterialComponent;
+export default CreateCustomerComponent;

@@ -22,7 +22,7 @@ import paperStyles from '../styles/Paper.module.css';
 import commonStyles from '../styles/Common.module.css';
 import InfoIcon from '@mui/icons-material/InfoOutline';
 import { useNavigate } from 'react-router-dom';
-import CreateCustomerComponent from '../components/modal/CreateCustomerComponent.tsx';
+import CreateCustomerComponent from '../components/modal/customers/CreateCustomerComponent.tsx';
 import SearchBar from '../components/SearchBar.tsx';
 
 const CustomersPage = () => {
@@ -134,7 +134,7 @@ const CustomersPage = () => {
                                 </TableCell>
                                 <TableCell>
                                     <IconButton
-                                        onClick={() => navigate(`/customers`)} // TODO: fixme
+                                        onClick={() => navigate(`/customers/${customer.id}`)}
                                         size="small"
                                         style={{ padding: 0 }}
                                     >

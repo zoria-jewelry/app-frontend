@@ -12,6 +12,7 @@ import { useState } from 'react';
 import PriceListsPage from './pages/PriceListsPage.tsx';
 import CustomersPage from './pages/CustomersPage.tsx';
 import ProductsCataloguePage from './pages/ProductsCataloguePage.tsx';
+import CustomerInfoPage from './pages/CustomerInfoPage.tsx';
 
 const App = () => {
     const path = useLocation();
@@ -33,6 +34,7 @@ const App = () => {
                 {/* Authenticated user */}
                 <Route element={<PrivateRoutes />}>
                     <Route path="/customers" element={<CustomersPage />} />
+                    <Route path="/customers/:customerId" element={<CustomerInfoPage />} />
                     <Route path="/materials" element={<MaterialsPage />} />
                     <Route path="/employees" element={<EmployeePage />} />
                     <Route path="/pricing" element={<PriceListsPage />} />

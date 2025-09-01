@@ -16,8 +16,8 @@ import commonStyles from '../../styles/Common.module.css';
 import { useEffect, useState } from 'react';
 import { PriceListsApiClient } from '../../api/priceListsApiClient.ts';
 import type { PriceListEntryDto } from '../../dto/price-lists.ts';
-import { toLocalDate } from '../../utils.ts';
-import CreatePriceListComponent from '../modal/CreatePriceListComponent.tsx';
+import { toFixedNumber, toLocalDate } from '../../utils.ts';
+import CreatePriceListComponent from '../modal/pricelists/CreatePriceListComponent.tsx';
 
 const CurrentPriceListComponent = () => {
     const theme = useTheme();
@@ -106,7 +106,7 @@ const CurrentPriceListComponent = () => {
                                 <TableRow key={`current-pricing-entry-${entry.materialName}`}>
                                     <TableCell>{entry.materialName}</TableCell>
                                     <TableCell sx={{ textAlign: 'right' }}>
-                                        {(Math.floor(entry.materialPrice * 100) / 100).toFixed(2)}
+                                        {toFixedNumber(entry.materialPrice, 2)}
                                     </TableCell>
                                 </TableRow>
                             ))}
