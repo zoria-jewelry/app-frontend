@@ -101,7 +101,11 @@ const OrdersTableComponent = ({ orders, setPage, updateCallback }: OrdersTablePr
                                             key={`product-name-${entry.productId}-${order.id}`}
                                             variant="body2"
                                             noWrap
-                                            overflow="scroll"
+                                            sx={{
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap',
+                                            }}
                                         >
                                             {entry.productName}
                                         </Typography>

@@ -102,12 +102,16 @@ const CustomerInfoPage = () => {
                     marginTop: theme.spacing(4),
                     maxHeight: '40vh',
                     borderRadius: '10px',
-                    overflow: 'scroll',
                     alignItems: 'stretch',
                     paddingBottom: theme.spacing(4),
                 }}
             >
-                <Typography variant="h3" textAlign="left" width="100%">
+                <Typography
+                    variant="h3"
+                    textAlign="left"
+                    width="100%"
+                    marginLeft={theme.spacing(2)}
+                >
                     Історія змін
                 </Typography>
                 <CustomerAuditRecordsComponent />

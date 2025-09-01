@@ -54,7 +54,11 @@ const UpdateCustomerInfoComponent = () => {
     }, [customerId]);
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} style={{ marginTop: theme.spacing(8) }} noValidate>
+        <form
+            onSubmit={handleSubmit(onSubmit)}
+            style={{ marginTop: theme.spacing(8), width: '100%', overflow: 'auto' }}
+            noValidate
+        >
             <FormControl fullWidth>
                 <FormLabel htmlFor="full-name">ПІБ</FormLabel>
                 <TextField
@@ -104,6 +108,7 @@ const UpdateCustomerInfoComponent = () => {
                     display: 'flex',
                     alignItems: 'center',
                     marginTop: theme.spacing(2),
+                    marginBottom: theme.spacing(2),
                 }}
             >
                 <Button variant="contained" color="primary" type="submit">

@@ -183,7 +183,7 @@ const EmployeePage = () => {
                 }}
                 rowsPerPageOptions={[]}
                 page={page}
-                rowsPerPage={3}
+                rowsPerPage={10}
                 style={{
                     marginTop: theme.spacing(4),
                     border: 0,

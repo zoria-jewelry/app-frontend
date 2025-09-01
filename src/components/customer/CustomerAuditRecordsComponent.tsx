@@ -27,7 +27,7 @@ const CustomerAuditRecordsComponent = () => {
     }, [customerId]);
 
     return (
-        <>
+        <Box overflow="scroll" padding={theme.spacing(2)}>
             {records.map((record) => (
                 <Paper
                     key={record.id}
@@ -36,6 +36,7 @@ const CustomerAuditRecordsComponent = () => {
                         width: '100%',
                         boxShadow: 3,
                         padding: theme.spacing(6),
+                        marginBottom: theme.spacing(1),
                     }}
                 >
                     <Box
@@ -52,7 +53,7 @@ const CustomerAuditRecordsComponent = () => {
                             Виконавець дії: {record.actorFullName}
                         </Typography>
                     </Box>
-                    <Box display="flex" flexWrap="wrap" gap={theme.spacing(4)}>
+                    <Box display="flex" flexWrap="wrap" gap={theme.spacing(8)}>
                         <Box width={isMd ? '100%' : '40%'}>
                             <Typography variant="body1" color="textPrimary">
                                 Опис:
@@ -65,20 +66,23 @@ const CustomerAuditRecordsComponent = () => {
                             width={isMd ? '100%' : '55%'}
                             display="flex"
                             flexWrap="wrap"
-                            gap={theme.spacing(4)}
+                            gap={theme.spacing(2)}
+                            border={`2px solid ${theme.palette.divider}`}
+                            padding={theme.spacing(2)}
                         >
                             {record.entryRows.map((entry) => (
                                 <Typography
                                     key={entry.materialName}
                                     variant="body1"
                                     color="textSecondary"
+                                    width={isMd ? '95%' : '45%'}
                                 >{`${entry.materialName}: ${entry.delta > 0 ? '+' : ''}${toFixedNumber(entry.delta, entry.isMoney ? 2 : 3)} ${entry.isMoney ? 'грн' : 'г'}`}</Typography>
                             ))}
                         </Box>
                     </Box>
                 </Paper>
             ))}
-        </>
+        </Box>
     );
 };
 

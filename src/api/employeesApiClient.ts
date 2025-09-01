@@ -5,7 +5,7 @@ import type { CreateEmployeeFormData } from '../validation/schemas.ts';
 export class EmployeesApiClient extends AbstractApiClient {
     public static async get(page: number): Promise<EmployeesListDto | undefined> {
         console.log(`EmployeesApiClient.get: page - ${page + 1}`);
-        const params = { page: page + 1, isArchived: false, page_size: 3 };
+        const params = { page: page + 1, isArchived: false, page_size: 10 };
         return await this.apiRequest<EmployeesListDto>({ url: `/employees/`, params });
     }
 
@@ -18,7 +18,7 @@ export class EmployeesApiClient extends AbstractApiClient {
 
     public static async getArchived(page: number): Promise<EmployeesListDto | undefined> {
         console.log(`EmployeesApiClient.getArchived: page - ${page}`);
-        const params = { page: page + 1, isArchived: true, page_size: 3 };
+        const params = { page: page + 1, isArchived: true, page_size: 10 };
         return await this.apiRequest<EmployeesListDto>({ url: `/employees/`, params });
     }
 
