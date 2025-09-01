@@ -27,7 +27,7 @@ const CustomerAuditRecordsComponent = () => {
     }, [customerId]);
 
     return (
-        <Box overflow="scroll" padding={theme.spacing(2)}>
+        <Box sx={{ overflowY: 'auto' }} padding={theme.spacing(2)}>
             {records.map((record) => (
                 <Paper
                     key={record.id}
