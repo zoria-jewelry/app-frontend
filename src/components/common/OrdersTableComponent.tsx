@@ -19,6 +19,7 @@ import { useState } from 'react';
 import CancelOrderComponent from '../modal/orders/CancelOrderComponent.tsx';
 import OrderDetailsComponent from '../modal/orders/OrderDetailsComponent.tsx';
 import EditOrderComponent from '../modal/orders/EditOrderComponent.tsx';
+import { useNavigate } from 'react-router-dom';
 
 export interface OrdersTableProps {
     orders: OrdersListDto;
@@ -27,6 +28,8 @@ export interface OrdersTableProps {
 }
 
 const OrdersTableComponent = ({ orders, setPage, updateCallback }: OrdersTableProps) => {
+    const navigate = useNavigate();
+
     const [orderToCancel, setOrderToCancel] = useState<OrderBriefInfoDto | undefined>();
     const [orderIdForInfoModal, setOrderIdForInfoModal] = useState<number | undefined>();
     const [orderIdForUpdateModal, setOrderIdForUpdateModal] = useState<number | undefined>();
@@ -156,7 +159,13 @@ const OrdersTableComponent = ({ orders, setPage, updateCallback }: OrdersTablePr
 
                                         {order.status === OrderStatus.IN_PROGRESS && (
                                             <>
-                                                <Button variant="contained" color="error">
+                                                <Button
+                                                    variant="contained"
+                                                    color="error"
+                                                    onClick={() =>
+                                                        navigate(`/complete-order/${order.id}`)
+                                                    }
+                                                >
                                                     Завершити
                                                 </Button>
                                                 <Button
