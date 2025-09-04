@@ -16,6 +16,7 @@ import {
     useTheme,
 } from '@mui/material';
 import type { ChangeEvent } from 'react';
+import { ProductsApiClient } from '../../../api/productsApiClient.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -39,6 +40,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export interface CreateProductComponentProps {
     isOpen: boolean;
     handleClose: () => void;
+    callback: () => void;
 }
 
 const CreateProductComponent = (props: CreateProductComponentProps) => {
@@ -80,8 +82,15 @@ const CreateProductComponent = (props: CreateProductComponentProps) => {
 
     const onSubmit = (data: CreateProductFormData) => {
         console.log(data);
-        // TODO: call API Endpoint
-        handleClose();
+        ProductsApiClient.create(data)
+            .then(() => {
+                handleClose();
+                props.callback();
+            })
+            .catch((error) => {
+                console.log(error);
+                // TODO: add toast
+            });
     };
 
     return (

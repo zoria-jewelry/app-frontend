@@ -13,7 +13,7 @@ import {
     useTheme,
 } from '@mui/material';
 import ArchiveIcon from '@mui/icons-material/Inventory2Outlined';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { ProductEntryDto } from '../dto/products.ts';
 import { ProductsApiClient } from '../api/productsApiClient.ts';
 import SearchBar from '../components/SearchBar.tsx';
@@ -43,21 +43,36 @@ const ProductsCataloguePage = () => {
         cardPercentWidth = '48%'; // 2 per row
     else if (isMd) cardPercentWidth = '31.5%'; // 3 per row
 
+    const loadProducts = useCallback(() => {
+        ProductsApiClient.getAll(searchPhrase)
+            .then((productsList) => {
+                if (productsList) {
+                    setEntries(productsList);
+                } else {
+                    // TODO: add toast
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                // TODO: add toast
+            });
+    }, [searchPhrase]);
+
     const handleArchiveProduct = (id?: number) => {
-        setProductToArchive(null);
-        console.log(`Archive product ${id}`);
-        // TODO: call archive endpoint
+        if (id) {
+            setProductToArchive(null);
+            ProductsApiClient.moveToArchive(id)
+                .then(loadProducts)
+                .catch((error) => {
+                    console.log(error);
+                    // TODO: add toast
+                });
+        }
     };
 
     useEffect(() => {
-        ProductsApiClient.getAll(searchPhrase).then((products) => {
-            if (!products) {
-                // TODO: add toast
-            } else {
-                setEntries(products);
-            }
-        });
-    }, [searchPhrase]);
+        loadProducts();
+    }, [searchPhrase, loadProducts]);
 
     return (
         <Paper
@@ -172,6 +187,7 @@ const ProductsCataloguePage = () => {
             <CreateProductComponent
                 isOpen={isCreateProductModalOpen}
                 handleClose={() => setIsCreateProductModalOpen(false)}
+                callback={loadProducts}
             />
 
             {productToArchive && (
@@ -188,6 +204,7 @@ const ProductsCataloguePage = () => {
             <ProductsArchiveComponent
                 handleClose={() => setIsArchiveOpened(false)}
                 isOpen={isArchiveOpened}
+                callback={loadProducts}
             />
         </Paper>
     );
