@@ -41,6 +41,7 @@ export interface OrderDto {
     cancellationReason?: string;
     entries: OrderEntryDto[];
     materialName: string;
+    materialPrice: number;
     materialId: number;
 
     executors: string[];
