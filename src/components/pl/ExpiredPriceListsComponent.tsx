@@ -20,7 +20,11 @@ import { toLocalDate } from '../../utils.ts';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import ExpiredPriceListDetailsComponent from '../modal/pricelists/ExpiredPriceListDetailsComponent.tsx';
 
-const ExpiredPriceListsComponent = () => {
+export interface ExpiredPriceListsComponentProps {
+    refreshTrigger: number;
+}
+
+const ExpiredPriceListsComponent = ({ refreshTrigger }: ExpiredPriceListsComponentProps) => {
     const theme = useTheme();
 
     const [page, setPage] = useState<number>(0);
@@ -38,7 +42,7 @@ const ExpiredPriceListsComponent = () => {
                 setTotal(closedLists.total);
             }
         });
-    }, [page]);
+    }, [page, refreshTrigger]);
 
     return (
         <Paper

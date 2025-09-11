@@ -123,7 +123,7 @@ const ExpiredPriceListDetailsComponent = (props: ExpiredPriceListDetailsProps) =
                                 </TableCell>
                                 <TableCell sx={{ textAlign: 'right' }}>
                                     <Typography variant="body2">
-                                        {toFixedNumber(material.materialPrice, 2)}
+                                        {material.materialPrice}
                                     </Typography>
                                 </TableCell>
                             </TableRow>
