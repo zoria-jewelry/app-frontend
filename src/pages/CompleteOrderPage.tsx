@@ -25,7 +25,7 @@ import { type CompleteOrderFormData, completeOrderSchema } from '../validation/s
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useMemo, useState } from 'react';
 import { toFixedNumber } from '../utils.ts';
-import type { OrderDto } from '../dto/orders.ts';
+import type { CompleteOrderCalculationsDto, OrderDto } from '../dto/orders.ts';
 import { OrdersApiClient } from '../api/ordersApiClient.ts';
 
 const CompleteOrderPage = () => {
@@ -35,6 +35,9 @@ const CompleteOrderPage = () => {
     const orderId: number = Number(params.orderId);
 
     const [order, setOrder] = useState<OrderDto | undefined>();
+    const [orderCalculations, setOrderCalculations] = useState<
+        CompleteOrderCalculationsDto | undefined
+    >();
 
     const {
         register,
@@ -82,6 +85,12 @@ const CompleteOrderPage = () => {
                     console.log(err);
                     // TODO: add toast
                 });
+            OrdersApiClient.getCompleteOrderCalculations(orderId)
+                .then(setOrderCalculations)
+                .catch((err) => {
+                    console.log(err);
+                    // TODO: add toast
+                });
         }
     }, [orderId]);
 
@@ -96,6 +105,7 @@ const CompleteOrderPage = () => {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
+                marginBottom: theme.spacing(8),
                 gap: theme.spacing(4),
             }}
             noValidate
@@ -348,7 +358,108 @@ const CompleteOrderPage = () => {
                 >
                     <Typography variant="h5">Крок 3. Оплата замовлення</Typography>
                 </AccordionSummary>
-                <AccordionDetails></AccordionDetails>
+                <AccordionDetails>
+                    {orderCalculations && (
+                        <>
+                            <TableContainer
+                                sx={{
+                                    overflowX: 'auto',
+                                    borderTopLeftRadius: '10px',
+                                    borderTopRightRadius: '10px',
+                                    borderBottomLeftRadius: '10px',
+                                    borderBottomRightRadius: '10px',
+                                    boxShadow: 1,
+                                }}
+                            >
+                                <Table stickyHeader sx={{ backgroundColor: '#d9d9d9' }}>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell
+                                                sx={{
+                                                    backgroundColor: '#d9d9d9',
+                                                    padding: theme.spacing(2),
+                                                    paddingY: theme.spacing(4),
+                                                }}
+                                            >
+                                                <Typography variant="body2" fontWeight={900}>
+                                                    Ресурс
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell
+                                                sx={{
+                                                    backgroundColor: '#d9d9d9',
+                                                    padding: theme.spacing(2),
+                                                    paddingY: theme.spacing(4),
+                                                }}
+                                            >
+                                                <Typography variant="body2" fontWeight={900}>
+                                                    Кількість
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell
+                                                sx={{
+                                                    backgroundColor: '#d9d9d9',
+                                                    padding: theme.spacing(2),
+                                                    paddingY: theme.spacing(4),
+                                                }}
+                                            >
+                                                <Typography variant="body2" fontWeight={900}>
+                                                    Курс у прайс-листі
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell
+                                                sx={{
+                                                    backgroundColor: '#d9d9d9',
+                                                    padding: theme.spacing(2),
+                                                    paddingY: theme.spacing(4),
+                                                    textAlign: 'right',
+                                                }}
+                                            >
+                                                <Typography variant="body2" fontWeight={900}>
+                                                    Вартість (грн)
+                                                </Typography>
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {orderCalculations.entries.map((entry) => (
+                                            <TableRow key={entry.materialId}>
+                                                <TableCell sx={{ padding: theme.spacing(2) }}>
+                                                    <Typography variant="body2">
+                                                        {entry.materialName}
+                                                    </Typography>
+                                                </TableCell>
+                                                <TableCell sx={{ padding: theme.spacing(2) }}>
+                                                    <Typography variant="body2">
+                                                        {entry.materialCountOwnedByCustomer}
+                                                    </Typography>
+                                                </TableCell>
+                                                <TableCell sx={{ padding: theme.spacing(2) }}>
+                                                    <Typography variant="body2">
+                                                        {entry.materialPrice}
+                                                    </Typography>
+                                                </TableCell>
+                                                <TableCell sx={{ padding: theme.spacing(2) }}>
+                                                    <Typography variant="body2" textAlign="right">
+                                                        {entry.totalMaterialCost}
+                                                    </Typography>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                            <Typography
+                                variant="body1"
+                                fontWeight={900}
+                                textAlign="right"
+                                marginTop={theme.spacing(4)}
+                            >
+                                Усього {orderCalculations.allMaterialsCost}
+                            </Typography>
+                        </>
+                    )}
+                </AccordionDetails>
             </Accordion>
         </form>
     );

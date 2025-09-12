@@ -25,8 +25,8 @@ export const toLocalDateTime = (date?: string | Date | null) => {
     });
 };
 
-export const toFixedNumber = (value: number, decimals: number) =>
-    (Math.floor(value * Math.pow(10, decimals)) / Math.pow(10, decimals)).toFixed(decimals);
+export const toFixedNumber = (value: number | string, decimals: number) =>
+    Number(value).toFixed(decimals);
 
 export const orderStatusToHumanText = (status: OrderStatus) => {
     switch (status) {

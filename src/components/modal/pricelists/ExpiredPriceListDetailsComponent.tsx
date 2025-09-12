@@ -15,7 +15,7 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
-import { toFixedNumber, toLocalDate } from '../../../utils.ts';
+import { toLocalDate } from '../../../utils.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {

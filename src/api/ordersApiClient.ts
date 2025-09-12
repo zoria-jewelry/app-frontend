@@ -1,5 +1,10 @@
 import { AbstractApiClient } from './abstractApiClient.ts';
-import { type OrderDto, type OrdersListDto, OrderStatus } from '../dto/orders.ts';
+import {
+    type CompleteOrderCalculationsDto,
+    type OrderDto,
+    type OrdersListDto,
+    OrderStatus,
+} from '../dto/orders.ts';
 
 export interface OrdersFilterData {
     fromDate?: Date;
@@ -34,5 +39,13 @@ export class OrdersApiClient extends AbstractApiClient {
     public static async cancelOrder(orderId: number, reason: string): Promise<void> {
         console.log(`OrdersApiClient.cancelOrder: orderId - ${orderId}, reason - ${reason}`);
         // TODO: use me - const res = await this.apiRequest<void>({});
+    }
+
+    public static async getCompleteOrderCalculations(
+        orderId: number,
+    ): Promise<CompleteOrderCalculationsDto | undefined> {
+        console.log(`OrdersApiClient.getCompleteOrderCalculations: ${orderId}`);
+        const response = await fetch('/complete-order-calculations.json');
+        return (await response.json()) as unknown as CompleteOrderCalculationsDto;
     }
 }
