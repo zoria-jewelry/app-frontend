@@ -96,9 +96,16 @@ export const completeOrderSchema = z.object({
         .min(0, { error: 'Відсоток угару повинен бути більшим за 0%' })
         .max(100, 'Відсоток угару повинен бути не більшим за 100%'),
     totalMetalWeight: z
-        .number('Введіть вагу металу у виробах')
+        .number('Введіть число')
         .positive('Вага металу у виробах повинна бути більшою за 0'),
-    payments: z.record(z.number(), z.number()),
+    payments: z.array(
+        z.object({
+            materialId: z.number().nullable(),
+            materialCurrencyEquivalent: z
+                .number('Введіть число')
+                .nonnegative('Значення повинно бути невідʼємним'),
+        }),
+    ),
 });
 
 export type CompleteOrderFormData = z.infer<typeof completeOrderSchema>;
