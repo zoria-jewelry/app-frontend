@@ -88,3 +88,27 @@ export const createUpdateOrderSchema = z.object({
 export type CreateOrderFormData = z.infer<typeof createUpdateOrderSchema>;
 
 export type UpdateOrderFormData = z.infer<typeof createUpdateOrderSchema>;
+
+export const completeOrderSchema = z.object({
+    discount: z.preprocess(
+        (val) => (isNaN(Number(val)) || val === '' ? undefined : val),
+        z.number({ error: 'Введіть число' }).optional().nullish(),
+    ),
+    loss: z
+        .number('Введіть число')
+        .min(0, { error: 'Відсоток угару повинен бути більшим за 0%' })
+        .max(100, 'Відсоток угару повинен бути не більшим за 100%'),
+    totalMetalWeight: z
+        .number('Введіть число')
+        .positive('Вага металу у виробах повинна бути більшою за 0'),
+    payments: z.array(
+        z.object({
+            materialId: z.number().nullable(),
+            materialCurrencyEquivalent: z
+                .number('Введіть число')
+                .nonnegative('Значення повинно бути невідʼємним'),
+        }),
+    ),
+});
+
+export type CompleteOrderFormData = z.infer<typeof completeOrderSchema>;

@@ -14,6 +14,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type CreateMaterialFormData, createMaterialSchema } from '../../../validation/schemas.ts';
+import { MaterialsApiClient } from '../../../api/materialsApiClient.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -37,6 +38,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export interface CreateMaterialComponentProps {
     handleClose: () => void;
     isOpen: boolean;
+    callback: () => void;
 }
 
 const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
@@ -64,8 +66,12 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
     };
 
     const onSubmit = (data: CreateMaterialFormData) => {
-        console.log(data);
-        // TODO: call API Endpoint
+        MaterialsApiClient.create(data)
+            .then(props.callback)
+            .catch((error) => {
+                console.log(error);
+                // TODO: add toast
+            });
         handleClose();
     };
 

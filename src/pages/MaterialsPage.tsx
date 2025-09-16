@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import paperStyles from '../styles/Paper.module.css';
 import commonStyles from '../styles/Common.module.css';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { MaterialDto } from '../dto/materials.ts';
 import { MaterialsApiClient } from '../api/materialsApiClient.ts';
 import CreateMaterialComponent from '../components/modal/materials/CreateMaterialComponent.tsx';
@@ -28,7 +28,7 @@ const MaterialsPage = () => {
 
     const [isCreateMaterialModalOpen, setIsCreateMaterialModalOpen] = useState<boolean>(false);
 
-    useEffect(() => {
+    const fetchMaterials = useCallback(() => {
         MaterialsApiClient.get(page).then((materialsList) => {
             if (!materialsList) {
                 // TODO: add toast
@@ -37,6 +37,10 @@ const MaterialsPage = () => {
                 setTotal(materialsList.total);
             }
         });
+    }, [page]);
+
+    useEffect(() => {
+        fetchMaterials();
     }, [page]);
 
     return (
@@ -133,6 +137,7 @@ const MaterialsPage = () => {
             <CreateMaterialComponent
                 handleClose={() => setIsCreateMaterialModalOpen(false)}
                 isOpen={isCreateMaterialModalOpen}
+                callback={fetchMaterials}
             />
         </Paper>
     );

@@ -11,7 +11,7 @@ import {
     useTheme,
 } from '@mui/material';
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import DialogComponent from '../DialogComponent.tsx';
@@ -41,6 +41,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export interface ProductsArchiveComponentProps {
     handleClose: () => void;
     isOpen: boolean;
+    callback: () => void;
 }
 
 const ProductsArchiveComponent = (props: ProductsArchiveComponentProps) => {
@@ -54,21 +55,9 @@ const ProductsArchiveComponent = (props: ProductsArchiveComponentProps) => {
     const handleUnarchiveClick = (product: ProductEntryDto | null) => {
         setProductToUnarchive(product);
         setIsUnarchiveDialogOpened(true);
-        console.log(`Unarchiving product ${product?.id}`);
-        // TODO: call unarchive product endpoint
     };
 
-    const handleUnarchiveProduct = (id?: number) => {
-        setIsUnarchiveDialogOpened(false);
-        console.log(`Unarchive product ${id}`);
-        // TODO: call unarchive endpoint
-    };
-
-    const handleClose = () => {
-        props.handleClose();
-    };
-
-    useEffect(() => {
+    const loadArchivedProducts = useCallback(() => {
         ProductsApiClient.getArchived().then((products) => {
             if (!products) {
                 // TODO: add toast
@@ -77,6 +66,32 @@ const ProductsArchiveComponent = (props: ProductsArchiveComponentProps) => {
             }
         });
     }, []);
+
+    const handleUnarchiveProduct = (id?: number) => {
+        console.log(`Unarchive product ${id}`);
+        if (id) {
+            setIsUnarchiveDialogOpened(false);
+            ProductsApiClient.removeFromArchive(id)
+                .then(() => {
+                    loadArchivedProducts();
+                    props.callback();
+                })
+                .catch((error) => {
+                    console.log(error);
+                    // TODO: add toast
+                });
+        }
+    };
+
+    const handleClose = () => {
+        props.handleClose();
+    };
+
+    useEffect(() => {
+        if (props.isOpen) {
+            loadArchivedProducts();
+        }
+    }, [props.isOpen, loadArchivedProducts]);
 
     return (
         <BootstrapDialog

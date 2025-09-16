@@ -1,0 +1,76 @@
+{
+    "allMaterialsCost": 786944.92,
+    "clientIsAbleToFullyPay": true,
+    "entries": [
+        {
+            "materialId": null,
+            "materialName": "Валюта",
+            "materialPrice": 1,
+            "materialCountOwnedByCustomer": 75000.0,
+            "totalMaterialCost": 75000.0
+        },
+        {
+            "materialId": 1,
+            "materialName": "Золото 585",
+            "materialPrice": 2345.43,
+            "materialCountOwnedByCustomer": 123.34,
+            "totalMaterialCost": 289260.32
+        },
+        {
+            "materialId": 2,
+            "materialName": "Срібло 999",
+            "materialPrice": 234.43,
+            "materialCountOwnedByCustomer": 243.54,
+            "totalMaterialCost": 57138.61
+        },
+        {
+            "materialId": 3,
+            "materialName": "Платина 950",
+            "materialPrice": 5432.1,
+            "materialCountOwnedByCustomer": 12.75,
+            "totalMaterialCost": 69285.78
+        },
+        {
+            "materialId": 4,
+            "materialName": "Золото 750",
+            "materialPrice": 3025.55,
+            "materialCountOwnedByCustomer": 67.2,
+            "totalMaterialCost": 203468.76
+        },
+        {
+            "materialId": 5,
+            "materialName": "Паладій",
+            "materialPrice": 4100.0,
+            "materialCountOwnedByCustomer": 5.5,
+            "totalMaterialCost": 22550.0
+        },
+        {
+            "materialId": 6,
+            "materialName": "Бронза",
+            "materialPrice": 120.0,
+            "materialCountOwnedByCustomer": 100.0,
+            "totalMaterialCost": 12000.0
+        },
+        {
+            "materialId": 7,
+            "materialName": "Мідь",
+            "materialPrice": 85.75,
+            "materialCountOwnedByCustomer": 250.0,
+            "totalMaterialCost": 21437.5
+        },
+        {
+            "materialId": 8,
+            "materialName": "Титан",
+            "materialPrice": 950.25,
+            "materialCountOwnedByCustomer": 15.8,
+            "totalMaterialCost": 15013.95
+        },
+        {
+            "materialId": 9,
+            "materialName": "Золото біле 585",
+            "materialPrice": 2400.99,
+            "materialCountOwnedByCustomer": 40.25,
+            "totalMaterialCost": 96790.0
+        }
+    ]
+}

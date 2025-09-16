@@ -41,6 +41,7 @@ export interface OrderDto {
     cancellationReason?: string;
     entries: OrderEntryDto[];
     materialName: string;
+    materialPrice: number;
     materialId: number;
 
     executors: string[];
@@ -57,4 +58,18 @@ export interface OrderDto {
     discount?: number | null;
     total?: number | null; // сума без знижки
     totalWithDiscount?: number | null; // сума зі знижкою
+}
+
+export interface CompleteOrderCalculationsEntryDto {
+    materialId?: number;
+    materialName: string;
+    materialPrice: number;
+    materialCountOwnedByCustomer: number;
+    totalMaterialCost: number;
+}
+
+export interface CompleteOrderCalculationsDto {
+    allMaterialsCost: number;
+    clientIsAbleToFullyPay: boolean;
+    entries: CompleteOrderCalculationsEntryDto[];
 }

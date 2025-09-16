@@ -13,13 +13,17 @@ import {
 } from '@mui/material';
 import paperStyles from '../../styles/Paper.module.css';
 import commonStyles from '../../styles/Common.module.css';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { PriceListsApiClient } from '../../api/priceListsApiClient.ts';
 import type { PriceListEntryDto } from '../../dto/price-lists.ts';
-import { toFixedNumber, toLocalDate } from '../../utils.ts';
+import { toLocalDate } from '../../utils.ts';
 import CreatePriceListComponent from '../modal/pricelists/CreatePriceListComponent.tsx';
 
-const CurrentPriceListComponent = () => {
+export interface CurrentPriceListComponentProps {
+    onPriceListCreated: () => void;
+}
+
+const CurrentPriceListComponent = ({ onPriceListCreated }: CurrentPriceListComponentProps) => {
     const theme = useTheme();
 
     const [entries, setEntries] = useState<PriceListEntryDto[]>([]);
@@ -28,16 +32,25 @@ const CurrentPriceListComponent = () => {
 
     const [isCreationFormOpened, setIsCreationFormOpened] = useState<boolean>(false);
 
-    useEffect(() => {
+    const fetchCurrentPriceList = useCallback(() => {
         PriceListsApiClient.getActiveListDetails().then((priceList) => {
             if (!priceList) {
-                // Add error toast
+                // TODO: add toast
             } else {
                 setEntries(priceList.entries);
                 setActiveListId(priceList.id);
                 setActiveListStartDate(priceList.startDate);
             }
         });
+    }, []);
+
+    const handlePriceListCreated = useCallback(() => {
+        fetchCurrentPriceList();
+        onPriceListCreated();
+    }, [onPriceListCreated, fetchCurrentPriceList]);
+
+    useEffect(() => {
+        fetchCurrentPriceList();
     }, []);
 
     return (
@@ -106,7 +119,7 @@ const CurrentPriceListComponent = () => {
                                 <TableRow key={`current-pricing-entry-${entry.materialName}`}>
                                     <TableCell>{entry.materialName}</TableCell>
                                     <TableCell sx={{ textAlign: 'right' }}>
-                                        {toFixedNumber(entry.materialPrice, 2)}
+                                        {entry.materialPrice}
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -117,6 +130,7 @@ const CurrentPriceListComponent = () => {
             <CreatePriceListComponent
                 isOpen={isCreationFormOpened}
                 handleClose={() => setIsCreationFormOpened(false)}
+                callback={handlePriceListCreated}
             />
         </Paper>
     );

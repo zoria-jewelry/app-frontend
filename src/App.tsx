@@ -13,6 +13,7 @@ import PriceListsPage from './pages/PriceListsPage.tsx';
 import CustomersPage from './pages/CustomersPage.tsx';
 import ProductsCataloguePage from './pages/ProductsCataloguePage.tsx';
 import CustomerInfoPage from './pages/CustomerInfoPage.tsx';
+import CompleteOrderPage from './pages/CompleteOrderPage.tsx';
 
 const App = () => {
     const path = useLocation();
@@ -39,6 +40,7 @@ const App = () => {
                     <Route path="/employees" element={<EmployeePage />} />
                     <Route path="/pricing" element={<PriceListsPage />} />
                     <Route path="/products" element={<ProductsCataloguePage />} />
+                    <Route path="/complete-order/:orderId" element={<CompleteOrderPage />} />
                     <Route path="/*" element={<Navigate to="/materials" />} />
                 </Route>
                 {/* Guests */}

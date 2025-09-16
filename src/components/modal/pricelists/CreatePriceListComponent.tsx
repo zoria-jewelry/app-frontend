@@ -41,12 +41,12 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export interface CreatePriceListComponentProps {
     isOpen: boolean;
     handleClose: () => void;
+    callback: () => void;
 }
 
 const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
     const theme = useTheme();
     const [entries, setEntries] = useState<PriceListEntryDto[]>([]);
-    // Keep schema as reference since it's dynamic.....
     const schemaRef = useRef<z.ZodObject<Record<string, z.ZodString>>>(z.object({}));
 
     type CreatePriceListDto = z.infer<typeof schemaRef.current>;
@@ -69,11 +69,6 @@ const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
             if (priceList) {
                 setEntries(priceList.entries);
 
-                /**
-                 *
-                 * Dynamically create validation schema...
-                 *
-                 * */
                 const newDefaults: Record<string, string> = {};
                 const newShape: Record<string, z.ZodString> = {};
 
@@ -85,6 +80,9 @@ const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
                         .refine((val) => !isNaN(Number(val)), { message: 'Неправильний формат' })
                         .refine((val) => Number(val) > 0, {
                             message: 'Вартість повинна бути більшою за 0',
+                        })
+                        .refine((val) => /^\d+(\.\d{1,2})?$/.test(val), {
+                            message: 'Не більше двох знаків після коми',
                         });
                 });
 
@@ -93,7 +91,7 @@ const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
                 schemaRef.current = z.object(newShape);
             }
         });
-    }, []);
+    }, [props.isOpen]);
 
     const handleClose = () => {
         reset();
@@ -102,7 +100,19 @@ const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
     };
 
     const onSubmit = (data: { [key: string]: string }) => {
-        console.log(data);
+        const transformed = {
+            entries: Object.entries(data).map(([materialId, materialPrice]) => ({
+                materialId: Number(materialId),
+                materialPrice: Number(materialPrice),
+            })),
+        };
+
+        PriceListsApiClient.create(transformed)
+            .then(props.callback)
+            .catch((error) => {
+                console.log(error);
+                // TODO: add toast
+            });
         handleClose();
     };
 
