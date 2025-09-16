@@ -693,9 +693,11 @@ const CompleteOrderPage = () => {
                                         }}
                                     />
                                     <Typography variant="body1">
-                                        Необхідно додати{' '}
+                                        {orderPaymentDifference > 0
+                                            ? 'Обрана сума оплати менша за вартість замовлення. Необхідно додати '
+                                            : 'Обрана сума оплати перевищує вартість замовлення. Необхідно прибрати '}
                                         <span style={{ fontWeight: 900 }}>
-                                            {orderPaymentDifference.toFixed(2)}
+                                            {Math.abs(orderPaymentDifference).toFixed(2)}
                                         </span>{' '}
                                         грн
                                         <br />
