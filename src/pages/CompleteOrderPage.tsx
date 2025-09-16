@@ -72,9 +72,9 @@ const CompleteOrderPage = () => {
         name: 'payments',
     });
 
-    const discount = watch('discount') ?? 0;
-    const loss = watch('loss') ?? 0;
-    const totalMetalWeight = watch('totalMetalWeight') ?? 0;
+    const discount = watch('discount') || 0;
+    const loss = watch('loss') || 0;
+    const totalMetalWeight = watch('totalMetalWeight') || 0;
     const totalMetalWeightWithLoss = useMemo(
         () => totalMetalWeight * (1 + loss / 100),
         [loss, totalMetalWeight],
@@ -124,7 +124,7 @@ const CompleteOrderPage = () => {
                     // TODO: add toast
                 });
         }
-    }, [orderId]);
+    }, [orderId, total]);
 
     useEffect(() => {}, [discount, loss, totalMetalWeight]);
 
@@ -566,12 +566,18 @@ const CompleteOrderPage = () => {
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell sx={{ paddingX: 0 }}>
+                                            <TableCell sx={{ paddingX: 0, borderBottom: 'none' }}>
                                                 <Typography textAlign="center">
                                                     Ресурс (грн)
                                                 </Typography>
                                             </TableCell>
-                                            <TableCell sx={{ paddingX: 0, width: '160px' }}>
+                                            <TableCell
+                                                sx={{
+                                                    paddingX: 0,
+                                                    width: '160px',
+                                                    borderBottom: 'none',
+                                                }}
+                                            >
                                                 <Typography textAlign="center">
                                                     Доступно (грн)
                                                 </Typography>
@@ -586,13 +592,9 @@ const CompleteOrderPage = () => {
                                             return (
                                                 <TableRow key={entry?.materialId}>
                                                     <TableCell
-                                                        sx={{ borderBottom: 'none', paddingX: 0 }}
+                                                        sx={{ borderBottom: 'none', padding: 0 }}
                                                     >
-                                                        <FormControl
-                                                            key={field.id}
-                                                            fullWidth
-                                                            sx={{ marginBottom: theme.spacing(2) }}
-                                                        >
+                                                        <FormControl key={field.id} fullWidth>
                                                             <FormLabel
                                                                 htmlFor={`material-${field.materialId}`}
                                                             >
@@ -638,7 +640,7 @@ const CompleteOrderPage = () => {
                                                         </FormControl>
                                                     </TableCell>
                                                     <TableCell
-                                                        sx={{ borderBottom: 'none', paddingX: 0 }}
+                                                        sx={{ borderBottom: 'none', padding: 0 }}
                                                     >
                                                         <Typography textAlign="right">
                                                             {entry?.totalMaterialCost.toFixed(2)}
