@@ -24,7 +24,7 @@ import {
 } from '@mui/material';
 import paperStyles from '../styles/Paper.module.css';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { type Resolver, useFieldArray, useForm } from 'react-hook-form';
 import { type CompleteOrderFormData, completeOrderSchema } from '../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ChangeEvent, useEffect, useMemo, useState } from 'react';
@@ -54,6 +54,8 @@ const CompleteOrderPage = () => {
         setPaymentMethod(event.target.value);
     };
 
+    const resolver = zodResolver(completeOrderSchema) as Resolver<CompleteOrderFormData>;
+
     const {
         register,
         handleSubmit,
@@ -63,7 +65,7 @@ const CompleteOrderPage = () => {
         control,
         formState: { errors },
     } = useForm<CompleteOrderFormData>({
-        resolver: zodResolver(completeOrderSchema),
+        resolver,
         reValidateMode: 'onChange',
     });
 

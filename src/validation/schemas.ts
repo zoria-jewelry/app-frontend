@@ -90,7 +90,10 @@ export type CreateOrderFormData = z.infer<typeof createUpdateOrderSchema>;
 export type UpdateOrderFormData = z.infer<typeof createUpdateOrderSchema>;
 
 export const completeOrderSchema = z.object({
-    discount: z.number('Введіть число').optional(),
+    discount: z.preprocess(
+        (val) => (isNaN(Number(val)) || val === '' ? undefined : val),
+        z.number({ error: 'Введіть число' }).optional().nullish(),
+    ),
     loss: z
         .number('Введіть число')
         .min(0, { error: 'Відсоток угару повинен бути більшим за 0%' })
