@@ -1,8 +1,8 @@
 export interface WorkUnitDto {
-    issuedDate: Date;
-    metalIssued: number;
-    orderId?: number;
+    issuedDate?: Date;
     returnedDate?: Date;
+    orderId?: number;
+    metalIssued?: number;
     metalReturned?: number;
     loss?: number;
     metalReturnedWithLoss?: number;
