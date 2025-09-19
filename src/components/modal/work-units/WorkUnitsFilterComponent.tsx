@@ -25,7 +25,7 @@ import {
 } from '../../../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { formatDateToYYYYMMDD } from '../../../utils.ts';
+import { formatDateToYYYYMMDD, getCurrentMonthRange } from '../../../utils.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -63,16 +63,6 @@ export interface WorkUnitsFilterModalProps {
 
 const WorkUnitsFilterComponent = ({ open, onClose, onApply }: WorkUnitsFilterModalProps) => {
     const theme = useTheme();
-
-    const getCurrentMonthRange = () => {
-        const now = new Date();
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-        return {
-            start: startOfMonth,
-            end: endOfMonth,
-        };
-    };
 
     const currentMonth = getCurrentMonthRange();
     const [employees, setEmployees] = useState<EmployeeDto[]>([]);

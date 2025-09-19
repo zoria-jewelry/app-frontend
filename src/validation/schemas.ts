@@ -166,7 +166,8 @@ export type ReturnWorkUnitFormData = z.infer<typeof returnWorkUnitSchema>;
 export const saveMetalSchema = z.object({
     metalWeight: z
         .number({ error: 'Введіть число' })
-        .positive({ error: 'Введіть невідʼємне число' }),
+        .positive({ error: 'Введіть невідʼємне число' })
+        .multipleOf(0.001, { message: 'Крок значення — 0.001' }),
 });
 
 export type SaveMetalFormData = z.infer<typeof saveMetalSchema>;

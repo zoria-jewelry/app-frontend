@@ -19,7 +19,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import type { WorkUnitsReportDto } from '../dto/work-units.ts';
 import { WorkUnitsApiClient } from '../api/workUnitsApiClient.ts';
-import { toLocalDate } from '../utils.ts';
+import { getCurrentMonthRange, toLocalDate } from '../utils.ts';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
 import FilterIcon from '@mui/icons-material/TuneOutlined';
@@ -38,6 +38,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 const WorkUnitsPage = () => {
     const theme = useTheme();
+
+    const currentMonth = getCurrentMonthRange();
+    const [filterData, setFilterData] = useState<WorkUnitsFilterData>({
+        startDate: currentMonth.start,
+        endDate: currentMonth.end,
+        employeeId: 1,
+        metalId: 1,
+    });
 
     const [report, setReport] = useState<WorkUnitsReportDto | undefined>();
     const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
@@ -64,19 +72,16 @@ const WorkUnitsPage = () => {
     };
 
     const fetchReport = useCallback(async () => {
-        WorkUnitsApiClient.getReportForPeriod({
-            startDate: new Date(),
-            endDate: new Date(),
-            employeeId: 1,
-            metalId: 1,
-        })
-            .then(setReport)
-            .catch((error) => console.log(error));
-    }, []);
+        if (filterData) {
+            WorkUnitsApiClient.getReportForPeriod(filterData)
+                .then(setReport)
+                .catch((error) => console.log(error));
+        }
+    }, [filterData]);
 
     useEffect(() => {
         fetchReport();
-    }, []);
+    }, [filterData]);
 
     return (
         <Paper
@@ -192,17 +197,7 @@ const WorkUnitsPage = () => {
             <WorkUnitsFilterComponent
                 open={isFilterOpen}
                 onClose={() => setIsFilterOpen(false)}
-                onApply={(data: WorkUnitsFilterData) => {
-                    WorkUnitsApiClient.getReportForPeriod({
-                        startDate: data.startDate ?? new Date(),
-                        endDate: data.endDate ?? new Date(),
-                        employeeId: data.employeeId ?? 1,
-                        metalId: data.metalId ?? 1,
-                        orderId: data.orderId,
-                    })
-                        .then(setReport)
-                        .catch((error) => console.log(error));
-                }}
+                onApply={setFilterData}
             />
 
             <CreateWorkUnitComponent
@@ -430,32 +425,62 @@ const WorkUnitsPage = () => {
                 </Box>
             )}
 
-            <Box width="100%" display="flex" justifyContent="flex-end" alignItems="center">
-                <form onSubmit={handleSubmit(onSave)}>
-                    <Box>
-                        <Typography>Рятування металу, г</Typography>
-                        <FormControl fullWidth error={!!errors.metalWeight}>
-                            <TextField
-                                type="number"
-                                fullWidth
-                                {...register('metalWeight', { valueAsNumber: true })}
-                                error={!!errors.metalWeight}
-                            />
-                            <FormHelperText
-                                error={true}
-                                sx={{
-                                    margin: 0,
-                                    marginBottom: theme.spacing(2),
-                                    minHeight: '30px',
-                                }}
-                            >
-                                {errors.metalWeight ? errors.metalWeight.message : ''}
-                            </FormHelperText>
-                        </FormControl>
+            <Box
+                sx={{
+                    width: '100%',
+                    marginTop: theme.spacing(3),
+                    padding: theme.spacing(4),
+                    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                    borderRadius: 1,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                }}
+            >
+                <form onSubmit={handleSubmit(onSave)} noValidate>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: theme.spacing(2),
+                            flexWrap: 'wrap',
+                        }}
+                    >
+                        <Box sx={{ flex: 1, minWidth: '200px' }}>
+                            <Typography variant="body2" sx={{ marginBottom: 1, fontWeight: 500 }}>
+                                Рятування металу, г
+                            </Typography>
+                            <FormControl fullWidth error={!!errors.metalWeight}>
+                                <TextField
+                                    type="number"
+                                    fullWidth
+                                    size="small"
+                                    {...register('metalWeight', { valueAsNumber: true })}
+                                    error={!!errors.metalWeight}
+                                    placeholder="Введіть вагу"
+                                />
+                                <FormHelperText
+                                    error={!!errors.metalWeight}
+                                    sx={{
+                                        margin: 0,
+                                        minHeight: '30px',
+                                    }}
+                                >
+                                    {errors.metalWeight ? errors.metalWeight.message : ''}
+                                </FormHelperText>
+                            </FormControl>
+                        </Box>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            sx={{
+                                height: '40px',
+                                minWidth: '160px',
+                            }}
+                        >
+                            Зафіксувати рятування
+                        </Button>
                     </Box>
-                    <Button variant="contained" color="primary" size="large" type="submit">
-                        Зафіксувати повернення
-                    </Button>
                 </form>
             </Box>
         </Paper>
