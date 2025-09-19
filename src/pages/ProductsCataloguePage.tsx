@@ -87,34 +87,86 @@ const ProductsCataloguePage = () => {
             {/* Header */}
             <Box
                 display="flex"
+                flexDirection={{ xs: 'column', md: 'row' }}
                 justifyContent="space-between"
-                alignItems="center"
-                flexWrap="wrap"
+                alignItems={{ xs: 'stretch', md: 'center' }}
                 width="100%"
-                marginBottom={theme.spacing(2)}
+                gap={{ xs: 3, sm: 2, md: 4 }}
+                sx={{
+                    padding: { xs: 2, sm: 3 },
+                    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                }}
             >
-                <Typography variant="h2">Каталог виробів</Typography>
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    flex={1}
+                    minWidth={0}
+                    sx={{ textAlign: { xs: 'center', md: 'left' } }}
+                >
+                    <Typography
+                        variant="h3"
+                        sx={{
+                            fontWeight: 600,
+                            lineHeight: 1.2,
+                            marginBottom: 0.5,
+                            wordBreak: 'break-word',
+                        }}
+                    >
+                        Каталог виробів
+                    </Typography>
+                </Box>
 
-                <Box display="flex" flexDirection="row" flexWrap="wrap">
+                <Box
+                    display="flex"
+                    flexDirection={{ xs: 'column', sm: 'row' }}
+                    alignItems={{ xs: 'stretch', sm: 'center' }}
+                    gap={{ xs: 2, sm: 1.5, md: 2 }}
+                    width={{ xs: '100%', md: 'auto' }}
+                    minWidth={{ xs: 'auto', sm: 'fit-content' }}
+                >
                     <Button
                         variant="contained"
                         color="secondary"
-                        sx={{
-                            marginTop: theme.spacing(isXs ? 2 : 0),
-                            marginRight: theme.spacing(2),
-                        }}
                         onClick={() => setIsArchiveOpened(true)}
+                        size="large"
+                        sx={{
+                            height: { xs: '48px', sm: '40px' },
+                            fontWeight: 600,
+                            borderRadius: 2,
+                        }}
                     >
                         Відкрити архів
                     </Button>
-                    <SearchBar consumer={setSearchPhrase} />
+                    <Box
+                        display="flex"
+                        flexDirection="row"
+                        alignItems="center"
+                        width="100%"
+                        gap={1}
+                        flex={1}
+                    >
+                        <SearchBar consumer={setSearchPhrase} />
+                    </Box>
                     <Button
                         variant="contained"
                         color="primary"
-                        sx={{ marginTop: theme.spacing(isXs ? 2 : 0) }}
                         onClick={() => setIsCreateProductModalOpen(true)}
+                        size="large"
+                        sx={{
+                            minWidth: { xs: '100%', sm: '200px', md: '250px' },
+                            height: { xs: '48px', sm: '40px' },
+                            fontWeight: 600,
+                            borderRadius: 2,
+                            boxShadow: 2,
+                            '&:hover': { boxShadow: 4, transform: 'translateY(-1px)' },
+                            transition: 'all 0.2s ease-in-out',
+                        }}
                     >
-                        НОВИЙ ВИРІБ
+                        Новий виріб
                     </Button>
                 </Box>
             </Box>

@@ -3,7 +3,6 @@ import commonStyles from '../styles/Common.module.css';
 import {
     Box,
     Button,
-    Grid,
     Paper,
     Table,
     TableBody,
@@ -50,18 +49,47 @@ const WorkUnitsPage = () => {
         >
             <Box
                 display="flex"
+                flexDirection={{ xs: 'column', md: 'row' }}
                 justifyContent="space-between"
-                alignItems="center"
+                alignItems={{ xs: 'stretch', md: 'center' }}
                 width="100%"
-                flexWrap="wrap"
-                gap={2}
+                gap={{ xs: 3, sm: 2, md: 4 }}
+                sx={{
+                    padding: { xs: 2, sm: 3 },
+                    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                }}
             >
                 {report && (
-                    <Box display="flex" flexDirection="column">
-                        <Typography variant="h3" textAlign="left">
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        flex={1}
+                        minWidth={0}
+                        sx={{
+                            textAlign: { xs: 'center', md: 'left' },
+                        }}
+                    >
+                        <Typography
+                            variant="h3"
+                            sx={{
+                                fontWeight: 600,
+                                lineHeight: 1.2,
+                                marginBottom: 0.5,
+                                wordBreak: 'break-word',
+                            }}
+                        >
                             Наряди ({report.employeeFullName})
                         </Typography>
-                        <Typography variant="body1">
+                        <Typography
+                            variant="body1"
+                            sx={{
+                                color: 'text.secondary',
+                                fontWeight: 400,
+                            }}
+                        >
                             {toLocalDate(report.periodStart)} – {toLocalDate(report.periodEnd)}
                         </Typography>
                     </Box>
@@ -69,19 +97,30 @@ const WorkUnitsPage = () => {
 
                 <Box
                     display="flex"
-                    alignItems={{ xs: 'stretch', sm: 'center' }}
-                    gap={2}
-                    width={{ xs: '100%', sm: 'auto' }}
+                    flexDirection={{ xs: 'column', sm: 'row' }}
+                    alignItems="center"
+                    gap={{ xs: 2, sm: 1.5, md: 2 }}
+                    width={{ xs: '100%', md: 'auto' }}
+                    minWidth={{ xs: 'auto', sm: 'fit-content' }}
                 >
                     <Box
                         display="flex"
-                        flexDirection="row"
                         alignItems="center"
-                        width="100%"
-                        gap={1}
-                        flex={1}
+                        justifyContent={{ xs: 'center', sm: 'flex-start' }}
+                        width={{ xs: '100%', sm: 'auto' }}
                     >
-                        <IconButton size="large" onClick={() => {}} aria-label="Filter">
+                        <IconButton
+                            size="large"
+                            onClick={() => {}}
+                            aria-label="Filter"
+                            sx={{
+                                backgroundColor: 'action.hover',
+                                '&:hover': {
+                                    backgroundColor: 'action.selected',
+                                },
+                                transition: 'all 0.2s ease-in-out',
+                            }}
+                        >
                             <FilterIcon />
                         </IconButton>
                     </Box>
@@ -90,7 +129,19 @@ const WorkUnitsPage = () => {
                         variant="contained"
                         color="primary"
                         onClick={() => {}}
-                        sx={{ minWidth: { sm: '300px' } }}
+                        size="large"
+                        sx={{
+                            minWidth: { xs: '100%', sm: '200px', md: '250px' },
+                            height: { xs: '48px', sm: '40px' },
+                            fontWeight: 600,
+                            borderRadius: 2,
+                            boxShadow: 2,
+                            '&:hover': {
+                                boxShadow: 4,
+                                transform: 'translateY(-1px)',
+                            },
+                            transition: 'all 0.2s ease-in-out',
+                        }}
                     >
                         Нова видача
                     </Button>

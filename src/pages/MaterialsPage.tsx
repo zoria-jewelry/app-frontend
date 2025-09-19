@@ -1,6 +1,6 @@
 import {
+    Box,
     Button,
-    Grid,
     Paper,
     Table,
     TableBody,
@@ -48,28 +48,69 @@ const MaterialsPage = () => {
             className={`${paperStyles.paper} ${commonStyles.flexColumn}`}
             style={{ gap: theme.spacing(4), borderRadius: '10px', maxHeight: '80vh' }}
         >
-            {/* Page name and button */}
-            <Grid
-                container
-                alignItems="center"
+            {/* Page header */}
+            <Box
+                display="flex"
+                flexDirection={{ xs: 'column', md: 'row' }}
                 justifyContent="space-between"
+                alignItems={{ xs: 'stretch', md: 'center' }}
                 width="100%"
-                style={{ gap: theme.spacing(4) }}
+                gap={{ xs: 3, sm: 2, md: 4 }}
+                sx={{
+                    padding: { xs: 2, sm: 3 },
+                    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                }}
             >
-                <Grid>
-                    <Typography variant="h2">Каталог матеріалів</Typography>
-                </Grid>
-                <Grid>
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    flex={1}
+                    minWidth={0}
+                    sx={{ textAlign: { xs: 'center', md: 'left' } }}
+                >
+                    <Typography
+                        variant="h3"
+                        sx={{
+                            fontWeight: 600,
+                            lineHeight: 1.2,
+                            marginBottom: 0.5,
+                            wordBreak: 'break-word',
+                        }}
+                    >
+                        Каталог матеріалів
+                    </Typography>
+                </Box>
+
+                <Box
+                    display="flex"
+                    flexDirection={{ xs: 'column', sm: 'row' }}
+                    alignItems={{ xs: 'stretch', sm: 'center' }}
+                    gap={{ xs: 2, sm: 1.5, md: 2 }}
+                    width={{ xs: '100%', md: 'auto' }}
+                    minWidth={{ xs: 'auto', sm: 'fit-content' }}
+                >
                     <Button
                         onClick={() => setIsCreateMaterialModalOpen(true)}
-                        style={{ marginBottom: theme.spacing(1) }}
                         variant="contained"
                         color="primary"
+                        size="large"
+                        sx={{
+                            minWidth: { xs: '100%', sm: '200px', md: '250px' },
+                            height: { xs: '48px', sm: '40px' },
+                            fontWeight: 600,
+                            borderRadius: 2,
+                            boxShadow: 2,
+                            '&:hover': { boxShadow: 4, transform: 'translateY(-1px)' },
+                            transition: 'all 0.2s ease-in-out',
+                        }}
                     >
                         Новий матеріал
                     </Button>
-                </Grid>
-            </Grid>
+                </Box>
+            </Box>
 
             {/* Data table */}
             <TableContainer
