@@ -11,30 +11,41 @@
     "spentOnOrders": 101.33,
     "entries": [
         {
+            "id": 15,
+            "returnedDate": "2025-01-31",
+            "metalReturned": 4.12
+        },
+        {
+            "id": 14,
             "issuedDate": "2025-01-31",
             "metalIssued": 5.0
         },
         {
+            "id": 13,
             "issuedDate": "2025-01-30",
             "orderId": 19430,
             "metalIssued": 8.5
         },
         {
+            "id": 12,
             "issuedDate": "2025-01-29",
             "orderId": 19431,
             "metalIssued": 6.2
         },
         {
+            "id": 11,
             "issuedDate": "2025-01-28",
             "orderId": 19432,
             "metalIssued": 12.0
         },
         {
+            "id": 10,
             "issuedDate": "2025-01-25",
             "orderId": 19433,
             "metalIssued": 9.3
         },
         {
+            "id": 9,
             "issuedDate": "2025-01-20",
             "orderId": 19434,
             "metalIssued": 14.0,
@@ -44,6 +55,7 @@
             "metalReturnedWithLoss": 13.2
         },
         {
+            "id": 8,
             "issuedDate": "2025-01-18",
             "orderId": 19435,
             "metalIssued": 20.5,
@@ -53,6 +65,7 @@
             "metalReturnedWithLoss": 19.3
         },
         {
+            "id": 7,
             "issuedDate": "2025-01-15",
             "orderId": 19436,
             "metalIssued": 22.0,
@@ -62,6 +75,7 @@
             "metalReturnedWithLoss": 20.3
         },
         {
+            "id": 6,
             "issuedDate": "2025-01-12",
             "orderId": 19437,
             "metalIssued": 17.0,
@@ -71,6 +85,7 @@
             "metalReturnedWithLoss": 15.2
         },
         {
+            "id": 5,
             "issuedDate": "2025-01-10",
             "orderId": 19438,
             "metalIssued": 18.0,
@@ -80,6 +95,7 @@
             "metalReturnedWithLoss": 15.7
         },
         {
+            "id": 4,
             "issuedDate": "2025-01-08",
             "orderId": 19439,
             "metalIssued": 24.0,
@@ -89,6 +105,7 @@
             "metalReturnedWithLoss": 21.5
         },
         {
+            "id": 3,
             "issuedDate": "2025-01-05",
             "orderId": 19440,
             "metalIssued": 26.43,
@@ -98,6 +115,7 @@
             "metalReturnedWithLoss": 23.29
         },
         {
+            "id": 2,
             "issuedDate": "2025-01-02",
             "orderId": 19441,
             "metalIssued": 30.5,
@@ -107,6 +125,7 @@
             "metalReturnedWithLoss": 29.8
         },
         {
+            "id": 1,
             "issuedDate": "2025-01-01",
             "orderId": 19442,
             "metalIssued": 21.0,

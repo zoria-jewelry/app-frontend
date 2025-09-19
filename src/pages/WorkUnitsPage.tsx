@@ -3,6 +3,8 @@ import commonStyles from '../styles/Common.module.css';
 import {
     Box,
     Button,
+    FormControl,
+    FormHelperText,
     Paper,
     Table,
     TableBody,
@@ -10,23 +12,58 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    TextField,
     Typography,
     useTheme,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { WorkUnitsReportDto } from '../dto/work-units.ts';
 import { WorkUnitsApiClient } from '../api/workUnitsApiClient.ts';
 import { toLocalDate } from '../utils.ts';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
 import FilterIcon from '@mui/icons-material/TuneOutlined';
+import WorkUnitsFilterComponent, {
+    type WorkUnitsFilterData,
+} from '../components/modal/work-units/WorkUnitsFilterComponent.tsx';
+import CreateWorkUnitComponent from '../components/modal/work-units/CreateWorkUnitComponent.tsx';
+import {
+    type CreateWorkUnitFormData,
+    saveMetalSchema,
+    type SaveMetalFormData,
+} from '../validation/schemas.ts';
+import ReturnWorkUnitComponent from '../components/modal/work-units/ReturnWorkUnitComponent.tsx';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const WorkUnitsPage = () => {
     const theme = useTheme();
 
     const [report, setReport] = useState<WorkUnitsReportDto | undefined>();
+    const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+    const [isCreateOpen, setIsCreateOpen] = useState<boolean>(false);
 
-    useEffect(() => {
+    const [workUnitIdToReturn, setWorkUnitIdToReturn] = useState<number | undefined>();
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm<SaveMetalFormData>({
+        resolver: zodResolver(saveMetalSchema),
+        reValidateMode: 'onSubmit',
+        defaultValues: {
+            metalWeight: 0,
+        },
+    });
+
+    const onSave = (data: SaveMetalFormData) => {
+        console.log(data);
+        reset();
+    };
+
+    const fetchReport = useCallback(async () => {
         WorkUnitsApiClient.getReportForPeriod({
             startDate: new Date(),
             endDate: new Date(),
@@ -35,6 +72,10 @@ const WorkUnitsPage = () => {
         })
             .then(setReport)
             .catch((error) => console.log(error));
+    }, []);
+
+    useEffect(() => {
+        fetchReport();
     }, []);
 
     return (
@@ -111,7 +152,7 @@ const WorkUnitsPage = () => {
                     >
                         <IconButton
                             size="large"
-                            onClick={() => {}}
+                            onClick={() => setIsFilterOpen(true)}
                             aria-label="Filter"
                             sx={{
                                 backgroundColor: 'action.hover',
@@ -128,7 +169,7 @@ const WorkUnitsPage = () => {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => {}}
+                        onClick={() => setIsCreateOpen(true)}
                         size="large"
                         sx={{
                             minWidth: { xs: '100%', sm: '200px', md: '250px' },
@@ -147,6 +188,40 @@ const WorkUnitsPage = () => {
                     </Button>
                 </Box>
             </Box>
+
+            <WorkUnitsFilterComponent
+                open={isFilterOpen}
+                onClose={() => setIsFilterOpen(false)}
+                onApply={(data: WorkUnitsFilterData) => {
+                    WorkUnitsApiClient.getReportForPeriod({
+                        startDate: data.startDate ?? new Date(),
+                        endDate: data.endDate ?? new Date(),
+                        employeeId: data.employeeId ?? 1,
+                        metalId: data.metalId ?? 1,
+                        orderId: data.orderId,
+                    })
+                        .then(setReport)
+                        .catch((error) => console.log(error));
+                }}
+            />
+
+            <CreateWorkUnitComponent
+                open={isCreateOpen}
+                onClose={() => setIsCreateOpen(false)}
+                onSave={(data: CreateWorkUnitFormData) => {
+                    // TODO: Call create work-unit endpoint when available
+                    console.log('Create work unit', data);
+                }}
+            />
+
+            {workUnitIdToReturn && (
+                <ReturnWorkUnitComponent
+                    workUnitId={workUnitIdToReturn}
+                    open={!!workUnitIdToReturn}
+                    onClose={() => setWorkUnitIdToReturn(undefined)}
+                    onSave={() => fetchReport()}
+                />
+            )}
 
             <TableContainer
                 style={{
@@ -184,8 +259,18 @@ const WorkUnitsPage = () => {
                     </TableHead>
                     <TableBody>
                         {report &&
-                            report.entries.map((entry, id) => (
-                                <TableRow key={id}>
+                            report.entries.map((entry) => (
+                                <TableRow
+                                    key={entry.id}
+                                    sx={{
+                                        backgroundColor:
+                                            !entry.orderId && entry.issuedDate
+                                                ? theme.palette.warning.main
+                                                : !entry.issuedDate
+                                                  ? theme.palette.success.light
+                                                  : 'transparent',
+                                    }}
+                                >
                                     <TableCell>{toLocalDate(entry.issuedDate)}</TableCell>
                                     <TableCell>
                                         {entry.returnedDate ? toLocalDate(entry.returnedDate) : '–'}
@@ -207,13 +292,15 @@ const WorkUnitsPage = () => {
                                             : '–'}
                                     </TableCell>
                                     <TableCell width="50px">
-                                        <IconButton
-                                            size="small"
-                                            style={{ padding: 0 }}
-                                            onClick={() => {}}
-                                        >
-                                            <EditIcon />
-                                        </IconButton>
+                                        {!entry.returnedDate && (
+                                            <IconButton
+                                                size="small"
+                                                style={{ padding: 0 }}
+                                                onClick={() => setWorkUnitIdToReturn(entry.id)}
+                                            >
+                                                <EditIcon />
+                                            </IconButton>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -243,7 +330,7 @@ const WorkUnitsPage = () => {
                                 ></TableCell>
                                 <TableCell sx={{ padding: 0, border: 'none' }}>
                                     <Typography variant="body1" fontWeight={900} textAlign="right">
-                                        {report.totalIssued.toFixed(2)} гр
+                                        {report.totalIssued.toFixed(2)} г
                                     </Typography>
                                 </TableCell>
                             </TableRow>
@@ -258,7 +345,7 @@ const WorkUnitsPage = () => {
                                 ></TableCell>
                                 <TableCell sx={{ padding: 0, border: 'none' }}>
                                     <Typography variant="body1" fontWeight={900} textAlign="right">
-                                        {report.totalReturned.toFixed(2)} гр
+                                        {report.totalReturned.toFixed(2)} г
                                     </Typography>
                                 </TableCell>
                             </TableRow>
@@ -273,7 +360,7 @@ const WorkUnitsPage = () => {
                                 ></TableCell>
                                 <TableCell sx={{ padding: 0, border: 'none' }}>
                                     <Typography variant="body1" fontWeight={900} textAlign="right">
-                                        {report.totalReturnedWithLoss.toFixed(2)} гр
+                                        {report.totalReturnedWithLoss.toFixed(2)} г
                                     </Typography>
                                 </TableCell>
                             </TableRow>
@@ -291,7 +378,7 @@ const WorkUnitsPage = () => {
                                         {report.savedByEmployee
                                             ? report.spentOnOrders.toFixed(2)
                                             : '–'}{' '}
-                                        гр
+                                        г
                                     </Typography>
                                 </TableCell>
                             </TableRow>
@@ -311,14 +398,14 @@ const WorkUnitsPage = () => {
                                         textAlign="right"
                                         color="error"
                                     >
-                                        {report.lost.toFixed(2)} гр
+                                        {report.lost.toFixed(2)} г
                                     </Typography>
                                 </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell sx={{ padding: 0, border: 'none' }}>
                                     <Typography variant="body1" color="text.secondary">
-                                        Повернено
+                                        Врятовано (???)
                                     </Typography>
                                 </TableCell>
                                 <TableCell
@@ -334,7 +421,7 @@ const WorkUnitsPage = () => {
                                         {report.savedByEmployee
                                             ? report.savedByEmployee.toFixed(2)
                                             : '–'}{' '}
-                                        гр
+                                        г
                                     </Typography>
                                 </TableCell>
                             </TableRow>
@@ -342,6 +429,35 @@ const WorkUnitsPage = () => {
                     </Table>
                 </Box>
             )}
+
+            <Box width="100%" display="flex" justifyContent="flex-end" alignItems="center">
+                <form onSubmit={handleSubmit(onSave)}>
+                    <Box>
+                        <Typography>Рятування металу, г</Typography>
+                        <FormControl fullWidth error={!!errors.metalWeight}>
+                            <TextField
+                                type="number"
+                                fullWidth
+                                {...register('metalWeight', { valueAsNumber: true })}
+                                error={!!errors.metalWeight}
+                            />
+                            <FormHelperText
+                                error={true}
+                                sx={{
+                                    margin: 0,
+                                    marginBottom: theme.spacing(2),
+                                    minHeight: '30px',
+                                }}
+                            >
+                                {errors.metalWeight ? errors.metalWeight.message : ''}
+                            </FormHelperText>
+                        </FormControl>
+                    </Box>
+                    <Button variant="contained" color="primary" size="large" type="submit">
+                        Зафіксувати повернення
+                    </Button>
+                </form>
+            </Box>
         </Paper>
     );
 };

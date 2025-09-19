@@ -1,4 +1,5 @@
 export interface WorkUnitDto {
+    id: number;
     issuedDate?: Date;
     returnedDate?: Date;
     orderId?: number;
