@@ -14,6 +14,7 @@ import { type CreateCustomerFormData, createCustomerSchema } from '../../../vali
 import { zodResolver } from '@hookform/resolvers/zod';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import { CustomersApiClient } from '../../../api/customersApiClient.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -64,9 +65,17 @@ const CreateCustomerComponent = (props: CreateEmployeeComponentProps) => {
     };
 
     const onSubmit = (data: CreateCustomerFormData) => {
-        console.log(data);
-        // TODO: call API Endpoint
-        handleClose();
+        CustomersApiClient.create(data)
+            .then(() => {
+                // TODO: add toast
+            })
+            .catch((err) => {
+                console.log(err);
+                // TODO: add toast
+            })
+            .finally(() => {
+                handleClose();
+            });
     };
 
     return (

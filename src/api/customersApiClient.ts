@@ -1,6 +1,7 @@
 import { AbstractApiClient } from './abstractApiClient.ts';
 import type { CustomerBalanceDto, CustomerDto, CustomerListDto } from '../dto/customers.ts';
-import type { CustomerAuditDetailsDto } from '../dto/audit.ts';
+import type { AuditRecord, CustomerAuditDetailsDto } from '../dto/audit.ts';
+import type { CreateCustomerFormData, UpdateCustomerInfoFromData } from '../validation/schemas.ts';
 
 export class CustomersApiClient extends AbstractApiClient {
     public static async get(
@@ -8,48 +9,44 @@ export class CustomersApiClient extends AbstractApiClient {
         searchPhrase: string,
     ): Promise<CustomerListDto | undefined> {
         console.log(`CustomersApiClient.get: page - ${page}, searchPhrase - ${searchPhrase}`);
-        const response = await fetch('/customers.json');
-        const json = (await response.json()) as unknown as { entries: CustomerDto[] };
-
-        const filtered = json.entries.filter(
-            (e) =>
-                e.id === Number(searchPhrase) ||
-                e.phone.includes(searchPhrase) ||
-                e.fullName.toLowerCase().includes(searchPhrase.toLowerCase()),
-        );
-
-        return {
-            entries: filtered.slice(page * 10, (page + 1) * 10),
-            total: filtered.length,
-            page,
+        const params = {
+            search: searchPhrase,
+            page: page + 1,
         };
-        // TODO: use me - const res = await this.apiRequest<{ pages: CustomerListDto[] }>({});
-        // return res?.pages[page];
+        return this.apiRequest<CustomerListDto>({ url: '/clients/', params });
+    }
+
+    public static async create(data: CreateCustomerFormData): Promise<void> {
+        console.log(`CustomersApiClient.create: data - ${JSON.stringify(data)}`);
+        await this.apiRequest<void>({ url: '/clients/', data, method: 'POST' });
+    }
+
+    public static async updateData(
+        customerId: number,
+        data: UpdateCustomerInfoFromData,
+    ): Promise<void> {
+        console.log(`CustomersApiClient.update: data - ${JSON.stringify(data)}`);
+        await this.apiRequest<void>({ url: `/clients/${customerId}/`, data, method: 'PUT' });
     }
 
     public static async getInfoById(id: number): Promise<CustomerDto | undefined> {
         console.log(`CustomersApiClient.getInfoById: ${id}`);
-        const response = await fetch(`/customers.json`);
-        const json = (await response.json()) as unknown as { entries: CustomerDto[] };
-
-        return json.entries.find((e) => e.id === id);
+        return await this.apiRequest<CustomerDto>({ url: `/clients/${id}/` });
     }
 
     public static async getCustomerBalanceById(
         id: number,
     ): Promise<CustomerBalanceDto | undefined> {
         console.log(`CustomersApiClient.getCustomerBalanceById: ${id}`);
-        const response = await fetch(`/customer-balance.json`);
-        return (await response.json()) as unknown as CustomerBalanceDto;
+        return await this.apiRequest<CustomerBalanceDto>({ url: `/clients/${id}/balance/` });
     }
 
     public static async getCustomerAuditRecords(
         id: number,
     ): Promise<CustomerAuditDetailsDto | undefined> {
         console.log(`CustomersApiClient.getCustomerAuditRecords: ${id}`);
-        const response = await fetch(`/audit-records.json`);
-        const parsed = (await response.json()) as unknown as CustomerAuditDetailsDto;
-        parsed.entries = parsed.entries.filter((e) => !!e.affectedCustomerId);
-        return parsed;
+        return {
+            entries: (await this.apiRequest<AuditRecord[]>({ url: `/clients/${id}/audit/` })) ?? [],
+        };
     }
 }
