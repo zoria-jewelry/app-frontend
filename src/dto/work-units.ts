@@ -19,6 +19,7 @@ export interface WorkUnitsReportDto {
     totalReturnedWithLoss: number;
     lost: number;
     savedByEmployee?: number;
+    delta: number;
     spentOnOrders: number;
     entries: WorkUnitDto[];
 }

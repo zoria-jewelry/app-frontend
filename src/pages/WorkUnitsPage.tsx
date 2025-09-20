@@ -325,37 +325,7 @@ const WorkUnitsPage = () => {
                                 ></TableCell>
                                 <TableCell sx={{ padding: 0, border: 'none' }}>
                                     <Typography variant="body1" fontWeight={900} textAlign="right">
-                                        {report.totalIssued.toFixed(2)} г
-                                    </Typography>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell sx={{ padding: 0, border: 'none' }}>
-                                    <Typography variant="body1" color="text.secondary">
-                                        Усього повернено (без %)
-                                    </Typography>
-                                </TableCell>
-                                <TableCell
-                                    sx={{ padding: 0, border: 'none', width: '50px' }}
-                                ></TableCell>
-                                <TableCell sx={{ padding: 0, border: 'none' }}>
-                                    <Typography variant="body1" fontWeight={900} textAlign="right">
-                                        {report.totalReturned.toFixed(2)} г
-                                    </Typography>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell sx={{ padding: 0, border: 'none' }}>
-                                    <Typography variant="body1" color="text.secondary">
-                                        Усього повернено (з %)
-                                    </Typography>
-                                </TableCell>
-                                <TableCell
-                                    sx={{ padding: 0, border: 'none', width: '50px' }}
-                                ></TableCell>
-                                <TableCell sx={{ padding: 0, border: 'none' }}>
-                                    <Typography variant="body1" fontWeight={900} textAlign="right">
-                                        {report.totalReturnedWithLoss.toFixed(2)} г
+                                        {report.totalIssued.toFixed(3)} г
                                     </Typography>
                                 </TableCell>
                             </TableRow>
@@ -371,7 +341,7 @@ const WorkUnitsPage = () => {
                                 <TableCell sx={{ padding: 0, border: 'none' }}>
                                     <Typography variant="body1" fontWeight={900} textAlign="right">
                                         {report.savedByEmployee
-                                            ? report.spentOnOrders.toFixed(2)
+                                            ? report.spentOnOrders.toFixed(3)
                                             : '–'}{' '}
                                         г
                                     </Typography>
@@ -380,27 +350,74 @@ const WorkUnitsPage = () => {
                             <TableRow>
                                 <TableCell sx={{ padding: 0, border: 'none' }}>
                                     <Typography variant="body1" color="text.secondary">
-                                        Втрачено
+                                        Усього повернено (без %)
                                     </Typography>
                                 </TableCell>
                                 <TableCell
                                     sx={{ padding: 0, border: 'none', width: '50px' }}
                                 ></TableCell>
                                 <TableCell sx={{ padding: 0, border: 'none' }}>
-                                    <Typography
-                                        variant="body1"
-                                        fontWeight={900}
-                                        textAlign="right"
-                                        color="error"
-                                    >
-                                        {report.lost.toFixed(2)} г
+                                    <Typography variant="body1" fontWeight={900} textAlign="right">
+                                        {report.totalReturned.toFixed(3)} г
                                     </Typography>
                                 </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell sx={{ padding: 0, border: 'none' }}>
                                     <Typography variant="body1" color="text.secondary">
-                                        Врятовано (???)
+                                        Усього повернено (з %)
+                                    </Typography>
+                                </TableCell>
+                                <TableCell
+                                    sx={{ padding: 0, border: 'none', width: '50px' }}
+                                ></TableCell>
+                                <TableCell sx={{ padding: 0, border: 'none' }}>
+                                    <Typography variant="body1" fontWeight={900} textAlign="right">
+                                        {report.totalReturnedWithLoss.toFixed(3)} г
+                                    </Typography>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell
+                                    sx={{
+                                        padding: 0,
+                                        border: 'none',
+                                        borderTop: '1px solid black',
+                                    }}
+                                >
+                                    <Typography variant="body1" color="text.secondary">
+                                        Угорілий метал
+                                    </Typography>
+                                </TableCell>
+                                <TableCell
+                                    sx={{
+                                        padding: 0,
+                                        border: 'none',
+                                        borderTop: '1px solid black',
+                                        width: '50px',
+                                    }}
+                                ></TableCell>
+                                <TableCell
+                                    sx={{
+                                        padding: 0,
+                                        border: 'none',
+                                        borderTop: '1px solid black',
+                                    }}
+                                >
+                                    <Typography
+                                        variant="body1"
+                                        fontWeight={900}
+                                        textAlign="right"
+                                        color="error"
+                                    >
+                                        {report.lost.toFixed(3)} г
+                                    </Typography>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell sx={{ padding: 0, border: 'none' }}>
+                                    <Typography variant="body1" color="text.secondary">
+                                        Повернено переплавленого порошку
                                     </Typography>
                                 </TableCell>
                                 <TableCell
@@ -414,9 +431,35 @@ const WorkUnitsPage = () => {
                                         color="green"
                                     >
                                         {report.savedByEmployee
-                                            ? report.savedByEmployee.toFixed(2)
+                                            ? report.savedByEmployee.toFixed(3)
                                             : '–'}{' '}
                                         г
+                                    </Typography>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell sx={{ padding: 0, border: 'none' }}>
+                                    <Typography variant="body1" color="text.secondary">
+                                        Втрачено металу
+                                    </Typography>
+                                </TableCell>
+                                <TableCell
+                                    sx={{ padding: 0, border: 'none', width: '50px' }}
+                                ></TableCell>
+                                <TableCell sx={{ padding: 0, border: 'none' }}>
+                                    <Typography
+                                        variant="body1"
+                                        fontWeight={900}
+                                        textAlign="right"
+                                        color={
+                                            report.delta === 0
+                                                ? 'info'
+                                                : report.delta > 0
+                                                  ? 'green'
+                                                  : 'error'
+                                        }
+                                    >
+                                        {report.delta.toFixed(3)} г
                                     </Typography>
                                 </TableCell>
                             </TableRow>
@@ -447,7 +490,7 @@ const WorkUnitsPage = () => {
                     >
                         <Box sx={{ flex: 1, minWidth: '200px' }}>
                             <Typography variant="body2" sx={{ marginBottom: 1, fontWeight: 500 }}>
-                                Рятування металу, г
+                                Повернено металу без видачі, г
                             </Typography>
                             <FormControl fullWidth error={!!errors.metalWeight}>
                                 <TextField
@@ -478,7 +521,7 @@ const WorkUnitsPage = () => {
                                 minWidth: '160px',
                             }}
                         >
-                            Зафіксувати рятування
+                            Зафіксувати повернення
                         </Button>
                     </Box>
                 </form>
