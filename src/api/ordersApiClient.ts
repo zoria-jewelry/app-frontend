@@ -48,4 +48,16 @@ export class OrdersApiClient extends AbstractApiClient {
         const response = await fetch('/complete-order-calculations.json');
         return (await response.json()) as unknown as CompleteOrderCalculationsDto;
     }
+
+    public static async getAllActiveIds(): Promise<number[] | undefined> {
+        console.log('OrdersApiClient.getAllActiveIds');
+        // TODO: replace with real endpoint via this.apiRequest when backend is ready
+        const response = await fetch('/orders.json');
+        const json = (await response.json()) as unknown as { pages: OrdersListDto[] };
+        const firstPage = json.pages?.[0];
+        return firstPage?.entries?.map((o) => o.id) ?? [];
+        // Example real call:
+        // const data = await this.apiRequest<{ ids: number[] }>({ url: '/orders/active-ids/' });
+        // return data?.ids;
+    }
 }

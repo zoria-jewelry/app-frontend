@@ -14,7 +14,33 @@ const ThemeDemoPage = () => {
             className={`${paperStyles.paper} ${commonStyles.flexColumn}`}
             style={{ gap: theme.spacing(4), borderRadius: '10px' }}
         >
-            <Typography variant="h1">Скарбниця Зоря</Typography>
+            <Box
+                display="flex"
+                flexDirection={{ xs: 'column', md: 'row' }}
+                justifyContent="space-between"
+                alignItems={{ xs: 'stretch', md: 'center' }}
+                width="100%"
+                gap={{ xs: 3, sm: 2, md: 4 }}
+                sx={{
+                    padding: { xs: 2, sm: 3 },
+                    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                }}
+            >
+                <Typography
+                    variant="h3"
+                    sx={{
+                        fontWeight: 600,
+                        lineHeight: 1.2,
+                        marginBottom: 0.5,
+                        wordBreak: 'break-word',
+                    }}
+                >
+                    Скарбниця Зоря
+                </Typography>
+            </Box>
             <img src={logo} alt="Application logo" className={imageStyles.largeImage} />
             <Button
                 onClick={() => setCount((count) => count + 1)}

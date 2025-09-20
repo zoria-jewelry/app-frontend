@@ -10,7 +10,7 @@ export interface CustomerDto {
 export interface CustomerListDto extends Pageable<CustomerDto> {}
 
 export interface CustomerBalanceEntryDto {
-    materialId: number;
+    materialId: number | null;
     materialName: string;
     value: number;
 }

@@ -156,8 +156,42 @@ const CompleteOrderPage = () => {
             }}
             noValidate
         >
-            <Paper className={paperStyles.paper} sx={{ padding: theme.spacing(6) }}>
-                <Typography variant="h3">Завершення замовлення №{orderId}</Typography>
+            <Paper className={paperStyles.paper} sx={{ padding: theme.spacing(4) }}>
+                <Box
+                    display="flex"
+                    flexDirection={{ xs: 'column', md: 'row' }}
+                    justifyContent="space-between"
+                    alignItems={{ xs: 'stretch', md: 'center' }}
+                    width="100%"
+                    gap={{ xs: 3, sm: 2, md: 4 }}
+                    sx={{
+                        padding: { xs: 2, sm: 3 },
+                        backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                        borderRadius: 2,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                    }}
+                >
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        flex={1}
+                        minWidth={0}
+                        sx={{ textAlign: { xs: 'center', md: 'left' } }}
+                    >
+                        <Typography
+                            variant="h3"
+                            sx={{
+                                fontWeight: 600,
+                                lineHeight: 1.2,
+                                marginBottom: 0.5,
+                                wordBreak: 'break-word',
+                            }}
+                        >
+                            Завершення замовлення №{orderId}
+                        </Typography>
+                    </Box>
+                </Box>
             </Paper>
 
             <Accordion

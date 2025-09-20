@@ -1,6 +1,6 @@
 import {
+    Box,
     Button,
-    Grid,
     Paper,
     Table,
     TableBody,
@@ -63,29 +63,51 @@ const CurrentPriceListComponent = ({ onPriceListCreated }: CurrentPriceListCompo
                 paddingBottom: '2rem',
             }}
         >
-            <Grid
-                container
-                alignItems="center"
+            <Box
+                display="flex"
+                flexDirection={{ xs: 'column', md: 'row' }}
                 justifyContent="space-between"
+                alignItems={{ xs: 'stretch', md: 'center' }}
                 width="100%"
-                style={{ gap: theme.spacing(4) }}
+                gap={{ xs: 3, sm: 2, md: 4 }}
+                sx={{
+                    padding: { xs: 2, sm: 3 },
+                    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                }}
             >
-                <Grid>
-                    <Typography variant="h2">
-                        {`Поточний прайс-лист №${activeListId} (від ${activeListStartDate && toLocalDate(activeListStartDate)})`}
-                    </Typography>
-                </Grid>
-                <Grid>
-                    <Button
-                        style={{ marginBottom: theme.spacing(1) }}
-                        onClick={() => setIsCreationFormOpened(true)}
-                        variant="contained"
-                        color="primary"
-                    >
-                        Новий прайс-лист
-                    </Button>
-                </Grid>
-            </Grid>
+                <Typography
+                    variant="h3"
+                    sx={{
+                        fontWeight: 600,
+                        lineHeight: 1.2,
+                        marginBottom: 0.5,
+                        wordBreak: 'break-word',
+                    }}
+                >
+                    {`Поточний прайс-лист №${activeListId} (від ${activeListStartDate && toLocalDate(activeListStartDate)})`}
+                </Typography>
+
+                <Button
+                    onClick={() => setIsCreationFormOpened(true)}
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    sx={{
+                        minWidth: { xs: '100%', sm: '200px', md: '250px' },
+                        height: { xs: '48px', sm: '40px' },
+                        fontWeight: 600,
+                        borderRadius: 2,
+                        boxShadow: 2,
+                        '&:hover': { boxShadow: 4, transform: 'translateY(-1px)' },
+                        transition: 'all 0.2s ease-in-out',
+                    }}
+                >
+                    Новий прайс-лист
+                </Button>
+            </Box>
 
             <TableContainer
                 style={{
