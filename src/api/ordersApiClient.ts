@@ -36,6 +36,19 @@ export class OrdersApiClient extends AbstractApiClient {
         // return res?.pages[page];
     }
 
+    public static async getAll(
+        phrase: string,
+        filterData: OrdersFilterData | undefined,
+        page: number,
+    ): Promise<OrdersListDto> {
+        console.log(
+            `OrdersApiClient.getAll: ${phrase}, filterData - ${JSON.stringify(filterData)}, page - ${page}`,
+        );
+        const response = await fetch('/orders.json');
+        const json = (await response.json()) as unknown as { pages: OrdersListDto[] };
+        return json.pages[page];
+    }
+
     public static async cancelOrder(orderId: number, reason: string): Promise<void> {
         console.log(`OrdersApiClient.cancelOrder: orderId - ${orderId}, reason - ${reason}`);
         // TODO: use me - const res = await this.apiRequest<void>({});
