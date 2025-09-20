@@ -5,6 +5,7 @@ import {
     Checkbox,
     FormControlLabel,
     FormGroup,
+    FormHelperText,
     IconButton,
     MenuItem,
     Select,
@@ -50,8 +51,8 @@ export interface OrdersFilterModalProps {
 const OrdersFilterModal = ({ open, onClose, onApply }: OrdersFilterModalProps) => {
     const theme = useTheme();
 
-    const [startDate, setStartDate] = useState(new Date().toDateString());
-    const [endDate, setEndDate] = useState(new Date().toDateString());
+    const [fromDate, setFromDate] = useState<Date | undefined>();
+    const [toDate, setToDate] = useState<Date | undefined>();
     const [statuses, setStatuses] = useState({
         inProgress: false,
         completed: false,
@@ -60,6 +61,8 @@ const OrdersFilterModal = ({ open, onClose, onApply }: OrdersFilterModalProps) =
     const [executors, setExecutors] = useState<number[] | undefined>();
 
     const [employees, setEmployees] = useState<EmployeeDto[]>([]);
+
+    const [datesError, setDatesError] = useState<string | undefined>();
 
     const handleStatusChange = (event: ChangeEvent<HTMLInputElement>) => {
         setStatuses({ ...statuses, [event.target.name]: event.target.checked });
@@ -71,24 +74,30 @@ const OrdersFilterModal = ({ open, onClose, onApply }: OrdersFilterModalProps) =
         if (statuses.completed) composedStatuses.push(OrderStatus.COMPLETED);
         if (statuses.canceled) composedStatuses.push(OrderStatus.CANCELED);
 
+        if (fromDate && toDate && fromDate > toDate) {
+            setDatesError('Дата кінця не може бути раніше дати початку');
+            return;
+        }
+
         onApply({
             executorsIds: executors?.map((e) => Number(e)),
-            fromDate: new Date(startDate),
+            fromDate,
+            toDate,
             statuses: composedStatuses,
-            toDate: new Date(endDate),
         });
         onClose();
     };
 
     const handleClose = () => {
-        setStartDate(new Date().toDateString());
-        setEndDate(new Date().toDateString());
+        setFromDate(undefined);
+        setToDate(undefined);
         setStatuses({
             inProgress: false,
             completed: false,
             canceled: false,
         });
         setExecutors([]);
+        setDatesError(undefined);
         onClose();
     };
 
@@ -130,17 +139,34 @@ const OrdersFilterModal = ({ open, onClose, onApply }: OrdersFilterModalProps) =
                 <TextField
                     type="date"
                     fullWidth
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
+                    value={fromDate ? fromDate.toISOString().split('T')[0] : ''}
+                    onChange={(e) => {
+                        setFromDate(e.target.value ? new Date(e.target.value) : undefined);
+                        setDatesError(undefined);
+                    }}
                 />
 
                 <Typography marginTop={theme.spacing(4)}>До дати включно</Typography>
                 <TextField
                     type="date"
                     fullWidth
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
+                    value={toDate ? toDate.toISOString().split('T')[0] : ''}
+                    onChange={(e) => {
+                        setToDate(e.target.value ? new Date(e.target.value) : undefined);
+                        setDatesError(undefined);
+                    }}
+                    error={!!datesError}
                 />
+                <FormHelperText
+                    error={!!datesError}
+                    sx={{
+                        margin: 0,
+                        marginBottom: theme.spacing(2),
+                        minHeight: '30px',
+                    }}
+                >
+                    {datesError ? datesError : ''}
+                </FormHelperText>
             </Box>
 
             <Box mt={2}>
