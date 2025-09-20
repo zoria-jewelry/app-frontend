@@ -171,3 +171,20 @@ export const saveMetalSchema = z.object({
 });
 
 export type SaveMetalFormData = z.infer<typeof saveMetalSchema>;
+
+export const updateCustomerBalancesSchema = z.object({
+    description: z.string().trim().nonempty('Опис є обовʼязковим'),
+    entries: z
+        .array(
+            z.object({
+                materialId: z.number().nullable(),
+                newValue: z
+                    .number({ error: 'Введіть число' })
+                    .nonnegative({ error: 'Значення повинно бути невідʼємним' })
+                    .multipleOf(0.001, { error: 'Крок значення — 0.001' }),
+            }),
+        )
+        .min(1, { error: 'Додайте хоча б один запис' }),
+});
+
+export type UpdateCustomerBalancesFormData = z.infer<typeof updateCustomerBalancesSchema>;
