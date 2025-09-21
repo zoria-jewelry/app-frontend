@@ -72,7 +72,8 @@
     "metalWeightWithLoss": 29.4,
     "metalWorkPrice": 1470,
     "totalMetalPrice": 1680,
+    "stonesPrice": 1000,
     "discount": 10,
-    "total": 3150,
-    "totalWithDiscount": 3140
+    "total": 4150,
+    "totalWithDiscount": 4140
 }
