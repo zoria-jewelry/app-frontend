@@ -1,7 +1,8 @@
 import paperStyles from '../../styles/Paper.module.css';
 import commonStyles from '../../styles/Common.module.css';
-import {Box, Paper, TextField, Typography, useTheme} from '@mui/material';
-import {useState} from "react";
+import { Box, Paper, TextField, Typography, useTheme } from '@mui/material';
+import { useState } from 'react';
+import { formatDateToYYYYMMDD } from '../../utils.ts';
 
 const GlobalStatisticsComponent = () => {
     const theme = useTheme();
@@ -19,7 +20,6 @@ const GlobalStatisticsComponent = () => {
                 justifyContent="space-between"
                 alignItems={{ xs: 'stretch', md: 'center' }}
                 width="100%"
-                gap={{ xs: 3, sm: 2, md: 4 }}
                 sx={{
                     padding: { xs: 2, sm: 3 },
                     backgroundColor: 'rgba(0, 0, 0, 0.02)',
@@ -59,14 +59,28 @@ const GlobalStatisticsComponent = () => {
                     <TextField
                         type="date"
                         fullWidth
-                        value={date}
-                        onChange={(e) => {
-                            console.log(e.target.value);
-                            setDate(new Date(e.target.value))
+                        value={date && formatDateToYYYYMMDD(date)}
+                        onChange={(e) => setDate(new Date(e.target.value))}
+                        sx={{
+                            margin: 0,
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '6px',
+                            },
+                            mb: theme.spacing(2),
                         }}
                     />
                 </Box>
             </Box>
+
+            <Paper
+                className={paperStyles.paper}
+                sx={{ width: '100%', my: theme.spacing(2), boxShadow: 4 }}
+            ></Paper>
+
+            <Paper
+                className={paperStyles.paper}
+                sx={{ width: '100%', mt: theme.spacing(2), mb: theme.spacing(4), boxShadow: 4 }}
+            ></Paper>
         </Paper>
     );
 };

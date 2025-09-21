@@ -1,0 +1,16 @@
+{
+    "globalStats": [
+        {
+            "materialId": 1,
+            "materialName": "Золото 585",
+            "value": 1424.034
+        }
+    ],
+    "statsWithoutCustomerData": [
+        {
+            "materialId": 1,
+            "materialName": "Золото 585",
+            "value": 460.549
+        }
+    ]
+}

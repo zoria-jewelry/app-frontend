@@ -25,6 +25,10 @@ export const toLocalDateTime = (date?: string | Date | null) => {
     });
 };
 
+export const formatDateToYYYYMMDD = (date: Date) => {
+    return date.toISOString().split('T')[0];
+};
+
 export const toFixedNumber = (value: number | string, decimals: number) =>
     Number(value).toFixed(decimals);
 
