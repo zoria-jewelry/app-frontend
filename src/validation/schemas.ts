@@ -1,52 +1,54 @@
 import z from 'zod';
 
 export const createMaterialSchema = z.object({
-    name: z.string().nonempty('Це поле є обовʼязковим'),
-    price: z.number({ message: 'Введіть число' }).positive('Вартість повинна бути більшою за 0'),
+    name: z.string().nonempty({ error: 'Це поле є обовʼязковим' }),
+    price: z
+        .number({ message: 'Введіть число' })
+        .positive({ error: 'Вартість повинна бути більшою за 0' }),
 });
 
 export type CreateMaterialFormData = z.infer<typeof createMaterialSchema>;
 
 export const createEmployeeSchema = z.object({
-    name: z.string().nonempty('Це поле є обовʼязковим'),
+    name: z.string().nonempty({ error: 'Це поле є обовʼязковим' }),
     phone: z
         .string()
-        .nonempty('Це поле є обовʼязковим')
+        .nonempty({ error: 'Це поле є обовʼязковим' })
         .regex(/^\s*(\+38)?\d{10}\s*$/im, { message: 'Неправильний формат' }),
 });
 
 export type CreateEmployeeFormData = z.infer<typeof createEmployeeSchema>;
 
 export const signinSchema = z.object({
-    email: z.string().nonempty('Введіть електронну адресу'),
-    password: z.string().nonempty('Введіть пароль'),
+    email: z.string().nonempty({ error: 'Введіть електронну адресу' }),
+    password: z.string().nonempty({ error: 'Введіть пароль' }),
 });
 
 export type SigninFormData = z.infer<typeof signinSchema>;
 
 export const createProductSchema = z.object({
-    name: z.string().nonempty('Це поле є обовʼязковим'),
-    article: z.string().nonempty('Це поле є обовʼязковим'),
+    name: z.string().nonempty({ error: 'Це поле є обовʼязковим' }),
+    article: z.string().nonempty({ error: 'Це поле є обовʼязковим' }),
     pictureBase64: z.string().optional(),
 });
 
 export type CreateProductFormData = z.infer<typeof createProductSchema>;
 
 export const createCustomerSchema = z.object({
-    fullName: z.string().nonempty('Це поле є обовʼязковим'),
+    fullName: z.string().nonempty({ error: 'Це поле є обовʼязковим' }),
     phone: z
         .string()
-        .nonempty('Це поле є обовʼязковим')
+        .nonempty({ error: 'Це поле є обовʼязковим' })
         .regex(/^\s*(\+38)?\d{10}\s*$/im, { message: 'Неправильний формат' }),
 });
 
 export type CreateCustomerFormData = z.infer<typeof createCustomerSchema>;
 
 export const updateCustomerInfoSchema = z.object({
-    fullName: z.string().nonempty('Це поле є обовʼязковим'),
+    fullName: z.string().nonempty({ error: 'Це поле є обовʼязковим' }),
     phone: z
         .string()
-        .nonempty('Це поле є обовʼязковим')
+        .nonempty({ error: 'Це поле є обовʼязковим' })
         .regex(/^\s*(\+38)?\d{10}\s*$/im, { message: 'Неправильний формат' }),
 });
 
@@ -95,19 +97,25 @@ export const completeOrderSchema = z.object({
         z.number({ error: 'Введіть число' }).optional().nullish(),
     ),
     loss: z
-        .number('Введіть число')
+        .number({ error: 'Введіть число' })
         .min(0, { error: 'Відсоток угару повинен бути більшим за 0%' })
-        .max(100, 'Відсоток угару повинен бути не більшим за 100%'),
+        .max(100, { error: 'Відсоток угару повинен бути не більшим за 100%' }),
     totalMetalWeight: z
-        .number('Введіть число')
-        .positive('Вага металу у виробах повинна бути більшою за 0')
+        .number({ error: 'Введіть число' })
+        .positive({ error: 'Вага металу у виробах повинна бути більшою за 0' })
         .multipleOf(0.001, { error: 'Крок значення — 0.001' }),
+    stonesPrice: z
+        .number({ error: 'Введіть число' })
+        .nonnegative({ error: 'Вартість не може бути відʼємною' })
+        .multipleOf(0.01, { error: 'Крок значення – 0.01' })
+        .optional()
+        .nullish(),
     payments: z.array(
         z.object({
             materialId: z.number().nullable(),
             materialCurrencyEquivalent: z
-                .number('Введіть число')
-                .nonnegative('Значення повинно бути невідʼємним')
+                .number({ error: 'Введіть число' })
+                .nonnegative({ error: 'Значення повинно бути невідʼємним' })
                 .multipleOf(0.01, { error: 'Крок значення — 0.01' }),
         }),
     ),
@@ -142,7 +150,7 @@ export const createWorkUnitSchema = z.object({
     metalId: z.number({ error: 'Оберіть метал' }).positive({ error: 'Оберіть метал' }),
     weight: z
         .number({ error: 'Введіть число' })
-        .positive('Вага повинна бути додатним числом')
+        .positive({ error: 'Вага повинна бути додатним числом' })
         .multipleOf(0.001, { message: 'Крок значення — 0.001' }),
 });
 
@@ -173,7 +181,7 @@ export const saveMetalSchema = z.object({
 export type SaveMetalFormData = z.infer<typeof saveMetalSchema>;
 
 export const updateCustomerBalancesSchema = z.object({
-    description: z.string().trim().nonempty('Опис є обовʼязковим'),
+    description: z.string().trim().nonempty({ error: 'Опис є обовʼязковим' }),
     entries: z
         .array(
             z.object({
