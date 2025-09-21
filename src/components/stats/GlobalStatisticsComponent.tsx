@@ -1,9 +1,13 @@
 import paperStyles from '../../styles/Paper.module.css';
 import commonStyles from '../../styles/Common.module.css';
-import { Box, Paper, Typography, useTheme } from '@mui/material';
+import {Box, Paper, TextField, Typography, useTheme} from '@mui/material';
+import {useState} from "react";
 
 const GlobalStatisticsComponent = () => {
     const theme = useTheme();
+
+    const [date, setDate] = useState<Date>(new Date());
+
     return (
         <Paper
             className={`${paperStyles.paper} ${commonStyles.flexColumn}`}
@@ -51,7 +55,17 @@ const GlobalStatisticsComponent = () => {
                     gap={{ xs: 2, sm: 1.5, md: 2 }}
                     width={{ xs: '100%', md: 'auto' }}
                     minWidth={{ xs: 'auto', sm: 'fit-content' }}
-                ></Box>
+                >
+                    <TextField
+                        type="date"
+                        fullWidth
+                        value={date}
+                        onChange={(e) => {
+                            console.log(e.target.value);
+                            setDate(new Date(e.target.value))
+                        }}
+                    />
+                </Box>
             </Box>
         </Paper>
     );
