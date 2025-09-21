@@ -1,6 +1,11 @@
 {
     "globalStats": [
         {
+            "materialId": null,
+            "materialName": "Валюта",
+            "value": "650400.00"
+        },
+        {
             "materialId": 1,
             "materialName": "Золото 585",
             "value": 2234.99
@@ -27,6 +32,11 @@
         }
     ],
     "statsWithoutCustomerData": [
+        {
+            "materialId": null,
+            "materialName": "Валюта",
+            "value": "299010.50"
+        },
         {
             "materialId": 1,
             "materialName": "Золото 585",

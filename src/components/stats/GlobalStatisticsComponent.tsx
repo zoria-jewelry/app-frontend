@@ -2,7 +2,9 @@ import paperStyles from '../../styles/Paper.module.css';
 import commonStyles from '../../styles/Common.module.css';
 import { Box, Paper, TextField, Typography, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { formatDateToYYYYMMDD } from '../../utils.ts';
+import { formatDateToYYYYMMDD, toFixedNumber } from '../../utils.ts';
+import { StatisticsApiClient } from '../../api/statsApiClient.ts';
+import type { MaterialStatsDto } from '../../dto/stats.ts';
 
 export interface GlobalStatisticsProps {
     refetchStats: () => void;
@@ -12,8 +14,22 @@ const GlobalStatisticsComponent = () => {
     const theme = useTheme();
 
     const [date, setDate] = useState<Date>(new Date());
+    const [globalStats, setGlobalStats] = useState<MaterialStatsDto[]>([]);
+    const [statsWithoutCustomerData, setStatsWithoutCustomerData] = useState<MaterialStatsDto[]>(
+        [],
+    );
 
-    useEffect(() => {}, [date]);
+    useEffect(() => {
+        StatisticsApiClient.getStatsForDate(date)
+            .then((data) => {
+                setGlobalStats(data.globalStats);
+                setStatsWithoutCustomerData(data.statsWithoutCustomerData);
+            })
+            .catch((err) => {
+                // TODO: add toast
+                console.log(err);
+            });
+    }, [date]);
 
     return (
         <Paper
@@ -80,17 +96,44 @@ const GlobalStatisticsComponent = () => {
 
             <Paper
                 className={paperStyles.paper}
-                sx={{ width: '100%', my: theme.spacing(2), boxShadow: 4 }}
+                sx={{ width: '100%', my: theme.spacing(2), boxShadow: 4, p: theme.spacing(8) }}
             >
-                <Typography variant="h5">Металу в сховищі (загальне)</Typography>
-                {}
+                <Typography variant="h5" pb={theme.spacing(2)}>
+                    Металу в сховищі (загальне)
+                </Typography>
+                {globalStats.map((stat) => (
+                    <Typography key={stat.materialId} variant="body1">
+                        {stat.materialName} –{' '}
+                        <span style={{ fontWeight: 900 }}>
+                            {toFixedNumber(stat.value, stat.materialId ? 3 : 2)}{' '}
+                            {stat.materialId ? 'г' : 'грн'}
+                        </span>
+                    </Typography>
+                ))}
             </Paper>
 
             <Paper
                 className={paperStyles.paper}
-                sx={{ width: '100%', mt: theme.spacing(2), mb: theme.spacing(4), boxShadow: 4 }}
+                sx={{
+                    width: '100%',
+                    mt: theme.spacing(2),
+                    mb: theme.spacing(4),
+                    boxShadow: 4,
+                    p: theme.spacing(8),
+                }}
             >
-                <Typography variant="h5">Металу в сховищі (без клієнтського)</Typography>
+                <Typography variant="h5" pb={theme.spacing(2)}>
+                    Металу в сховищі (без клієнтського)
+                </Typography>
+                {statsWithoutCustomerData.map((stat) => (
+                    <Typography key={stat.materialId} variant="body1">
+                        {stat.materialName} –{' '}
+                        <span style={{ fontWeight: 900 }}>
+                            {toFixedNumber(stat.value, stat.materialId ? 3 : 2)}{' '}
+                            {stat.materialId ? 'г' : 'грн'}
+                        </span>
+                    </Typography>
+                ))}
             </Paper>
         </Paper>
     );
