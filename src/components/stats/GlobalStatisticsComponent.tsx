@@ -1,16 +1,17 @@
 import paperStyles from '../../styles/Paper.module.css';
 import commonStyles from '../../styles/Common.module.css';
-import { Box, Paper, TextField, Typography, useTheme } from '@mui/material';
+import { Box, Button, Paper, TextField, Typography, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { formatDateToYYYYMMDD, toFixedNumber } from '../../utils.ts';
 import { StatisticsApiClient } from '../../api/statsApiClient.ts';
 import type { MaterialStatsDto } from '../../dto/stats.ts';
+import UpdateBalanceModal from '../modal/stats/UpdateBalanceModal.tsx';
 
 export interface GlobalStatisticsProps {
-    refetchStats: () => void;
+    onUpdate: () => void;
 }
 
-const GlobalStatisticsComponent = () => {
+const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
     const theme = useTheme();
 
     const [date, setDate] = useState<Date>(new Date());
@@ -18,6 +19,8 @@ const GlobalStatisticsComponent = () => {
     const [statsWithoutCustomerData, setStatsWithoutCustomerData] = useState<MaterialStatsDto[]>(
         [],
     );
+
+    const [isUpdateBalanceModalOpen, setIsUpdateBalanceModalOpen] = useState<boolean>(false);
 
     useEffect(() => {
         StatisticsApiClient.getStatsForDate(date)
@@ -34,7 +37,7 @@ const GlobalStatisticsComponent = () => {
     return (
         <Paper
             className={`${paperStyles.paper} ${commonStyles.flexColumn}`}
-            style={{ gap: theme.spacing(4), borderRadius: '10px', maxHeight: '80vh' }}
+            style={{ gap: theme.spacing(4), borderRadius: '10px' }}
         >
             <Box
                 display="flex"
@@ -90,51 +93,71 @@ const GlobalStatisticsComponent = () => {
                             },
                             mb: theme.spacing(2),
                         }}
+                        label="Станом на"
                     />
                 </Box>
             </Box>
 
-            <Paper
-                className={paperStyles.paper}
-                sx={{ width: '100%', my: theme.spacing(2), boxShadow: 4, p: theme.spacing(8) }}
-            >
-                <Typography variant="h5" pb={theme.spacing(2)}>
-                    Металу в сховищі (загальне)
-                </Typography>
-                {globalStats.map((stat) => (
-                    <Typography key={stat.materialId} variant="body1">
-                        {stat.materialName} –{' '}
-                        <span style={{ fontWeight: 900 }}>
-                            {toFixedNumber(stat.value, stat.materialId ? 3 : 2)}{' '}
-                            {stat.materialId ? 'г' : 'грн'}
-                        </span>
+            <Box width="100%" display="flex" justifyContent="space-between">
+                <Paper
+                    className={paperStyles.paper}
+                    sx={{ width: '49%', boxShadow: 4, p: theme.spacing(8) }}
+                >
+                    <Typography variant="h5" pb={theme.spacing(2)}>
+                        Металу в сховищі (загальне)
                     </Typography>
-                ))}
-            </Paper>
+                    {globalStats.map((stat) => (
+                        <Typography key={stat.materialId} variant="body1">
+                            {stat.materialName} –{' '}
+                            <span style={{ fontWeight: 900 }}>
+                                {toFixedNumber(stat.value, stat.materialId ? 3 : 2)}{' '}
+                                {stat.materialId ? 'г' : 'грн'}
+                            </span>
+                        </Typography>
+                    ))}
+                </Paper>
 
-            <Paper
-                className={paperStyles.paper}
-                sx={{
-                    width: '100%',
-                    mt: theme.spacing(2),
-                    mb: theme.spacing(4),
-                    boxShadow: 4,
-                    p: theme.spacing(8),
-                }}
-            >
-                <Typography variant="h5" pb={theme.spacing(2)}>
-                    Металу в сховищі (без клієнтського)
-                </Typography>
-                {statsWithoutCustomerData.map((stat) => (
-                    <Typography key={stat.materialId} variant="body1">
-                        {stat.materialName} –{' '}
-                        <span style={{ fontWeight: 900 }}>
-                            {toFixedNumber(stat.value, stat.materialId ? 3 : 2)}{' '}
-                            {stat.materialId ? 'г' : 'грн'}
-                        </span>
+                <Paper
+                    className={paperStyles.paper}
+                    sx={{
+                        width: '49%',
+                        boxShadow: 4,
+                        p: theme.spacing(8),
+                    }}
+                >
+                    <Typography variant="h5" pb={theme.spacing(2)}>
+                        Металу в сховищі (без клієнтського)
                     </Typography>
-                ))}
-            </Paper>
+                    {statsWithoutCustomerData.map((stat) => (
+                        <Typography key={stat.materialId} variant="body1">
+                            {stat.materialName} –{' '}
+                            <span style={{ fontWeight: 900 }}>
+                                {toFixedNumber(stat.value, stat.materialId ? 3 : 2)}{' '}
+                                {stat.materialId ? 'г' : 'грн'}
+                            </span>
+                        </Typography>
+                    ))}
+                </Paper>
+            </Box>
+
+            <Button
+                variant="contained"
+                onClick={() => setIsUpdateBalanceModalOpen(true)}
+                sx={{ alignSelf: 'flex-end', mb: theme.spacing(8) }}
+            >
+                Оновити баланс
+            </Button>
+
+            {isUpdateBalanceModalOpen && (
+                <UpdateBalanceModal
+                    onUpdate={onUpdate}
+                    isOpen={isUpdateBalanceModalOpen}
+                    handleClose={() => {
+                        setIsUpdateBalanceModalOpen(false);
+                        onUpdate();
+                    }}
+                />
+            )}
         </Paper>
     );
 };

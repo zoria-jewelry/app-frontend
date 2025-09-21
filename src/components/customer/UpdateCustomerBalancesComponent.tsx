@@ -10,7 +10,11 @@ import {
     type UpdateCustomerBalancesFormData,
 } from '../../validation/schemas.ts';
 
-const UpdateCustomerBalancesComponent = () => {
+export interface UpdateCustomerBalancesComponentProps {
+    onUpdate: () => void;
+}
+
+const UpdateCustomerBalancesComponent = ({ onUpdate }: UpdateCustomerBalancesComponentProps) => {
     const theme = useTheme();
 
     const params = useParams();
@@ -63,7 +67,8 @@ const UpdateCustomerBalancesComponent = () => {
                 .catch((err) => {
                     // TODO: add toast
                     console.log(err);
-                });
+                })
+                .finally(onUpdate);
         }
     };
 
@@ -79,7 +84,7 @@ const UpdateCustomerBalancesComponent = () => {
                 return (
                     <FormControl fullWidth key={key}>
                         <FormLabel htmlFor={`material-${key}`}>
-                            {`${entry.materialName} (г)`}
+                            {`${entry.materialName} ${entry.materialId ? '(г)' : ''}`}
                         </FormLabel>
                         <TextField
                             id={`material-${key}`}

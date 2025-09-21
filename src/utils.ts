@@ -38,7 +38,7 @@ export const getCurrentMonthRange = () => {
     return { start: startOfMonth, end: endOfMonth };
 };
 
-export const toFixedNumber = (value: number | string, decimals: number) =>
+export const toFixedNumber = (value: number | string | undefined, decimals: number) =>
     Number(value).toFixed(decimals);
 
 export const orderStatusToHumanText = (status: OrderStatus) => {

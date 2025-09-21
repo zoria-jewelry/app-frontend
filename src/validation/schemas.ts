@@ -196,3 +196,20 @@ export const updateCustomerBalancesSchema = z.object({
 });
 
 export type UpdateCustomerBalancesFormData = z.infer<typeof updateCustomerBalancesSchema>;
+
+export const updateGlobalBalancesSchema = z.object({
+    description: z.string().trim().nonempty({ error: 'Опис є обовʼязковим' }),
+    entries: z
+        .array(
+            z.object({
+                materialId: z.number().nullable(),
+                delta: z
+                    .number({ error: 'Введіть число' })
+                    .multipleOf(0.001, { error: 'Крок значення — 0.001' })
+                    .optional(),
+            }),
+        )
+        .min(1, { error: 'Додайте хоча б один запис' }),
+});
+
+export type UpdateGlobalBalancesFormData = z.infer<typeof updateGlobalBalancesSchema>;
