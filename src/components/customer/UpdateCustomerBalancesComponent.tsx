@@ -23,8 +23,6 @@ const UpdateCustomerBalancesComponent = () => {
         clearErrors,
         reset,
         formState: { errors },
-        watch,
-        setValue,
     } = useForm<UpdateCustomerBalancesFormData>({
         resolver: zodResolver(updateCustomerBalancesSchema),
         reValidateMode: 'onSubmit',
@@ -43,7 +41,6 @@ const UpdateCustomerBalancesComponent = () => {
             if (balances) {
                 setBalances(balances.entries);
 
-                // Initialize form with current balance entries
                 const entries = balances.entries.map((entry) => ({
                     materialId: entry.materialId,
                     newValue: entry.value,
@@ -58,13 +55,17 @@ const UpdateCustomerBalancesComponent = () => {
     }, [customerId, reset]);
 
     const onSubmit = (data: UpdateCustomerBalancesFormData) => {
-        console.log('Submitting customer balance update:', data);
-        clearErrors();
-        // TODO: Implement API call to update customer balances
-        // CustomersApiClient.updateCustomerBalances(customerId, data);
+        if (customerId) {
+            CustomersApiClient.updateCustomerBalance(customerId, data)
+                .then(() => {
+                    clearErrors();
+                })
+                .catch((err) => {
+                    // TODO: add toast
+                    console.log(err);
+                });
+        }
     };
-
-    const watchedEntries = watch('entries');
 
     return (
         <form
@@ -90,16 +91,10 @@ const UpdateCustomerBalancesComponent = () => {
                                     step: 0.001,
                                 },
                             }}
-                            value={watchedEntries?.[index]?.newValue || ''}
-                            onChange={(e) => {
-                                const newEntries = [...(watchedEntries || [])];
-                                newEntries[index] = {
-                                    ...newEntries[index],
-                                    materialId: entry.materialId,
-                                    newValue: parseFloat(e.target.value) || 0,
-                                };
-                                setValue('entries', newEntries);
-                            }}
+                            {...register(`entries.${index}.newValue`, {
+                                valueAsNumber: true,
+                                setValueAs: (value) => parseFloat(value) || 0,
+                            })}
                             error={!!errors.entries?.[index]?.newValue}
                             sx={{
                                 margin: 0,
