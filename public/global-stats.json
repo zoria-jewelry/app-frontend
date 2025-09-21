@@ -3,14 +3,54 @@
         {
             "materialId": 1,
             "materialName": "Золото 585",
-            "value": 1424.034
+            "value": 2234.99
+        },
+        {
+            "materialId": 2,
+            "materialName": "Золото 750",
+            "value": 1298.75
+        },
+        {
+            "materialId": 3,
+            "materialName": "Срібло 925",
+            "value": 412.45
+        },
+        {
+            "materialId": 4,
+            "materialName": "Платина 950",
+            "value": 2314.2
+        },
+        {
+            "materialId": 5,
+            "materialName": "Паладій 850",
+            "value": 1265.0
         }
     ],
     "statsWithoutCustomerData": [
         {
             "materialId": 1,
             "materialName": "Золото 585",
-            "value": 460.549
+            "value": 234.99
+        },
+        {
+            "materialId": 2,
+            "materialName": "Золото 750",
+            "value": 298.75
+        },
+        {
+            "materialId": 3,
+            "materialName": "Срібло 925",
+            "value": 12.45
+        },
+        {
+            "materialId": 4,
+            "materialName": "Платина 950",
+            "value": 314.2
+        },
+        {
+            "materialId": 5,
+            "materialName": "Паладій 850",
+            "value": 265.0
         }
     ]
 }

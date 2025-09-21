@@ -1,13 +1,19 @@
 import paperStyles from '../../styles/Paper.module.css';
 import commonStyles from '../../styles/Common.module.css';
 import { Box, Paper, TextField, Typography, useTheme } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatDateToYYYYMMDD } from '../../utils.ts';
+
+export interface GlobalStatisticsProps {
+    refetchStats: () => void;
+}
 
 const GlobalStatisticsComponent = () => {
     const theme = useTheme();
 
     const [date, setDate] = useState<Date>(new Date());
+
+    useEffect(() => {}, [date]);
 
     return (
         <Paper
@@ -75,12 +81,17 @@ const GlobalStatisticsComponent = () => {
             <Paper
                 className={paperStyles.paper}
                 sx={{ width: '100%', my: theme.spacing(2), boxShadow: 4 }}
-            ></Paper>
+            >
+                <Typography variant="h5">Металу в сховищі (загальне)</Typography>
+                {}
+            </Paper>
 
             <Paper
                 className={paperStyles.paper}
                 sx={{ width: '100%', mt: theme.spacing(2), mb: theme.spacing(4), boxShadow: 4 }}
-            ></Paper>
+            >
+                <Typography variant="h5">Металу в сховищі (без клієнтського)</Typography>
+            </Paper>
         </Paper>
     );
 };
