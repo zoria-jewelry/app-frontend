@@ -4,7 +4,7 @@ import {
     updateCustomerInfoSchema,
 } from '../../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CustomersApiClient } from '../../api/customersApiClient.ts';
 import { Button, FormControl, FormHelperText, FormLabel, TextField, useTheme } from '@mui/material';
@@ -24,20 +24,9 @@ const UpdateCustomerInfoComponent = () => {
     } = useForm<UpdateCustomerInfoFromData>({
         resolver: zodResolver(updateCustomerInfoSchema),
         reValidateMode: 'onSubmit',
-        defaultValues: {
-            fullName: '',
-            phone: '',
-        },
     });
 
-    const onSubmit = (data: UpdateCustomerInfoFromData) => {
-        console.log(data);
-        // TODO: call API Endpoint
-        clearErrors();
-        reset();
-    };
-
-    useEffect(() => {
+    const fetchCustomerInfo = useCallback(async () => {
         if (customerId) {
             CustomersApiClient.getInfoById(customerId).then((customerInfo) => {
                 if (!customerInfo) {
@@ -52,6 +41,23 @@ const UpdateCustomerInfoComponent = () => {
             });
         }
     }, [customerId]);
+
+    const onSubmit = (data: UpdateCustomerInfoFromData) => {
+        CustomersApiClient.updateData(customerId!, data)
+            .then(() => {
+                fetchCustomerInfo();
+                // TODO: add toast
+            })
+            .catch((err) => {
+                console.log(err);
+                // TODO: add toast
+            });
+        clearErrors();
+    };
+
+    useEffect(() => {
+        fetchCustomerInfo();
+    }, [fetchCustomerInfo]);
 
     return (
         <form

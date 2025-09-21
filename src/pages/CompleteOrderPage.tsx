@@ -81,12 +81,14 @@ const CompleteOrderPage = () => {
         () => totalMetalWeight * (1 + loss / 100),
         [loss, totalMetalWeight],
     );
+    const stonesPrice = watch('stonesPrice') || 0;
 
     const subtotal = useMemo(
         () =>
             (order?.workPrice ?? 0) * totalMetalWeightWithLoss +
-            (order?.materialPrice ?? 0) * totalMetalWeight,
-        [order, totalMetalWeightWithLoss],
+            (order?.materialPrice ?? 0) * totalMetalWeight +
+            (stonesPrice ?? 0),
+        [order, totalMetalWeightWithLoss, stonesPrice],
     );
     const total = useMemo(() => subtotal - discount, [subtotal, discount]);
 
@@ -156,8 +158,42 @@ const CompleteOrderPage = () => {
             }}
             noValidate
         >
-            <Paper className={paperStyles.paper} sx={{ padding: theme.spacing(6) }}>
-                <Typography variant="h3">Завершення замовлення №{orderId}</Typography>
+            <Paper className={paperStyles.paper} sx={{ padding: theme.spacing(4) }}>
+                <Box
+                    display="flex"
+                    flexDirection={{ xs: 'column', md: 'row' }}
+                    justifyContent="space-between"
+                    alignItems={{ xs: 'stretch', md: 'center' }}
+                    width="100%"
+                    gap={{ xs: 3, sm: 2, md: 4 }}
+                    sx={{
+                        padding: { xs: 2, sm: 3 },
+                        backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                        borderRadius: 2,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                    }}
+                >
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        flex={1}
+                        minWidth={0}
+                        sx={{ textAlign: { xs: 'center', md: 'left' } }}
+                    >
+                        <Typography
+                            variant="h3"
+                            sx={{
+                                fontWeight: 600,
+                                lineHeight: 1.2,
+                                marginBottom: 0.5,
+                                wordBreak: 'break-word',
+                            }}
+                        >
+                            Завершення замовлення №{orderId}
+                        </Typography>
+                    </Box>
+                </Box>
             </Paper>
 
             <Accordion
@@ -246,6 +282,33 @@ const CompleteOrderPage = () => {
                             sx={{ margin: 0, minHeight: '30px' }}
                         >
                             {errors?.totalMetalWeight?.message}
+                        </FormHelperText>
+                    </FormControl>
+
+                    <FormControl fullWidth>
+                        <FormLabel htmlFor="total-stones-price">
+                            Загальна вартість камінців у виробах (грн)
+                        </FormLabel>
+                        <TextField
+                            id="total-stones-price"
+                            placeholder="5400.00"
+                            fullWidth
+                            margin="normal"
+                            type="number"
+                            {...register('stonesPrice', { valueAsNumber: true })}
+                            error={!!errors.stonesPrice}
+                            sx={{
+                                margin: 0,
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '6px',
+                                },
+                            }}
+                        />
+                        <FormHelperText
+                            error={!!errors.stonesPrice}
+                            sx={{ margin: 0, minHeight: '30px' }}
+                        >
+                            {errors?.stonesPrice?.message}
                         </FormHelperText>
                     </FormControl>
                 </AccordionDetails>
@@ -364,6 +427,21 @@ const CompleteOrderPage = () => {
                                                         2,
                                                     )}{' '}
                                                     грн
+                                                </span>
+                                            </TableCell>
+                                        </TableRow>
+
+                                        <TableRow>
+                                            <TableCell
+                                                sx={{
+                                                    borderRight: `1px solid ${theme.palette.divider}`,
+                                                }}
+                                            >
+                                                Вартість камінців
+                                            </TableCell>
+                                            <TableCell>
+                                                <span style={{ fontWeight: 900 }}>
+                                                    {toFixedNumber(stonesPrice, 2)} грн
                                                 </span>
                                             </TableCell>
                                         </TableRow>

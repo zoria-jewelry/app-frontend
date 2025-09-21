@@ -32,30 +32,34 @@ const CustomerInfoPage = () => {
 
     const isMd = useMediaQuery(theme.breakpoints.down('md')); // < 900px
 
-    const updateOrdersList = useCallback(() => {
-        if (customerId) {
-            OrdersApiClient.getByCustomerId(
-                customerId,
-                orderSearchPhrase,
-                ordersFilterData,
-                ordersPage,
-            ).then((orders) => {
-                if (orders) {
-                    setOrders(orders);
-                } else {
-                    // TODO: add toast?
-                }
-            });
-        }
-    }, [ordersPage]);
+    const updateOrdersList = useCallback(
+        (page: number = ordersPage) => {
+            if (customerId) {
+                OrdersApiClient.getByCustomerId(
+                    customerId,
+                    orderSearchPhrase,
+                    ordersFilterData,
+                    page,
+                ).then((orders) => {
+                    if (orders) {
+                        setOrders(orders);
+                    } else {
+                        // TODO: add toast?
+                    }
+                });
+            }
+        },
+        [customerId, orderSearchPhrase, ordersFilterData],
+    );
+
+    useEffect(() => {
+        updateOrdersList(ordersPage);
+    }, [ordersPage, updateOrdersList]);
 
     useEffect(() => {
         setOrdersPage(0);
-    }, [ordersFilterData]);
-
-    useEffect(() => {
-        updateOrdersList();
-    }, [ordersPage, orderSearchPhrase, customerId]);
+        updateOrdersList(0);
+    }, [ordersFilterData, updateOrdersList]);
 
     return (
         <Box width="85%">
@@ -127,13 +131,28 @@ const CustomerInfoPage = () => {
             >
                 <Box
                     display="flex"
+                    flexDirection={{ xs: 'column', md: 'row' }}
                     justifyContent="space-between"
-                    alignItems="center"
+                    alignItems={{ xs: 'stretch', md: 'center' }}
                     width="100%"
-                    flexWrap="wrap"
-                    gap={2}
+                    gap={{ xs: 3, sm: 2, md: 4 }}
+                    sx={{
+                        padding: { xs: 2, sm: 3 },
+                        backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                        borderRadius: 2,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                    }}
                 >
-                    <Typography variant="h3" textAlign="left">
+                    <Typography
+                        variant="h3"
+                        sx={{
+                            fontWeight: 600,
+                            lineHeight: 1.2,
+                            marginBottom: 0.5,
+                            wordBreak: 'break-word',
+                        }}
+                    >
                         Замовлення
                     </Typography>
 
@@ -141,8 +160,9 @@ const CustomerInfoPage = () => {
                         display="flex"
                         flexDirection={{ xs: 'column', sm: 'row' }}
                         alignItems={{ xs: 'stretch', sm: 'center' }}
-                        gap={2}
-                        width={{ xs: '100%', sm: 'auto' }}
+                        gap={{ xs: 2, sm: 1.5, md: 2 }}
+                        width={{ xs: '100%', md: 'auto' }}
+                        minWidth={{ xs: 'auto', sm: 'fit-content' }}
                     >
                         <Box
                             display="flex"
@@ -166,7 +186,16 @@ const CustomerInfoPage = () => {
                             variant="contained"
                             color="primary"
                             onClick={() => setIsCreateOrderModalOpen(true)}
-                            sx={{ minWidth: { sm: '200px' } }}
+                            size="large"
+                            sx={{
+                                minWidth: { xs: '100%', sm: '200px', md: '250px' },
+                                height: { xs: '48px', sm: '40px' },
+                                fontWeight: 600,
+                                borderRadius: 2,
+                                boxShadow: 2,
+                                '&:hover': { boxShadow: 4, transform: 'translateY(-1px)' },
+                                transition: 'all 0.2s ease-in-out',
+                            }}
                         >
                             Нове замовлення
                         </Button>

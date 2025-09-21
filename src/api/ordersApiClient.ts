@@ -36,6 +36,19 @@ export class OrdersApiClient extends AbstractApiClient {
         // return res?.pages[page];
     }
 
+    public static async getAll(
+        phrase: string,
+        filterData: OrdersFilterData | undefined,
+        page: number,
+    ): Promise<OrdersListDto> {
+        console.log(
+            `OrdersApiClient.getAll: ${phrase}, filterData - ${JSON.stringify(filterData)}, page - ${page}`,
+        );
+        const response = await fetch('/orders.json');
+        const json = (await response.json()) as unknown as { pages: OrdersListDto[] };
+        return json.pages[page];
+    }
+
     public static async cancelOrder(orderId: number, reason: string): Promise<void> {
         console.log(`OrdersApiClient.cancelOrder: orderId - ${orderId}, reason - ${reason}`);
         // TODO: use me - const res = await this.apiRequest<void>({});
@@ -47,5 +60,17 @@ export class OrdersApiClient extends AbstractApiClient {
         console.log(`OrdersApiClient.getCompleteOrderCalculations: ${orderId}`);
         const response = await fetch('/complete-order-calculations.json');
         return (await response.json()) as unknown as CompleteOrderCalculationsDto;
+    }
+
+    public static async getAllActiveIds(): Promise<number[] | undefined> {
+        console.log('OrdersApiClient.getAllActiveIds');
+        // TODO: replace with real endpoint via this.apiRequest when backend is ready
+        const response = await fetch('/orders.json');
+        const json = (await response.json()) as unknown as { pages: OrdersListDto[] };
+        const firstPage = json.pages?.[0];
+        return firstPage?.entries?.map((o) => o.id) ?? [];
+        // Example real call:
+        // const data = await this.apiRequest<{ ids: number[] }>({ url: '/orders/active-ids/' });
+        // return data?.ids;
     }
 }

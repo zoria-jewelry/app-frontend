@@ -54,6 +54,7 @@ export interface OrderDto {
     metalWeightWithLoss?: number; // totalMetalWeight * ((100% + loss) / 100)
     metalWorkPrice?: number; // metalWeightWithLoss * workPrice
     totalMetalPrice?: number; // totalMetalWeight * ціна_металу_за_грам
+    stonesPrice: number;
 
     discount?: number | null;
     total?: number | null; // сума без знижки

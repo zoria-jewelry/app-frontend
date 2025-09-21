@@ -29,7 +29,16 @@ export const formatDateToYYYYMMDD = (date: Date) => {
     return date.toISOString().split('T')[0];
 };
 
-export const toFixedNumber = (value: number | string | undefined, decimals: number) =>
+export const getCurrentMonthRange = () => {
+    const now = new Date();
+    const startOfMonth = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1));
+    const endOfMonth = new Date(
+        Date.UTC(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999),
+    );
+    return { start: startOfMonth, end: endOfMonth };
+};
+
+export const toFixedNumber = (value: number | string, decimals: number) =>
     Number(value).toFixed(decimals);
 
 export const orderStatusToHumanText = (status: OrderStatus) => {
