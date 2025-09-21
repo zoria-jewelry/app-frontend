@@ -32,30 +32,34 @@ const CustomerInfoPage = () => {
 
     const isMd = useMediaQuery(theme.breakpoints.down('md')); // < 900px
 
-    const updateOrdersList = useCallback(() => {
-        if (customerId) {
-            OrdersApiClient.getByCustomerId(
-                customerId,
-                orderSearchPhrase,
-                ordersFilterData,
-                ordersPage,
-            ).then((orders) => {
-                if (orders) {
-                    setOrders(orders);
-                } else {
-                    // TODO: add toast?
-                }
-            });
-        }
-    }, [ordersPage]);
+    const updateOrdersList = useCallback(
+        (page: number = ordersPage) => {
+            if (customerId) {
+                OrdersApiClient.getByCustomerId(
+                    customerId,
+                    orderSearchPhrase,
+                    ordersFilterData,
+                    page,
+                ).then((orders) => {
+                    if (orders) {
+                        setOrders(orders);
+                    } else {
+                        // TODO: add toast?
+                    }
+                });
+            }
+        },
+        [customerId, orderSearchPhrase, ordersFilterData],
+    );
+
+    useEffect(() => {
+        updateOrdersList(ordersPage);
+    }, [ordersPage, updateOrdersList]);
 
     useEffect(() => {
         setOrdersPage(0);
-    }, [ordersFilterData]);
-
-    useEffect(() => {
-        updateOrdersList();
-    }, [ordersPage, orderSearchPhrase, customerId]);
+        updateOrdersList(0);
+    }, [ordersFilterData, updateOrdersList]);
 
     return (
         <Box width="85%">

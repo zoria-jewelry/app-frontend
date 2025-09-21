@@ -13,7 +13,7 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { CustomerDto } from '../dto/customers.ts';
 import { CustomersApiClient } from '../api/customersApiClient.ts';
 import paperStyles from '../styles/Paper.module.css';
@@ -35,11 +35,7 @@ const CustomersPage = () => {
 
     const [isCreateComponentOpened, setIsCreateComponentOpened] = useState<boolean>(false);
 
-    useEffect(() => {
-        setPage(0);
-    }, [searchPhrase]);
-
-    useEffect(() => {
+    const fetchCustomers = useCallback(async () => {
         CustomersApiClient.get(page, searchPhrase).then((customersList) => {
             if (!customersList) {
                 // TODO: add toast
@@ -49,6 +45,14 @@ const CustomersPage = () => {
             }
         });
     }, [page, searchPhrase]);
+
+    useEffect(() => {
+        setPage(0);
+    }, [searchPhrase]);
+
+    useEffect(() => {
+        fetchCustomers();
+    }, [fetchCustomers]);
 
     return (
         <Paper
@@ -205,7 +209,10 @@ const CustomersPage = () => {
 
             {/* Add new customer modal window */}
             <CreateCustomerComponent
-                handleClose={() => setIsCreateComponentOpened(false)}
+                handleClose={() => {
+                    fetchCustomers();
+                    setIsCreateComponentOpened(false);
+                }}
                 isOpen={isCreateComponentOpened}
             />
         </Paper>
