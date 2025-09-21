@@ -260,9 +260,9 @@ const WorkUnitsPage = () => {
                                     sx={{
                                         backgroundColor:
                                             !entry.orderId && entry.issuedDate
-                                                ? theme.palette.warning.main
+                                                ? '#FFE9D2'
                                                 : !entry.issuedDate
-                                                  ? theme.palette.success.light
+                                                  ? '#e5f6df'
                                                   : 'transparent',
                                     }}
                                 >
