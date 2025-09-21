@@ -14,6 +14,7 @@ import CustomersPage from './pages/CustomersPage.tsx';
 import ProductsCataloguePage from './pages/ProductsCataloguePage.tsx';
 import CustomerInfoPage from './pages/CustomerInfoPage.tsx';
 import CompleteOrderPage from './pages/CompleteOrderPage.tsx';
+import WorkUnitsPage from './pages/WorkUnitsPage.tsx';
 import OrdersPage from './pages/OrdersPage.tsx';
 
 const App = () => {
@@ -43,6 +44,7 @@ const App = () => {
                     <Route path="/products" element={<ProductsCataloguePage />} />
                     <Route path="/complete-order/:orderId" element={<CompleteOrderPage />} />
                     <Route path="/orders" element={<OrdersPage />} />
+                    <Route path="/work-units" element={<WorkUnitsPage />} />
                     <Route path="/*" element={<Navigate to="/materials" />} />
                 </Route>
                 {/* Guests */}

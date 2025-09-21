@@ -256,6 +256,13 @@ export default function OrderDetailsComponent({ id, open, onClose }: OrderDetail
                                         </Typography>
                                     </>
                                 )}
+
+                                <Typography variant="body2">
+                                    Вартість використаних камінців
+                                </Typography>
+                                <Typography variant="body2">
+                                    <b>{order.stonesPrice} грн</b>
+                                </Typography>
                             </Box>
                         </Box>
 
@@ -296,7 +303,7 @@ export default function OrderDetailsComponent({ id, open, onClose }: OrderDetail
                                             Вартість без знижки — <b>{order.total} грн</b>
                                         </Typography>
                                         <Typography variant="body2" textAlign="right">
-                                            Знижка — <b>-{order.discount ?? 0} грн</b>
+                                            Знижка — <b>{order.discount ?? 0} грн</b>
                                         </Typography>
                                         <Typography
                                             variant="body1"
