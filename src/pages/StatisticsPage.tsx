@@ -1,5 +1,11 @@
+import GlobalStatisticsComponent from '../components/stats/GlobalStatisticsComponent.tsx';
+
 const StatisticsPage = () => {
-    return <></>;
+    return (
+        <>
+            <GlobalStatisticsComponent />
+        </>
+    );
 };
 
 export default StatisticsPage;

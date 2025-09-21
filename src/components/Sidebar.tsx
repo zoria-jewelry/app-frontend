@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import CustomerIcon from '@mui/icons-material/Portrait';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -84,6 +85,14 @@ const Sidebar = (props: SidebarProps) => {
                             <ListAltIcon />
                         </ListItemIcon>
                         <ListItemText secondary="Каталог виробів" />
+                    </ListItemButton>
+                </ListItem>
+                <ListItem key="Statistics" disablePadding>
+                    <ListItemButton onClick={() => navigate('/stats')}>
+                        <ListItemIcon>
+                            <QueryStatsIcon />
+                        </ListItemIcon>
+                        <ListItemText secondary="Статистика" />
                     </ListItemButton>
                 </ListItem>
             </List>
