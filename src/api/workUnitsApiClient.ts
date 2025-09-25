@@ -12,11 +12,11 @@ export class WorkUnitsApiClient extends AbstractApiClient {
         startDate,
         endDate,
         employeeId,
-        metalId,
+        materialId,
         orderId,
     }: WorkUnitsFilterData): Promise<WorkUnitsReportDto | undefined> {
         console.log(
-            `WorkUnitsApiClient.getReportForPeriod: startDate=${startDate}, endDate=${endDate}, employeeId=${employeeId}, metalId=${metalId}, orderId=${orderId}`,
+            `WorkUnitsApiClient.getReportForPeriod: startDate=${startDate}, endDate=${endDate}, employeeId=${employeeId}, materialId=${materialId}, orderId=${orderId}`,
         );
         const response = await fetch(`/work-units-report.json`);
         return (await response.json()) as unknown as WorkUnitsReportDto;

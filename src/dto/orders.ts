@@ -39,7 +39,7 @@ export interface OrderDto {
     closedAt?: Date | null;
     status: OrderStatus;
     cancellationReason?: string;
-    entries: OrderEntryDto[];
+    products: OrderEntryDto[];
     materialName: string;
     materialPrice: number;
     materialId: number;
@@ -49,7 +49,6 @@ export interface OrderDto {
 
     loss?: number; // угар
     workPrice: number; // ціна обробки граму металу
-    totalWeight?: number; // загальна вага виробів (з камінням)
     totalMetalWeight?: number; // загальна вага виробів (без каміння)
     metalWeightWithLoss?: number; // totalMetalWeight * ((100% + loss) / 100)
     metalWorkPrice?: number; // metalWeightWithLoss * workPrice
@@ -59,6 +58,13 @@ export interface OrderDto {
     discount?: number | null;
     total?: number | null; // сума без знижки
     totalWithDiscount?: number | null; // сума зі знижкою
+}
+
+export interface RequestOrderCalculationDto {
+    discount?: number;
+    lossPercentage: number;
+    finalMetalWeight: number;
+    stoneCost?: number;
 }
 
 export interface CompleteOrderCalculationsEntryDto {

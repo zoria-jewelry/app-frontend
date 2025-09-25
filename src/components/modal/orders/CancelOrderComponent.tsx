@@ -45,13 +45,16 @@ const CancelOrderComponent = ({ isOpen, orderId, handleClose }: CancelOrderCompo
             setError('Введіть причину скасування');
             return;
         }
-        try {
-            await OrdersApiClient.cancelOrder(orderId, reason);
-            handleClose();
-        } catch (err) {
-            console.error('Failed to cancel order:', err);
-            setError('Не вдалося скасувати замовлення');
-        }
+        await OrdersApiClient.cancelOrder(orderId, reason)
+            .then(() => {
+                // TODO: add toast
+                handleClose();
+            })
+            .catch((err) => {
+                // TODO: add toast
+                console.log(err);
+                setError('Не вдалося скасувати замовлення');
+            });
     };
 
     return (

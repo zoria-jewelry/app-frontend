@@ -121,7 +121,7 @@ export default function OrderDetailsComponent({ id, open, onClose }: OrderDetail
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {order.entries.map((entry) => (
+                                {order.products.map((entry) => (
                                     <TableRow key={entry.productId}>
                                         <TableCell>
                                             {entry.productPictureUrl && (
@@ -180,17 +180,6 @@ export default function OrderDetailsComponent({ id, open, onClose }: OrderDetail
                                         <Typography variant="body2">Угар</Typography>
                                         <Typography variant="body2">
                                             <b>{order.loss}%</b>
-                                        </Typography>
-                                    </>
-                                )}
-
-                                {order.totalWeight && (
-                                    <>
-                                        <Typography variant="body2">
-                                            Загальна вага виробів
-                                        </Typography>
-                                        <Typography variant="body2">
-                                            <b>{order.totalWeight} г</b>
                                         </Typography>
                                     </>
                                 )}

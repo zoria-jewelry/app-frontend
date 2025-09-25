@@ -69,7 +69,7 @@ const CreateWorkUnitComponent = ({ open, onClose, onSave }: CreateWorkUnitModalP
         defaultValues: {
             employeeId: 0,
             orderId: undefined,
-            metalId: 0,
+            materialId: 0,
             weight: 0,
         },
     });
@@ -84,7 +84,7 @@ const CreateWorkUnitComponent = ({ open, onClose, onSave }: CreateWorkUnitModalP
         MaterialsApiClient.getAll().then((ms) => {
             setMetals(ms ?? []);
             if (ms && ms.length > 0) {
-                setValue('metalId', ms[0].id);
+                setValue('materialId', ms[0].id);
             }
         });
         OrdersApiClient.getAllActiveIds().then((ids) => setActiveOrderIds(ids ?? []));
@@ -99,7 +99,7 @@ const CreateWorkUnitComponent = ({ open, onClose, onSave }: CreateWorkUnitModalP
         reset({
             employeeId: 0,
             orderId: undefined,
-            metalId: 0,
+            materialId: 0,
             weight: 0,
         });
         onClose();
@@ -190,11 +190,11 @@ const CreateWorkUnitComponent = ({ open, onClose, onSave }: CreateWorkUnitModalP
 
                 <Box mt={4}>
                     <Typography>Метал</Typography>
-                    <FormControl fullWidth error={!!errors.metalId}>
+                    <FormControl fullWidth error={!!errors.materialId}>
                         <Select
                             fullWidth
-                            value={watch('metalId') || ''}
-                            onChange={(e) => setValue('metalId', Number(e.target.value))}
+                            value={watch('materialId') || ''}
+                            onChange={(e) => setValue('materialId', Number(e.target.value))}
                             displayEmpty
                         >
                             <MenuItem value="">Оберіть метал</MenuItem>
@@ -212,7 +212,7 @@ const CreateWorkUnitComponent = ({ open, onClose, onSave }: CreateWorkUnitModalP
                                 minHeight: '30px',
                             }}
                         >
-                            {errors.metalId ? errors.metalId.message : ''}
+                            {errors.materialId ? errors.materialId.message : ''}
                         </FormHelperText>
                     </FormControl>
                 </Box>

@@ -51,7 +51,7 @@ export interface WorkUnitsFilterData {
     employeeId?: number;
     startDate?: Date;
     endDate?: Date;
-    metalId?: number;
+    materialId?: number;
     orderId?: number;
 }
 
@@ -82,7 +82,7 @@ const WorkUnitsFilterComponent = ({ open, onClose, onApply }: WorkUnitsFilterMod
             startDate: currentMonth.start,
             endDate: currentMonth.end,
             employeeId: 0,
-            metalId: 0,
+            materialId: 0,
             orderId: undefined,
         },
     });
@@ -97,7 +97,7 @@ const WorkUnitsFilterComponent = ({ open, onClose, onApply }: WorkUnitsFilterMod
         MaterialsApiClient.getAll().then((ms) => {
             setMetals(ms ?? []);
             if (ms && ms.length > 0) {
-                setValue('metalId', ms[0].id);
+                setValue('materialId', ms[0].id);
             }
         });
         OrdersApiClient.getAllActiveIds().then((ids) => setOrdersIds(ids ?? []));
@@ -108,7 +108,7 @@ const WorkUnitsFilterComponent = ({ open, onClose, onApply }: WorkUnitsFilterMod
             employeeId: data.employeeId,
             startDate: data.startDate,
             endDate: data.endDate,
-            metalId: data.metalId,
+            materialId: data.materialId,
             orderId: data.orderId,
         });
         onClose();
@@ -120,7 +120,7 @@ const WorkUnitsFilterComponent = ({ open, onClose, onApply }: WorkUnitsFilterMod
             startDate: currentMonth.start,
             endDate: currentMonth.end,
             employeeId: 0,
-            metalId: 0,
+            materialId: 0,
             orderId: undefined,
         });
         onClose();
@@ -219,11 +219,11 @@ const WorkUnitsFilterComponent = ({ open, onClose, onApply }: WorkUnitsFilterMod
 
                 <Box mt={4}>
                     <Typography>Тип металу</Typography>
-                    <FormControl fullWidth error={!!errors.metalId}>
+                    <FormControl fullWidth error={!!errors.materialId}>
                         <Select
                             fullWidth
-                            value={watch('metalId') || ''}
-                            onChange={(e) => setValue('metalId', Number(e.target.value))}
+                            value={watch('materialId') || ''}
+                            onChange={(e) => setValue('materialId', Number(e.target.value))}
                             displayEmpty
                         >
                             <MenuItem value="">Оберіть метал</MenuItem>
@@ -240,7 +240,7 @@ const WorkUnitsFilterComponent = ({ open, onClose, onApply }: WorkUnitsFilterMod
                                 minHeight: '30px',
                             }}
                         >
-                            {errors.metalId ? errors.metalId.message : ''}
+                            {errors.materialId ? errors.materialId.message : ''}
                         </FormHelperText>
                     </FormControl>
                 </Box>

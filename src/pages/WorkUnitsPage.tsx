@@ -44,7 +44,7 @@ const WorkUnitsPage = () => {
         startDate: currentMonth.start,
         endDate: currentMonth.end,
         employeeId: 1,
-        metalId: 1,
+        materialId: 1,
     });
 
     const [report, setReport] = useState<WorkUnitsReportDto | undefined>();

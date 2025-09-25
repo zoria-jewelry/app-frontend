@@ -54,7 +54,7 @@ export const updateCustomerInfoSchema = z.object({
 
 export type UpdateCustomerInfoFromData = z.infer<typeof updateCustomerInfoSchema>;
 
-export const orderPositionSchema = z.object({
+export const orderProductsSchema = z.object({
     productId: z
         .number({ error: 'Оберіть виріб' })
         .nullish()
@@ -73,13 +73,14 @@ export const orderPositionSchema = z.object({
 });
 
 export const createUpdateOrderSchema = z.object({
-    metalId: z.number({ error: 'Оберіть матеріал' }),
+    clientId: z.number().optional(),
+    materialId: z.number({ error: 'Оберіть матеріал' }),
     workPrice: z
         .number({ error: 'Введіть число' })
         .positive({ error: 'Вартість роботи повинна бути додатною' })
         .multipleOf(0.01, { error: 'Крок значення — 0.01' }),
-    positions: z
-        .array(orderPositionSchema)
+    products: z
+        .array(orderProductsSchema)
         .nonempty({ error: 'Список товарів не може бути порожнім' })
         .nonoptional({ error: 'Список товарів не може бути порожнім' }),
     executorsIds: z
@@ -96,15 +97,15 @@ export const completeOrderSchema = z.object({
         (val) => (isNaN(Number(val)) || val === '' ? undefined : val),
         z.number({ error: 'Введіть число' }).optional().nullish(),
     ),
-    loss: z
+    lossPercentage: z
         .number({ error: 'Введіть число' })
         .min(0, { error: 'Відсоток угару повинен бути більшим за 0%' })
         .max(100, { error: 'Відсоток угару повинен бути не більшим за 100%' }),
-    totalMetalWeight: z
+    finalMetalWeight: z
         .number({ error: 'Введіть число' })
         .positive({ error: 'Вага металу у виробах повинна бути більшою за 0' })
         .multipleOf(0.001, { error: 'Крок значення — 0.001' }),
-    stonesPrice: z
+    stoneCost: z
         .number({ error: 'Введіть число' })
         .nonnegative({ error: 'Вартість не може бути відʼємною' })
         .multipleOf(0.01, { error: 'Крок значення – 0.01' })
@@ -113,7 +114,7 @@ export const completeOrderSchema = z.object({
     payments: z.array(
         z.object({
             materialId: z.number().nullable(),
-            materialCurrencyEquivalent: z
+            amountToPay: z
                 .number({ error: 'Введіть число' })
                 .nonnegative({ error: 'Значення повинно бути невідʼємним' })
                 .multipleOf(0.01, { error: 'Крок значення — 0.01' }),
@@ -134,7 +135,7 @@ export const workUnitsFilterSchema = z
         endDate: z
             .date({ error: "Дата кінця обов'язкова" })
             .nonoptional({ error: "Дата початку обов'язкова" }),
-        metalId: z.number({ error: 'Оберіть метал' }).positive({ error: 'Оберіть метал' }),
+        materialId: z.number({ error: 'Оберіть метал' }).positive({ error: 'Оберіть метал' }),
         orderId: z.number().positive().optional(),
     })
     .refine((data) => data.startDate <= data.endDate, {
@@ -147,7 +148,7 @@ export type WorkUnitsFilterFormData = z.infer<typeof workUnitsFilterSchema>;
 export const createWorkUnitSchema = z.object({
     employeeId: z.number({ error: 'Оберіть працівника' }).positive({ error: 'Оберіть працівника' }),
     orderId: z.number().positive().optional(),
-    metalId: z.number({ error: 'Оберіть метал' }).positive({ error: 'Оберіть метал' }),
+    materialId: z.number({ error: 'Оберіть метал' }).positive({ error: 'Оберіть метал' }),
     weight: z
         .number({ error: 'Введіть число' })
         .positive({ error: 'Вага повинна бути додатним числом' })

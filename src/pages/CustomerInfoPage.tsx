@@ -217,10 +217,13 @@ const CustomerInfoPage = () => {
                 onApply={setOrdersFilterData}
             />
 
-            <CreateOrderComponent
-                handleClose={() => setIsCreateOrderModalOpen(false)}
-                isOpen={isCreateOrderModalOpen}
-            />
+            {customerId && (
+                <CreateOrderComponent
+                    clientId={customerId}
+                    handleClose={() => setIsCreateOrderModalOpen(false)}
+                    isOpen={isCreateOrderModalOpen}
+                />
+            )}
         </Box>
     );
 };

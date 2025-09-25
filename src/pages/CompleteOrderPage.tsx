@@ -75,13 +75,25 @@ const CompleteOrderPage = () => {
     });
 
     const discount = watch('discount') || 0;
-    const loss = watch('loss') || 0;
-    const totalMetalWeight = watch('totalMetalWeight') || 0;
+    const loss = watch('lossPercentage') || 0;
+    const totalMetalWeight = watch('finalMetalWeight') || 0;
+    const stonesPrice = watch('stoneCost') || 0;
+
+    useEffect(() => {
+        if (loss > 0 && totalMetalWeight > 0) {
+            OrdersApiClient.getCompleteOrderCalculations(orderId, {
+                lossPercentage: loss,
+                finalMetalWeight: totalMetalWeight,
+                discount,
+                stoneCost: stonesPrice,
+            });
+        }
+    }, [discount, loss, totalMetalWeight, stonesPrice]);
+
     const totalMetalWeightWithLoss = useMemo(
         () => totalMetalWeight * (1 + loss / 100),
         [loss, totalMetalWeight],
     );
-    const stonesPrice = watch('stonesPrice') || 0;
 
     const subtotal = useMemo(
         () =>
@@ -97,13 +109,11 @@ const CompleteOrderPage = () => {
 
     const onSubmit = (data: CompleteOrderFormData) => {
         console.log(data);
-        const sum: number = data.payments
-            .map((p) => p.materialCurrencyEquivalent)
-            .reduce((a, b) => a + b);
+        const sum: number = data.payments.map((p) => p.amountToPay).reduce((a, b) => a + b);
         if (Math.abs(sum - total) > 0.001) {
             setOrderPaymentDifference(total - sum);
             setSelectedOrderPaymentEntries(
-                data.payments.map((p) => p.materialCurrencyEquivalent).filter((p) => p > 0),
+                data.payments.map((p) => p.amountToPay).filter((p) => p > 0),
             );
             return;
         }
@@ -121,12 +131,6 @@ const CompleteOrderPage = () => {
                     console.log(err);
                     // TODO: add toast
                 });
-            OrdersApiClient.getCompleteOrderCalculations(orderId)
-                .then(setOrderCalculations)
-                .catch((err) => {
-                    console.log(err);
-                    // TODO: add toast
-                });
         }
     }, [orderId, total]);
 
@@ -138,7 +142,7 @@ const CompleteOrderPage = () => {
                 ...watch(),
                 payments: orderCalculations.entries.map((entry) => ({
                     materialId: entry.materialId,
-                    materialCurrencyEquivalent: 0,
+                    amountToPay: 0,
                 })),
             });
         }
@@ -244,8 +248,8 @@ const CompleteOrderPage = () => {
                             fullWidth
                             margin="normal"
                             type="number"
-                            {...register('loss', { valueAsNumber: true })}
-                            error={!!errors.loss}
+                            {...register('lossPercentage', { valueAsNumber: true })}
+                            error={!!errors.lossPercentage}
                             sx={{
                                 margin: 0,
                                 '& .MuiOutlinedInput-root': {
@@ -253,8 +257,11 @@ const CompleteOrderPage = () => {
                                 },
                             }}
                         />
-                        <FormHelperText error={!!errors.loss} sx={{ margin: 0, minHeight: '30px' }}>
-                            {errors?.loss?.message}
+                        <FormHelperText
+                            error={!!errors.lossPercentage}
+                            sx={{ margin: 0, minHeight: '30px' }}
+                        >
+                            {errors?.lossPercentage?.message}
                         </FormHelperText>
                     </FormControl>
 
@@ -268,8 +275,8 @@ const CompleteOrderPage = () => {
                             fullWidth
                             margin="normal"
                             type="number"
-                            {...register('totalMetalWeight', { valueAsNumber: true })}
-                            error={!!errors.totalMetalWeight}
+                            {...register('finalMetalWeight', { valueAsNumber: true })}
+                            error={!!errors.finalMetalWeight}
                             sx={{
                                 margin: 0,
                                 '& .MuiOutlinedInput-root': {
@@ -278,10 +285,10 @@ const CompleteOrderPage = () => {
                             }}
                         />
                         <FormHelperText
-                            error={!!errors.totalMetalWeight}
+                            error={!!errors.finalMetalWeight}
                             sx={{ margin: 0, minHeight: '30px' }}
                         >
-                            {errors?.totalMetalWeight?.message}
+                            {errors?.finalMetalWeight?.message}
                         </FormHelperText>
                     </FormControl>
 
@@ -295,8 +302,8 @@ const CompleteOrderPage = () => {
                             fullWidth
                             margin="normal"
                             type="number"
-                            {...register('stonesPrice', { valueAsNumber: true })}
-                            error={!!errors.stonesPrice}
+                            {...register('stoneCost', { valueAsNumber: true })}
+                            error={!!errors.stoneCost}
                             sx={{
                                 margin: 0,
                                 '& .MuiOutlinedInput-root': {
@@ -305,10 +312,10 @@ const CompleteOrderPage = () => {
                             }}
                         />
                         <FormHelperText
-                            error={!!errors.stonesPrice}
+                            error={!!errors.stoneCost}
                             sx={{ margin: 0, minHeight: '30px' }}
                         >
-                            {errors?.stonesPrice?.message}
+                            {errors?.stoneCost?.message}
                         </FormHelperText>
                     </FormControl>
                 </AccordionDetails>
@@ -687,12 +694,12 @@ const CompleteOrderPage = () => {
                                                                 margin="normal"
                                                                 type="number"
                                                                 {...register(
-                                                                    `payments.${index}.materialCurrencyEquivalent`,
+                                                                    `payments.${index}.amountToPay`,
                                                                     { valueAsNumber: true },
                                                                 )}
                                                                 error={
                                                                     !!errors.payments?.[index]
-                                                                        ?.materialCurrencyEquivalent
+                                                                        ?.amountToPay
                                                                 }
                                                                 sx={{
                                                                     margin: 0,
@@ -704,7 +711,7 @@ const CompleteOrderPage = () => {
                                                             <FormHelperText
                                                                 error={
                                                                     !!errors.payments?.[index]
-                                                                        ?.materialCurrencyEquivalent
+                                                                        ?.amountToPay
                                                                 }
                                                                 sx={{
                                                                     margin: 0,
@@ -713,8 +720,7 @@ const CompleteOrderPage = () => {
                                                             >
                                                                 {
                                                                     errors.payments?.[index]
-                                                                        ?.materialCurrencyEquivalent
-                                                                        ?.message
+                                                                        ?.amountToPay?.message
                                                                 }
                                                             </FormHelperText>
                                                         </FormControl>

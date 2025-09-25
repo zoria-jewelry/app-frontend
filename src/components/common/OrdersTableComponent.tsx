@@ -208,7 +208,7 @@ const OrdersTableComponent = ({ orders, setPage, updateCallback }: OrdersTablePr
                 count={orders.total}
                 onPageChange={(_, p) => setPage(p)}
                 rowsPerPageOptions={[]}
-                page={orders.page}
+                page={orders.page - 1}
                 rowsPerPage={10}
                 sx={{ mt: 2, border: 0 }}
             />

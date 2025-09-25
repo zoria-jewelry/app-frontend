@@ -29,6 +29,7 @@ import { MaterialsApiClient } from '../../../api/materialsApiClient.ts';
 import { EmployeesApiClient } from '../../../api/employeesApiClient.ts';
 import { ProductsApiClient } from '../../../api/productsApiClient.ts';
 import ListItemText from '@mui/material/ListItemText';
+import { OrdersApiClient } from '../../../api/ordersApiClient.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -45,6 +46,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 export interface CreateOrderComponentProps {
+    clientId: number;
     handleClose: () => void;
     isOpen: boolean;
 }
@@ -63,21 +65,21 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
         resolver: zodResolver(createUpdateOrderSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
-            metalId: 0,
+            materialId: 0,
             workPrice: 0,
-            positions: [],
+            products: [],
             executorsIds: [],
         },
     });
 
     const { fields, append, remove } = useFieldArray({
         control,
-        name: 'positions',
+        name: 'products',
     });
 
     const [materials, setMaterials] = useState<MaterialDto[]>([]);
     const [employees, setEmployees] = useState<EmployeeDto[]>([]);
-    const [products, setProducts] = useState<ProductEntryDto[]>([]);
+    const [jewelryProducts, setJewelryProducts] = useState<ProductEntryDto[]>([]);
     const [searchPhrase, setSearchPhrase] = useState('');
 
     useEffect(() => {
@@ -86,7 +88,7 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
     }, []);
 
     useEffect(() => {
-        ProductsApiClient.getAll(searchPhrase).then((data) => data && setProducts(data));
+        ProductsApiClient.getAll(searchPhrase).then((data) => data && setJewelryProducts(data));
     }, [searchPhrase]);
 
     const handleClose = (): void => {
@@ -96,9 +98,17 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
     };
 
     const onSubmit = (data: CreateOrderFormData) => {
+        data.clientId = props.clientId;
         console.log('Submit:', data);
-        // TODO: call API Endpoint
-        handleClose();
+        OrdersApiClient.create(data)
+            .then(() => {
+                // TODO: add toast
+                handleClose();
+            })
+            .catch((err) => {
+                // TODO: add toast
+                console.log(err);
+            });
     };
 
     return (
@@ -144,7 +154,7 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                         <FormLabel>Метал</FormLabel>
                         <Controller
                             control={control}
-                            name="metalId"
+                            name="materialId"
                             render={({ field }) => (
                                 <Select {...field} fullWidth>
                                     {materials.map((m) => (
@@ -155,8 +165,8 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                                 </Select>
                             )}
                         />
-                        <FormHelperText error={!!errors.metalId}>
-                            {errors?.metalId?.message as string}
+                        <FormHelperText error={!!errors.materialId}>
+                            {errors?.materialId?.message as string}
                         </FormHelperText>
                     </FormControl>
 
@@ -175,7 +185,7 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                     </FormControl>
                 </Box>
 
-                {/* Positions */}
+                {/* products */}
                 <Typography variant="h6" mt={8}>
                     Позиції замовлення
                 </Typography>
@@ -196,10 +206,10 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                             {/* Product */}
                             <Controller
                                 control={control}
-                                name={`positions.${index}.productId`}
+                                name={`products.${index}.productId`}
                                 render={({ field }) => (
                                     <Autocomplete
-                                        options={products}
+                                        options={jewelryProducts}
                                         noOptionsText="Нічого не знайдено"
                                         getOptionLabel={(option) => option.name}
                                         onInputChange={(_, value) => setSearchPhrase(value)}
@@ -227,7 +237,7 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                                             <TextField
                                                 {...params}
                                                 placeholder="Виберіть виріб"
-                                                error={!!errors.positions?.[index]?.productId}
+                                                error={!!errors.products?.[index]?.productId}
                                             />
                                         )}
                                     />
@@ -238,8 +248,8 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                             <TextField
                                 type="number"
                                 placeholder="Розмір"
-                                {...register(`positions.${index}.size`, { valueAsNumber: true })}
-                                error={!!errors.positions?.[index]?.size}
+                                {...register(`products.${index}.size`, { valueAsNumber: true })}
+                                error={!!errors.products?.[index]?.size}
                                 sx={{ flex: 0.5, minWidth: 100 }}
                             />
 
@@ -247,16 +257,16 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                             <TextField
                                 type="number"
                                 placeholder="К-ть"
-                                {...register(`positions.${index}.count`, { valueAsNumber: true })}
-                                error={!!errors.positions?.[index]?.count}
+                                {...register(`products.${index}.count`, { valueAsNumber: true })}
+                                error={!!errors.products?.[index]?.count}
                                 sx={{ flex: 0.5, minWidth: 100 }}
                             />
 
                             {/* Notes */}
                             <TextField
                                 placeholder="Примітки"
-                                {...register(`positions.${index}.notes`)}
-                                error={!!errors.positions?.[index]?.notes}
+                                {...register(`products.${index}.notes`)}
+                                error={!!errors.products?.[index]?.notes}
                                 sx={{ flex: 2 }}
                                 multiline
                                 maxRows={4}
@@ -267,8 +277,8 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                             </IconButton>
                         </Box>
                     ))}
-                    <FormHelperText error={!!errors.positions}>
-                        {errors.positions?.root?.message || errors.positions?.message}
+                    <FormHelperText error={!!errors.products}>
+                        {errors.products?.root?.message || errors.products?.message}
                     </FormHelperText>
                 </Box>
 
