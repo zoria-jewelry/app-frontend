@@ -32,6 +32,8 @@ const CustomerInfoPage = () => {
 
     const isMd = useMediaQuery(theme.breakpoints.down('md')); // < 900px
 
+    const [refresher, setRefresher] = useState<number>(0);
+
     const updateOrdersList = useCallback(
         (page: number = ordersPage) => {
             if (customerId) {
@@ -95,7 +97,7 @@ const CustomerInfoPage = () => {
                     <Typography variant="h3" textAlign="left" width="100%">
                         Баланси клієнта
                     </Typography>
-                    <UpdateCustomerBalancesComponent />
+                    <UpdateCustomerBalancesComponent onUpdate={() => setRefresher((v) => v + 1)} />
                 </Paper>
             </Box>
             <Paper
@@ -118,7 +120,7 @@ const CustomerInfoPage = () => {
                 >
                     Історія змін
                 </Typography>
-                <CustomerAuditRecordsComponent />
+                <CustomerAuditRecordsComponent refresher={refresher} />
             </Paper>
             <Paper
                 className={`${paperStyles.paper} ${commonStyles.flexColumn}`}
