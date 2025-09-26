@@ -239,7 +239,7 @@ const ProductsCataloguePage = () => {
             <CreateProductComponent
                 isOpen={isCreateProductModalOpen}
                 handleClose={() => setIsCreateProductModalOpen(false)}
-                callback={loadProducts}
+                onCreate={loadProducts}
             />
 
             {productToArchive && (
@@ -256,7 +256,7 @@ const ProductsCataloguePage = () => {
             <ProductsArchiveComponent
                 handleClose={() => setIsArchiveOpened(false)}
                 isOpen={isArchiveOpened}
-                callback={loadProducts}
+                onArchive={loadProducts}
             />
         </Paper>
     );

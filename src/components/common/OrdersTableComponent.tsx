@@ -22,12 +22,13 @@ import EditOrderComponent from '../modal/orders/EditOrderComponent.tsx';
 import { useNavigate } from 'react-router-dom';
 
 export interface OrdersTableProps {
+    customerId?: number | null;
     orders: OrdersListDto;
     setPage: (page: number) => void;
-    updateCallback: () => void;
+    onUpdate: () => void;
 }
 
-const OrdersTableComponent = ({ orders, setPage, updateCallback }: OrdersTableProps) => {
+const OrdersTableComponent = ({ customerId, orders, setPage, onUpdate }: OrdersTableProps) => {
     const navigate = useNavigate();
 
     const [orderToCancel, setOrderToCancel] = useState<OrderBriefInfoDto | undefined>();
@@ -162,9 +163,14 @@ const OrdersTableComponent = ({ orders, setPage, updateCallback }: OrdersTablePr
                                                 <Button
                                                     variant="contained"
                                                     color="error"
-                                                    onClick={() =>
-                                                        navigate(`/complete-order/${order.id}`)
-                                                    }
+                                                    onClick={() => {
+                                                        const query = customerId
+                                                            ? `?customerId=${customerId}`
+                                                            : '';
+                                                        navigate(
+                                                            `/complete-order/${order.id}${query}`,
+                                                        );
+                                                    }}
                                                 >
                                                     Завершити
                                                 </Button>
@@ -234,7 +240,7 @@ const OrdersTableComponent = ({ orders, setPage, updateCallback }: OrdersTablePr
                     orderId={orderIdForUpdateModal}
                     handleClose={() => setOrderIdForUpdateModal(undefined)}
                     open={!!orderIdForUpdateModal}
-                    callback={updateCallback}
+                    onUpdate={onUpdate}
                 />
             )}
         </>

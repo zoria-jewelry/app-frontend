@@ -41,7 +41,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export interface ProductsArchiveComponentProps {
     handleClose: () => void;
     isOpen: boolean;
-    callback: () => void;
+    onArchive: () => void;
 }
 
 const ProductsArchiveComponent = (props: ProductsArchiveComponentProps) => {
@@ -74,7 +74,7 @@ const ProductsArchiveComponent = (props: ProductsArchiveComponentProps) => {
             ProductsApiClient.removeFromArchive(id)
                 .then(() => {
                     loadArchivedProducts();
-                    props.callback();
+                    props.onArchive();
                 })
                 .catch((error) => {
                     console.log(error);

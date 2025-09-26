@@ -6,7 +6,11 @@ import {
     OrderStatus,
     type RequestOrderCalculationDto,
 } from '../dto/orders.ts';
-import type { CreateOrderFormData, UpdateOrderFormData } from '../validation/schemas.ts';
+import type {
+    CompleteOrderFormData,
+    CreateOrderFormData,
+    UpdateOrderFormData,
+} from '../validation/schemas.ts';
 
 export interface OrdersFilterData {
     fromDate?: Date;
@@ -16,6 +20,23 @@ export interface OrdersFilterData {
 }
 
 export class OrdersApiClient extends AbstractApiClient {
+    private static mapFilterData(filterData?: OrdersFilterData): any {
+        return {
+            fromDate: filterData?.fromDate
+                ? filterData.fromDate.toISOString().split('T')[0]
+                : undefined,
+            toDate: filterData?.toDate ? filterData.toDate.toISOString().split('T')[0] : undefined,
+            statuses:
+                filterData?.statuses && filterData?.statuses?.length > 0
+                    ? filterData.statuses
+                    : undefined,
+            executorsIds:
+                filterData?.executorsIds && filterData?.executorsIds?.length > 0
+                    ? filterData.executorsIds
+                    : undefined,
+        };
+    }
+
     public static async getById(id: number): Promise<OrderDto | undefined> {
         console.log(`OrdersApiClient.getById: ${id}`);
         return await this.apiRequest<OrderDto>({ url: `/orders/${id}/` });
@@ -33,6 +54,7 @@ export class OrdersApiClient extends AbstractApiClient {
         const params = {
             search: phrase,
             page: page + 1,
+            ...this.mapFilterData(filterData),
         };
         return await this.apiRequest<OrdersListDto>({
             url: `/clients/${customerId}/orders/`,
@@ -48,7 +70,7 @@ export class OrdersApiClient extends AbstractApiClient {
         console.log(
             `OrdersApiClient.getAll: ${phrase}, filterData - ${JSON.stringify(filterData)}, page - ${page}`,
         );
-        const params = { search: phrase, page: page + 1 };
+        const params = { search: phrase, page: page + 1, ...this.mapFilterData(filterData) };
         return await this.apiRequest<OrdersListDto>({ url: '/orders/', params });
     }
 
@@ -64,12 +86,19 @@ export class OrdersApiClient extends AbstractApiClient {
 
     public static async cancelOrder(orderId: number, reason: string): Promise<void> {
         console.log(`OrdersApiClient.cancelOrder: orderId - ${orderId}, reason - ${reason}`);
-        const data = { cancellationReason: reason };
+        const data = { reason };
         return await this.apiRequest<void>({
             url: `/orders/${orderId}/cancel/`,
             method: 'POST',
             data,
         });
+    }
+
+    public static async completeOrder(orderId: number, data: CompleteOrderFormData): Promise<void> {
+        console.log(
+            `OrdersApiClient.completeOrder: orderId - ${orderId}, data - ${JSON.stringify(data)}`,
+        );
+        await this.apiRequest<void>({ url: `/orders/${orderId}/complete/`, data });
     }
 
     public static async getCompleteOrderCalculations(

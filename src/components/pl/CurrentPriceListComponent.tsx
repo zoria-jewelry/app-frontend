@@ -152,7 +152,7 @@ const CurrentPriceListComponent = ({ onPriceListCreated }: CurrentPriceListCompo
             <CreatePriceListComponent
                 isOpen={isCreationFormOpened}
                 handleClose={() => setIsCreationFormOpened(false)}
-                callback={handlePriceListCreated}
+                onCreate={handlePriceListCreated}
             />
         </Paper>
     );

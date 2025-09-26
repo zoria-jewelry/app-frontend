@@ -49,6 +49,7 @@ export interface CreateOrderComponentProps {
     clientId: number;
     handleClose: () => void;
     isOpen: boolean;
+    onCreate: () => void;
 }
 
 const CreateOrderComponent = (props: CreateOrderComponentProps) => {
@@ -103,6 +104,7 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
         OrdersApiClient.create(data)
             .then(() => {
                 // TODO: add toast
+                props.onCreate();
                 handleClose();
             })
             .catch((err) => {

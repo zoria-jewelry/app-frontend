@@ -79,4 +79,12 @@ export interface CompleteOrderCalculationsDto {
     allMaterialsCost: number;
     clientIsAbleToFullyPay: boolean;
     entries: CompleteOrderCalculationsEntryDto[];
+    finalWeight: number;
+    metalMassWithLoss: number;
+    workCost: number;
+    usedMetalCost: number;
+    stoneCost: number;
+    sumWithoutDiscount: number;
+    discount: number;
+    totalSum: number;
 }

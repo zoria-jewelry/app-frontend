@@ -50,7 +50,7 @@ export interface EditOrderComponentProps {
     orderId: number;
     handleClose: () => void;
     open: boolean;
-    callback: () => void;
+    onUpdate: () => void;
 }
 
 const EditOrderComponent = (props: EditOrderComponentProps) => {
@@ -104,7 +104,7 @@ const EditOrderComponent = (props: EditOrderComponentProps) => {
             .then(() => {
                 // TODO: add toast
                 handleClose();
-                props.callback();
+                props.onUpdate();
             })
             .catch((err) => {
                 // TODO: add toast
@@ -284,7 +284,7 @@ const EditOrderComponent = (props: EditOrderComponentProps) => {
                                                         sx={{ width: 50, height: 50, mr: 4 }}
                                                     />
                                                 )}
-                                                {option.name}
+                                                {option.name} (Арт. {option.article})
                                             </li>
                                         )}
                                         renderInput={(params) => (

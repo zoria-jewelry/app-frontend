@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
     Accordion,
     AccordionDetails,
@@ -27,7 +27,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { type Resolver, useFieldArray, useForm } from 'react-hook-form';
 import { type CompleteOrderFormData, completeOrderSchema } from '../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { type ChangeEvent, useEffect, useState } from 'react';
 import { toFixedNumber } from '../utils.ts';
 import type { CompleteOrderCalculationsDto, OrderDto } from '../dto/orders.ts';
 import { OrdersApiClient } from '../api/ordersApiClient.ts';
@@ -40,6 +40,9 @@ const CompleteOrderPage = () => {
 
     const params = useParams();
     const orderId: number = Number(params.orderId);
+
+    const [searchParams] = useSearchParams();
+    const customerId = searchParams.get('customerId');
 
     const [order, setOrder] = useState<OrderDto | undefined>();
     const [orderCalculations, setOrderCalculations] = useState<
@@ -86,41 +89,41 @@ const CompleteOrderPage = () => {
                 finalMetalWeight: totalMetalWeight,
                 discount,
                 stoneCost: stonesPrice,
-            });
+            })
+                .then(setOrderCalculations)
+                .catch((err) => {
+                    // TODO: add toast
+                    console.log(err);
+                });
         }
     }, [discount, loss, totalMetalWeight, stonesPrice]);
-
-    const totalMetalWeightWithLoss = useMemo(
-        () => totalMetalWeight * (1 + loss / 100),
-        [loss, totalMetalWeight],
-    );
-
-    const subtotal = useMemo(
-        () =>
-            (order?.workPrice ?? 0) * totalMetalWeightWithLoss +
-            (order?.materialPrice ?? 0) * totalMetalWeight +
-            (stonesPrice ?? 0),
-        [order, totalMetalWeightWithLoss, stonesPrice],
-    );
-    const total = useMemo(() => subtotal - discount, [subtotal, discount]);
 
     const enableSections =
         !!loss && !!totalMetalWeight && !!Number(loss) && !!Number(totalMetalWeight);
 
     const onSubmit = (data: CompleteOrderFormData) => {
-        console.log(data);
-        const sum: number = data.payments.map((p) => p.amountToPay).reduce((a, b) => a + b);
-        if (Math.abs(sum - total) > 0.001) {
-            setOrderPaymentDifference(total - sum);
-            setSelectedOrderPaymentEntries(
-                data.payments.map((p) => p.amountToPay).filter((p) => p > 0),
-            );
-            return;
+        if (orderCalculations && orderId > 0) {
+            const sum: number = data.payments.map((p) => p.amountToPay).reduce((a, b) => a + b);
+            if (Math.abs(sum - orderCalculations.totalSum) > 0.001) {
+                setOrderPaymentDifference(orderCalculations.totalSum - sum);
+                setSelectedOrderPaymentEntries(
+                    data.payments.map((p) => p.amountToPay).filter((p) => p > 0),
+                );
+                return;
+            }
+
+            OrdersApiClient.completeOrder(orderId, data)
+                .then(() => {
+                    // TODO: add toast
+                    clearErrors();
+                    reset();
+                    navigate(customerId ? `/customers/${customerId}` : '/orders');
+                })
+                .catch((err) => {
+                    // TODO: add toast
+                    console.log(err);
+                });
         }
-        // TODO: call API Endpoint
-        clearErrors();
-        reset();
-        navigate('/customers');
     };
 
     useEffect(() => {
@@ -132,15 +135,13 @@ const CompleteOrderPage = () => {
                     // TODO: add toast
                 });
         }
-    }, [orderId, total]);
-
-    useEffect(() => {}, [discount, loss, totalMetalWeight]);
+    }, [orderId]);
 
     useEffect(() => {
         if (orderCalculations) {
             reset({
                 ...watch(),
-                payments: orderCalculations.entries.map((entry) => ({
+                payments: (orderCalculations.entries ?? []).map((entry) => ({
                     materialId: entry.materialId,
                     amountToPay: 0,
                 })),
@@ -395,7 +396,11 @@ const CompleteOrderPage = () => {
                                             <TableCell>
                                                 {`${toFixedNumber(totalMetalWeight, 3)} * (1 + ${loss} ÷ 100) = `}
                                                 <span style={{ fontWeight: 900 }}>
-                                                    {toFixedNumber(totalMetalWeightWithLoss, 3)} г
+                                                    {toFixedNumber(
+                                                        orderCalculations?.metalMassWithLoss ?? 0,
+                                                        3,
+                                                    )}{' '}
+                                                    г
                                                 </span>
                                             </TableCell>
                                         </TableRow>
@@ -408,10 +413,10 @@ const CompleteOrderPage = () => {
                                                 Вартість обробки металу
                                             </TableCell>
                                             <TableCell>
-                                                {`${order.workPrice} * ${toFixedNumber(totalMetalWeightWithLoss, 3)} = `}
+                                                {`${order.workPrice} * ${toFixedNumber(orderCalculations?.metalMassWithLoss ?? 0, 3)} = `}
                                                 <span style={{ fontWeight: 900 }}>
                                                     {toFixedNumber(
-                                                        order.workPrice * totalMetalWeightWithLoss,
+                                                        orderCalculations?.workCost ?? 0,
                                                         2,
                                                     )}{' '}
                                                     грн
@@ -427,10 +432,10 @@ const CompleteOrderPage = () => {
                                                 Вартість використаного металу
                                             </TableCell>
                                             <TableCell>
-                                                {`${toFixedNumber(totalMetalWeight, 3)} * ${order.materialPrice} = `}
+                                                {`${toFixedNumber(totalMetalWeight, 3)} * ${toFixedNumber(order.materialPrice, 2)} = `}
                                                 <span style={{ fontWeight: 900 }}>
                                                     {toFixedNumber(
-                                                        totalMetalWeight * order.materialPrice,
+                                                        orderCalculations?.usedMetalCost ?? 0,
                                                         2,
                                                     )}{' '}
                                                     грн
@@ -448,7 +453,11 @@ const CompleteOrderPage = () => {
                                             </TableCell>
                                             <TableCell>
                                                 <span style={{ fontWeight: 900 }}>
-                                                    {toFixedNumber(stonesPrice, 2)} грн
+                                                    {toFixedNumber(
+                                                        orderCalculations?.stoneCost ?? 0,
+                                                        2,
+                                                    )}{' '}
+                                                    грн
                                                 </span>
                                             </TableCell>
                                         </TableRow>
@@ -463,13 +472,17 @@ const CompleteOrderPage = () => {
                                 marginTop={theme.spacing(4)}
                             >
                                 <Typography variant="body1">
-                                    Сума без знижки – {subtotal.toFixed(2)} грн
+                                    Сума без знижки –{' '}
+                                    {toFixedNumber(orderCalculations?.sumWithoutDiscount ?? 0, 2)}{' '}
+                                    грн
                                 </Typography>
                                 <Typography variant="body1">
-                                    Знижка – {Number(discount).toFixed(2)} грн
+                                    Знижка – {toFixedNumber(orderCalculations?.discount ?? 0, 2)}{' '}
+                                    грн
                                 </Typography>
                                 <Typography variant="body1" fontWeight={900}>
-                                    Сума зі знижкою – {total.toFixed(2)} грн
+                                    Сума зі знижкою –{' '}
+                                    {toFixedNumber(orderCalculations?.totalSum ?? 0, 2)} грн
                                 </Typography>
                             </Box>
                         </>
@@ -557,7 +570,7 @@ const CompleteOrderPage = () => {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {orderCalculations.entries.map((entry) => (
+                                        {(orderCalculations.entries ?? []).map((entry) => (
                                             <TableRow key={entry.materialId}>
                                                 <TableCell sx={{ padding: theme.spacing(2) }}>
                                                     <Typography variant="body2">
@@ -751,7 +764,7 @@ const CompleteOrderPage = () => {
                                 />
                             </RadioGroup>
 
-                            {orderPaymentDifference && !!total && (
+                            {orderPaymentDifference && !!orderCalculations && (
                                 <Paper
                                     elevation={3}
                                     className={paperStyles.paper}
@@ -786,7 +799,7 @@ const CompleteOrderPage = () => {
                                         грн
                                         <br />
                                         {selectedOrderPaymentEntries.length
-                                            ? `${total.toFixed(2)}${selectedOrderPaymentEntries.map((p) => ` – ${p.toFixed(2)}`).join('')} = ${orderPaymentDifference.toFixed(2)} грн`
+                                            ? `${orderCalculations.totalSum.toFixed(2)}${selectedOrderPaymentEntries.map((p) => ` – ${p.toFixed(2)}`).join('')} = ${orderPaymentDifference.toFixed(2)} грн`
                                             : `Жоден матеріал ще не був обраний для оплати`}
                                     </Typography>
                                 </Paper>
