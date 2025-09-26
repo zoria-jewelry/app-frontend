@@ -1,7 +1,11 @@
 import { AbstractApiClient } from './abstractApiClient.ts';
 import type { CustomerBalanceDto, CustomerDto, CustomerListDto } from '../dto/customers.ts';
-import type { AuditRecord, CustomerAuditDetailsDto } from '../dto/audit.ts';
-import type { CreateCustomerFormData, UpdateCustomerInfoFromData } from '../validation/schemas.ts';
+import type { AuditRecord, AuditDetailsDto } from '../dto/audit.ts';
+import type {
+    CreateCustomerFormData,
+    UpdateCustomerBalancesFormData,
+    UpdateCustomerInfoFromData,
+} from '../validation/schemas.ts';
 
 export class CustomersApiClient extends AbstractApiClient {
     public static async get(
@@ -41,9 +45,21 @@ export class CustomersApiClient extends AbstractApiClient {
         return await this.apiRequest<CustomerBalanceDto>({ url: `/clients/${id}/balance/` });
     }
 
-    public static async getCustomerAuditRecords(
-        id: number,
-    ): Promise<CustomerAuditDetailsDto | undefined> {
+    public static async updateCustomerBalance(
+        customerId: number,
+        data: UpdateCustomerBalancesFormData,
+    ): Promise<void> {
+        console.log(
+            `CustomersApiClient.updateCustomerBalance: customerId - ${customerId}, data - ${JSON.stringify(data)}`,
+        );
+        await this.apiRequest<void>({
+            url: `/clients/${customerId}/balance/`,
+            data,
+            method: 'POST',
+        });
+    }
+
+    public static async getCustomerAuditRecords(id: number): Promise<AuditDetailsDto | undefined> {
         console.log(`CustomersApiClient.getCustomerAuditRecords: ${id}`);
         return {
             entries: (await this.apiRequest<AuditRecord[]>({ url: `/clients/${id}/audit/` })) ?? [],

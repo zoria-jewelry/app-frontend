@@ -5,7 +5,11 @@ import { CustomersApiClient } from '../../api/customersApiClient.ts';
 import { Box, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { toFixedNumber, toLocalDateTime } from '../../utils.ts';
 
-const CustomerAuditRecordsComponent = () => {
+export interface CustomerAuditRecordsProps {
+    refresher: number;
+}
+
+const CustomerAuditRecordsComponent = ({ refresher }: CustomerAuditRecordsProps) => {
     const theme = useTheme();
 
     const params = useParams();
@@ -20,11 +24,10 @@ const CustomerAuditRecordsComponent = () => {
             return;
         }
 
-        CustomersApiClient.getCustomerAuditRecords(customerId).then((audit) => {
-            console.log(audit);
-            setRecords(audit?.entries ?? []);
-        });
-    }, [customerId]);
+        CustomersApiClient.getCustomerAuditRecords(customerId).then((audit) =>
+            setRecords(audit?.entries ?? []),
+        );
+    }, [customerId, refresher]);
 
     return (
         <Box sx={{ overflowY: 'auto' }} padding={theme.spacing(2)}>

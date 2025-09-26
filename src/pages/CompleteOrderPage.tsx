@@ -456,13 +456,13 @@ const CompleteOrderPage = () => {
                                 marginTop={theme.spacing(4)}
                             >
                                 <Typography variant="body1">
-                                    Сума без знижки – {subtotal.toFixed(2)} грн
+                                    Сума без знижки – {toFixedNumber(subtotal, 2)} грн
                                 </Typography>
                                 <Typography variant="body1">
-                                    Знижка – {Number(discount).toFixed(2)} грн
+                                    Знижка – {toFixedNumber(discount, 2)} грн
                                 </Typography>
                                 <Typography variant="body1" fontWeight={900}>
-                                    Сума зі знижкою – {total.toFixed(2)} грн
+                                    Сума зі знижкою – {toFixedNumber(total, 2)} грн
                                 </Typography>
                             </Box>
                         </>
@@ -569,7 +569,7 @@ const CompleteOrderPage = () => {
                                                 </TableCell>
                                                 <TableCell sx={{ padding: theme.spacing(2) }}>
                                                     <Typography variant="body2" textAlign="right">
-                                                        {entry.totalMaterialCost.toFixed(2)}
+                                                        {toFixedNumber(entry.totalMaterialCost, 2)}
                                                     </Typography>
                                                 </TableCell>
                                             </TableRow>
@@ -723,7 +723,10 @@ const CompleteOrderPage = () => {
                                                         sx={{ borderBottom: 'none', padding: 0 }}
                                                     >
                                                         <Typography textAlign="right">
-                                                            {entry?.totalMaterialCost.toFixed(2)}
+                                                            {toFixedNumber(
+                                                                entry?.totalMaterialCost,
+                                                                2,
+                                                            )}
                                                         </Typography>
                                                     </TableCell>
                                                 </TableRow>
@@ -775,12 +778,12 @@ const CompleteOrderPage = () => {
                                             ? 'Обрана сума оплати менша за вартість замовлення. Необхідно додати '
                                             : 'Обрана сума оплати перевищує вартість замовлення. Необхідно прибрати '}
                                         <span style={{ fontWeight: 900 }}>
-                                            {Math.abs(orderPaymentDifference).toFixed(2)}
+                                            {toFixedNumber(Math.abs(orderPaymentDifference), 2)}
                                         </span>{' '}
                                         грн
                                         <br />
                                         {selectedOrderPaymentEntries.length
-                                            ? `${total.toFixed(2)}${selectedOrderPaymentEntries.map((p) => ` – ${p.toFixed(2)}`).join('')} = ${orderPaymentDifference.toFixed(2)} грн`
+                                            ? `${toFixedNumber(total, 2)}${selectedOrderPaymentEntries.map((p) => ` – ${p.toFixed(2)}`).join('')} = ${orderPaymentDifference.toFixed(2)} грн`
                                             : `Жоден матеріал ще не був обраний для оплати`}
                                     </Typography>
                                 </Paper>

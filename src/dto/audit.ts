@@ -14,6 +14,6 @@ export interface AuditRecord {
     entryRows: AuditRecordRow[];
 }
 
-export interface CustomerAuditDetailsDto {
+export interface AuditDetailsDto {
     entries: AuditRecord[];
 }
