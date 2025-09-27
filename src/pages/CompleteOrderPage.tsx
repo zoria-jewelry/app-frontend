@@ -104,7 +104,7 @@ const CompleteOrderPage = () => {
     const onSubmit = (data: CompleteOrderFormData) => {
         if (orderCalculations && orderId > 0) {
             const sum: number = data.paymentData.map((p) => p.amountToPay).reduce((a, b) => a + b);
-            if (Math.abs(sum - orderCalculations.totalSum) > 0.001) {
+            if (Math.abs(sum - orderCalculations.totalSum) >= 0.01) {
                 setOrderPaymentDifference(orderCalculations.totalSum - sum);
                 setSelectedOrderPaymentEntries(
                     data.paymentData.map((p) => p.amountToPay).filter((p) => p > 0),
