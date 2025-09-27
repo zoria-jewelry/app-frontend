@@ -74,7 +74,7 @@ const CompleteOrderPage = () => {
 
     const { fields } = useFieldArray({
         control,
-        name: 'payments',
+        name: 'paymentData',
     });
 
     const discount = watch('discount') || 0;
@@ -103,11 +103,11 @@ const CompleteOrderPage = () => {
 
     const onSubmit = (data: CompleteOrderFormData) => {
         if (orderCalculations && orderId > 0) {
-            const sum: number = data.payments.map((p) => p.amountToPay).reduce((a, b) => a + b);
+            const sum: number = data.paymentData.map((p) => p.amountToPay).reduce((a, b) => a + b);
             if (Math.abs(sum - orderCalculations.totalSum) > 0.001) {
                 setOrderPaymentDifference(orderCalculations.totalSum - sum);
                 setSelectedOrderPaymentEntries(
-                    data.payments.map((p) => p.amountToPay).filter((p) => p > 0),
+                    data.paymentData.map((p) => p.amountToPay).filter((p) => p > 0),
                 );
                 return;
             }
@@ -141,7 +141,7 @@ const CompleteOrderPage = () => {
         if (orderCalculations) {
             reset({
                 ...watch(),
-                payments: (orderCalculations.entries ?? []).map((entry) => ({
+                paymentData: (orderCalculations.entries ?? []).map((entry) => ({
                     materialId: entry.materialId,
                     amountToPay: 0,
                 })),
@@ -604,7 +604,7 @@ const CompleteOrderPage = () => {
                                     marginBottom={theme.spacing(4)}
                                     paddingRight={theme.spacing(2)}
                                 >
-                                    Усього {orderCalculations.allMaterialsCost}
+                                    Усього {toFixedNumber(orderCalculations.allMaterialsCost, 2)}
                                 </Typography>
                             </TableContainer>
 
@@ -707,11 +707,11 @@ const CompleteOrderPage = () => {
                                                                 margin="normal"
                                                                 type="number"
                                                                 {...register(
-                                                                    `payments.${index}.amountToPay`,
+                                                                    `paymentData.${index}.amountToPay`,
                                                                     { valueAsNumber: true },
                                                                 )}
                                                                 error={
-                                                                    !!errors.payments?.[index]
+                                                                    !!errors.paymentData?.[index]
                                                                         ?.amountToPay
                                                                 }
                                                                 sx={{
@@ -723,7 +723,7 @@ const CompleteOrderPage = () => {
                                                             />
                                                             <FormHelperText
                                                                 error={
-                                                                    !!errors.payments?.[index]
+                                                                    !!errors.paymentData?.[index]
                                                                         ?.amountToPay
                                                                 }
                                                                 sx={{
@@ -732,7 +732,7 @@ const CompleteOrderPage = () => {
                                                                 }}
                                                             >
                                                                 {
-                                                                    errors.payments?.[index]
+                                                                    errors.paymentData?.[index]
                                                                         ?.amountToPay?.message
                                                                 }
                                                             </FormHelperText>

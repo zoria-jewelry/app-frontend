@@ -98,7 +98,7 @@ export class OrdersApiClient extends AbstractApiClient {
         console.log(
             `OrdersApiClient.completeOrder: orderId - ${orderId}, data - ${JSON.stringify(data)}`,
         );
-        await this.apiRequest<void>({ url: `/orders/${orderId}/complete/`, data });
+        await this.apiRequest<void>({ url: `/orders/${orderId}/complete/`, data, method: 'POST' });
     }
 
     public static async getCompleteOrderCalculations(

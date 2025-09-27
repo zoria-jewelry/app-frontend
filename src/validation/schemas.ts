@@ -111,7 +111,7 @@ export const completeOrderSchema = z.object({
         .multipleOf(0.01, { error: 'Крок значення – 0.01' })
         .optional()
         .nullish(),
-    payments: z.array(
+    paymentData: z.array(
         z.object({
             materialId: z.number().nullable(),
             amountToPay: z
