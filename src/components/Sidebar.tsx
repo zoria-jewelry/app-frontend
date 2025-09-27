@@ -8,7 +8,7 @@ import ListItemText from '@mui/material/ListItemText';
 import EmployeesIcon from '@mui/icons-material/Groups2';
 import DiamondIcon from '@mui/icons-material/Diamond';
 import { styled } from '@mui/material/styles';
-import { Divider, IconButton } from '@mui/material';
+import { Button, CircularProgress, Divider, IconButton } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { useNavigate } from 'react-router-dom';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
@@ -17,6 +17,8 @@ import CustomerIcon from '@mui/icons-material/Portrait';
 import PercentIcon from '@mui/icons-material/Percent';
 import StoreIcon from '@mui/icons-material/Store';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import { useCallback, useEffect, useState } from 'react';
+import { VchasnoApiClient } from '../api/vchasnoApiClient.ts';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -38,17 +40,65 @@ const Sidebar = (props: SidebarProps) => {
 
     const navigate = useNavigate();
 
+    const [isShiftOpen, setIsShiftOpen] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
+
+    const fetchShiftState = useCallback(() => {
+        VchasnoApiClient.isShiftActive()
+            .then(setIsShiftOpen)
+            .catch((err) => {
+                // TODO: add toast
+                console.log(err);
+            });
+    }, [isShiftOpen]);
+
+    const handleApiError = (errorText?: string) => {
+        if (errorText && errorText.trim() !== '') {
+            // TODO: add toast
+            console.error('API reported error:', errorText);
+        }
+    };
+
+    const onStartShift = async () => {
+        setLoading(true);
+        try {
+            const response = await VchasnoApiClient.startShift();
+            handleApiError(response?.errortxt);
+            fetchShiftState();
+        } catch (e) {
+            console.error('Failed to open shift:', e);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const onEndShift = async () => {
+        setLoading(true);
+        try {
+            const response = await VchasnoApiClient.endShift();
+            handleApiError(response?.errortxt);
+            fetchShiftState();
+        } catch (e) {
+            console.error('Failed to close shift:', e);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchShiftState();
+    }, [isShiftOpen]);
+
     const DrawerList = (
-        <Box sx={{ width: 300 }} role="presentation" onClick={toggleDrawer(false)}>
-            {/* Close sidebar button */}
+        <Box sx={{ width: 300, height: '100%', display: 'flex', flexDirection: 'column' }}>
             <DrawerHeader>
                 <IconButton onClick={() => props.setIsOpen(false)}>
                     <ChevronLeftIcon />
                 </IconButton>
             </DrawerHeader>
             <Divider />
-            {/* Sidebar buttons */}
-            <List>
+
+            <List sx={{ flexGrow: 1 }}>
                 <ListItem key="Orders" disablePadding>
                     <ListItemButton onClick={() => navigate('/orders')}>
                         <ListItemIcon>
@@ -114,6 +164,45 @@ const Sidebar = (props: SidebarProps) => {
                     </ListItemButton>
                 </ListItem>
             </List>
+
+            <Box
+                sx={{
+                    p: 2,
+                    borderTop: '1px solid #eee',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1.5,
+                }}
+            >
+                {!isShiftOpen && (
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        onClick={onStartShift}
+                        disabled={loading}
+                        startIcon={
+                            loading ? <CircularProgress size={18} color="inherit" /> : undefined
+                        }
+                    >
+                        Відкрити зміну
+                    </Button>
+                )}
+                {isShiftOpen && (
+                    <Button
+                        variant="contained"
+                        color="error"
+                        fullWidth
+                        onClick={onEndShift}
+                        disabled={loading}
+                        startIcon={
+                            loading ? <CircularProgress size={18} color="inherit" /> : undefined
+                        }
+                    >
+                        Закрити зміну
+                    </Button>
+                )}
+            </Box>
         </Box>
     );
 

@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, type Theme, Typography, useTheme } from '@mui/material';
+import { AppBar, Box, type Theme, Typography, useTheme } from '@mui/material';
 import headerStyles from '../styles/HeaderComponent.module.css';
 import MenuIcon from '@mui/icons-material/Menu';
 import iconsStyles from '../styles/Icons.module.css';
@@ -47,11 +47,6 @@ const HeaderComponent = (props: HeaderComponentProps) => {
                     />
                 </Box>
                 <Typography variant="h2">Zoria</Typography>
-            </Box>
-
-            <Box>
-                <Button>Відкрити зміну</Button>
-                <Button>Закрити зміну</Button>
             </Box>
         </AppBar>
     );

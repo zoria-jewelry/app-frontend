@@ -21,17 +21,28 @@ export interface OrdersFilterData {
 
 export class OrdersApiClient extends AbstractApiClient {
     private static mapFilterData(filterData?: OrdersFilterData): any {
+        const toUtcString = (date: Date | undefined, endOfDay = false): string | undefined => {
+            if (!date) return undefined;
+
+            const local = new Date(date);
+            if (endOfDay) {
+                local.setHours(23, 59, 59, 999);
+            } else {
+                local.setHours(0, 0, 0, 0);
+            }
+
+            return local.toISOString();
+        };
+
         return {
-            fromDate: filterData?.fromDate
-                ? filterData.fromDate.toISOString().split('T')[0]
-                : undefined,
-            toDate: filterData?.toDate ? filterData.toDate.toISOString().split('T')[0] : undefined,
+            fromDate: toUtcString(filterData?.fromDate, false),
+            toDate: toUtcString(filterData?.toDate, true),
             statuses:
-                filterData?.statuses && filterData?.statuses?.length > 0
+                filterData?.statuses && filterData?.statuses.length > 0
                     ? filterData.statuses
                     : undefined,
             executorsIds:
-                filterData?.executorsIds && filterData?.executorsIds?.length > 0
+                filterData?.executorsIds && filterData?.executorsIds.length > 0
                     ? filterData.executorsIds
                     : undefined,
         };

@@ -21,7 +21,7 @@ export class VchasnoApiClient extends AbstractApiClient {
         return Number(res.info.shift_status) === 1;
     }
 
-    public static async startShift(): Promise<void> {
+    public static async startShift(): Promise<any> {
         const data = {
             ver: 6,
             source: 'API',
@@ -31,7 +31,7 @@ export class VchasnoApiClient extends AbstractApiClient {
                 task: 0,
             },
         };
-        await this.apiRequest<void>({
+        await this.apiRequest<any>({
             url: '/dm/execute',
             baseURL: config.vchasnoApiBase,
             data,
@@ -39,17 +39,17 @@ export class VchasnoApiClient extends AbstractApiClient {
         });
     }
 
-    public static async endShift(): Promise<void> {
+    public static async endShift(): Promise<any> {
         const data = {
             ver: 6,
             source: 'API',
             device: 'Zoria Checkout',
             type: 1,
             fiscal: {
-                task: 1,
+                task: 11,
             },
         };
-        await this.apiRequest<void>({
+        await this.apiRequest<any>({
             url: '/dm/execute',
             baseURL: config.vchasnoApiBase,
             data,
