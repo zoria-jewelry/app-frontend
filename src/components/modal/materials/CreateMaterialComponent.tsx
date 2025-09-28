@@ -38,7 +38,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export interface CreateMaterialComponentProps {
     handleClose: () => void;
     isOpen: boolean;
-    callback: () => void;
+    onCreate: () => void;
 }
 
 const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
@@ -67,7 +67,7 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
 
     const onSubmit = (data: CreateMaterialFormData) => {
         MaterialsApiClient.create(data)
-            .then(props.callback)
+            .then(props.onCreate)
             .catch((error) => {
                 console.log(error);
                 // TODO: add toast

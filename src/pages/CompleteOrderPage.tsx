@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
     Accordion,
     AccordionDetails,
@@ -6,12 +6,12 @@ import {
     Box,
     Button,
     FormControl,
-    FormControlLabel,
     FormHelperText,
     FormLabel,
+    InputLabel,
+    MenuItem,
     Paper,
-    Radio,
-    RadioGroup,
+    Select,
     Table,
     TableBody,
     TableCell,
@@ -27,12 +27,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { type Resolver, useFieldArray, useForm } from 'react-hook-form';
 import { type CompleteOrderFormData, completeOrderSchema } from '../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toFixedNumber } from '../utils.ts';
-import type { CompleteOrderCalculationsDto, OrderDto } from '../dto/orders.ts';
+import { paymentTypes, type CompleteOrderCalculationsDto, type OrderDto } from '../dto/orders.ts';
 import { OrdersApiClient } from '../api/ordersApiClient.ts';
 import SuccessIcon from '@mui/icons-material/CheckCircle';
 import WarningIcon from '@mui/icons-material/Warning';
+import { VchasnoApiClient } from '../api/vchasnoApiClient.ts';
 
 const CompleteOrderPage = () => {
     const theme = useTheme();
@@ -41,6 +42,9 @@ const CompleteOrderPage = () => {
     const params = useParams();
     const orderId: number = Number(params.orderId);
 
+    const [searchParams] = useSearchParams();
+    const customerId = searchParams.get('customerId');
+
     const [order, setOrder] = useState<OrderDto | undefined>();
     const [orderCalculations, setOrderCalculations] = useState<
         CompleteOrderCalculationsDto | undefined
@@ -48,11 +52,9 @@ const CompleteOrderPage = () => {
     const [orderPaymentDifference, setOrderPaymentDifference] = useState<number | undefined>();
     const [selectedOrderPaymentEntries, setSelectedOrderPaymentEntries] = useState<number[]>([]);
 
-    const [paymentMethod, setPaymentMethod] = useState<string>('');
+    const [isShiftOpen, setIsShiftOpen] = useState<boolean>(false);
 
-    const handleChangePaymentMethod = (event: ChangeEvent<HTMLInputElement>) => {
-        setPaymentMethod(event.target.value);
-    };
+    const [paymentType, setPaymentType] = useState<number | string>('');
 
     const resolver = zodResolver(completeOrderSchema) as Resolver<CompleteOrderFormData>;
 
@@ -71,46 +73,72 @@ const CompleteOrderPage = () => {
 
     const { fields } = useFieldArray({
         control,
-        name: 'payments',
+        name: 'paymentData',
     });
 
     const discount = watch('discount') || 0;
-    const loss = watch('loss') || 0;
-    const totalMetalWeight = watch('totalMetalWeight') || 0;
-    const totalMetalWeightWithLoss = useMemo(
-        () => totalMetalWeight * (1 + loss / 100),
-        [loss, totalMetalWeight],
-    );
-    const stonesPrice = watch('stonesPrice') || 0;
+    const loss = watch('lossPercentage') || 0;
+    const totalMetalWeight = watch('finalMetalWeight') || 0;
+    const stonesPrice = watch('stoneCost') || 0;
 
-    const subtotal = useMemo(
-        () =>
-            (order?.workPrice ?? 0) * totalMetalWeightWithLoss +
-            (order?.materialPrice ?? 0) * totalMetalWeight +
-            (stonesPrice ?? 0),
-        [order, totalMetalWeightWithLoss, stonesPrice],
-    );
-    const total = useMemo(() => subtotal - discount, [subtotal, discount]);
+    const paidMoney = watch('paymentData.0.amountToPay') || 0;
+
+    useEffect(() => {
+        if (loss > 0 && totalMetalWeight > 0) {
+            OrdersApiClient.getCompleteOrderCalculations(orderId, {
+                lossPercentage: loss,
+                finalMetalWeight: totalMetalWeight,
+                discount,
+                stoneCost: stonesPrice,
+            })
+                .then(setOrderCalculations)
+                .catch((err) => {
+                    // TODO: add toast
+                    console.log(err);
+                });
+        }
+    }, [discount, loss, totalMetalWeight, stonesPrice]);
 
     const enableSections =
         !!loss && !!totalMetalWeight && !!Number(loss) && !!Number(totalMetalWeight);
 
     const onSubmit = (data: CompleteOrderFormData) => {
-        console.log(data);
-        const sum: number = data.payments
-            .map((p) => p.materialCurrencyEquivalent)
-            .reduce((a, b) => a + b);
-        if (Math.abs(sum - total) > 0.001) {
-            setOrderPaymentDifference(total - sum);
-            setSelectedOrderPaymentEntries(
-                data.payments.map((p) => p.materialCurrencyEquivalent).filter((p) => p > 0),
-            );
-            return;
+        if (orderCalculations && orderId > 0) {
+            const sum: number = data.paymentData.map((p) => p.amountToPay).reduce((a, b) => a + b);
+            if (Math.abs(sum - orderCalculations.totalSum) >= 0.01) {
+                setOrderPaymentDifference(orderCalculations.totalSum - sum);
+                setSelectedOrderPaymentEntries(
+                    data.paymentData.map((p) => p.amountToPay).filter((p) => p > 0),
+                );
+                return;
+            }
+
+            if (paidMoney > 0 && paymentType === '') {
+                console.log('Payment type is not selected');
+                return;
+            }
+
+            data.stoneCost = data.stoneCost ?? 0;
+
+            OrdersApiClient.completeOrder(orderId, data)
+                .then(async () => {
+                    // TODO: add toast
+                    if (paidMoney > 0) {
+                        const receiptUrl: string = await VchasnoApiClient.checkout(
+                            paidMoney,
+                            Number(paymentType),
+                        );
+                        await OrdersApiClient.addReceipt(orderId, receiptUrl);
+                    }
+                    clearErrors();
+                    reset();
+                    navigate(customerId ? `/customers/${customerId}` : '/orders');
+                })
+                .catch((err) => {
+                    // TODO: add toast
+                    console.log(err);
+                });
         }
-        // TODO: call API Endpoint
-        clearErrors();
-        reset();
-        navigate('/customers');
     };
 
     useEffect(() => {
@@ -121,28 +149,29 @@ const CompleteOrderPage = () => {
                     console.log(err);
                     // TODO: add toast
                 });
-            OrdersApiClient.getCompleteOrderCalculations(orderId)
-                .then(setOrderCalculations)
-                .catch((err) => {
-                    console.log(err);
-                    // TODO: add toast
-                });
         }
-    }, [orderId, total]);
-
-    useEffect(() => {}, [discount, loss, totalMetalWeight]);
+    }, [orderId]);
 
     useEffect(() => {
         if (orderCalculations) {
             reset({
                 ...watch(),
-                payments: orderCalculations.entries.map((entry) => ({
+                paymentData: (orderCalculations.entries ?? []).map((entry) => ({
                     materialId: entry.materialId,
-                    materialCurrencyEquivalent: 0,
+                    amountToPay: 0,
                 })),
             });
         }
     }, [orderCalculations]);
+
+    useEffect(() => {
+        VchasnoApiClient.isShiftActive()
+            .then(setIsShiftOpen)
+            .catch((err) => {
+                // TODO: add toast
+                console.log(err);
+            });
+    }, []);
 
     return (
         <form
@@ -244,8 +273,8 @@ const CompleteOrderPage = () => {
                             fullWidth
                             margin="normal"
                             type="number"
-                            {...register('loss', { valueAsNumber: true })}
-                            error={!!errors.loss}
+                            {...register('lossPercentage', { valueAsNumber: true })}
+                            error={!!errors.lossPercentage}
                             sx={{
                                 margin: 0,
                                 '& .MuiOutlinedInput-root': {
@@ -253,8 +282,11 @@ const CompleteOrderPage = () => {
                                 },
                             }}
                         />
-                        <FormHelperText error={!!errors.loss} sx={{ margin: 0, minHeight: '30px' }}>
-                            {errors?.loss?.message}
+                        <FormHelperText
+                            error={!!errors.lossPercentage}
+                            sx={{ margin: 0, minHeight: '30px' }}
+                        >
+                            {errors?.lossPercentage?.message}
                         </FormHelperText>
                     </FormControl>
 
@@ -268,8 +300,8 @@ const CompleteOrderPage = () => {
                             fullWidth
                             margin="normal"
                             type="number"
-                            {...register('totalMetalWeight', { valueAsNumber: true })}
-                            error={!!errors.totalMetalWeight}
+                            {...register('finalMetalWeight', { valueAsNumber: true })}
+                            error={!!errors.finalMetalWeight}
                             sx={{
                                 margin: 0,
                                 '& .MuiOutlinedInput-root': {
@@ -278,10 +310,10 @@ const CompleteOrderPage = () => {
                             }}
                         />
                         <FormHelperText
-                            error={!!errors.totalMetalWeight}
+                            error={!!errors.finalMetalWeight}
                             sx={{ margin: 0, minHeight: '30px' }}
                         >
-                            {errors?.totalMetalWeight?.message}
+                            {errors?.finalMetalWeight?.message}
                         </FormHelperText>
                     </FormControl>
 
@@ -295,8 +327,8 @@ const CompleteOrderPage = () => {
                             fullWidth
                             margin="normal"
                             type="number"
-                            {...register('stonesPrice', { valueAsNumber: true })}
-                            error={!!errors.stonesPrice}
+                            {...register('stoneCost', { valueAsNumber: true })}
+                            error={!!errors.stoneCost}
                             sx={{
                                 margin: 0,
                                 '& .MuiOutlinedInput-root': {
@@ -305,10 +337,10 @@ const CompleteOrderPage = () => {
                             }}
                         />
                         <FormHelperText
-                            error={!!errors.stonesPrice}
+                            error={!!errors.stoneCost}
                             sx={{ margin: 0, minHeight: '30px' }}
                         >
-                            {errors?.stonesPrice?.message}
+                            {errors?.stoneCost?.message}
                         </FormHelperText>
                     </FormControl>
                 </AccordionDetails>
@@ -388,7 +420,11 @@ const CompleteOrderPage = () => {
                                             <TableCell>
                                                 {`${toFixedNumber(totalMetalWeight, 3)} * (1 + ${loss} ÷ 100) = `}
                                                 <span style={{ fontWeight: 900 }}>
-                                                    {toFixedNumber(totalMetalWeightWithLoss, 3)} г
+                                                    {toFixedNumber(
+                                                        orderCalculations?.metalMassWithLoss ?? 0,
+                                                        3,
+                                                    )}{' '}
+                                                    г
                                                 </span>
                                             </TableCell>
                                         </TableRow>
@@ -401,10 +437,10 @@ const CompleteOrderPage = () => {
                                                 Вартість обробки металу
                                             </TableCell>
                                             <TableCell>
-                                                {`${order.workPrice} * ${toFixedNumber(totalMetalWeightWithLoss, 3)} = `}
+                                                {`${order.workPrice} * ${toFixedNumber(orderCalculations?.metalMassWithLoss ?? 0, 3)} = `}
                                                 <span style={{ fontWeight: 900 }}>
                                                     {toFixedNumber(
-                                                        order.workPrice * totalMetalWeightWithLoss,
+                                                        orderCalculations?.workCost ?? 0,
                                                         2,
                                                     )}{' '}
                                                     грн
@@ -420,10 +456,10 @@ const CompleteOrderPage = () => {
                                                 Вартість використаного металу
                                             </TableCell>
                                             <TableCell>
-                                                {`${toFixedNumber(totalMetalWeight, 3)} * ${order.materialPrice} = `}
+                                                {`${toFixedNumber(totalMetalWeight, 3)} * ${toFixedNumber(order.materialPrice, 2)} = `}
                                                 <span style={{ fontWeight: 900 }}>
                                                     {toFixedNumber(
-                                                        totalMetalWeight * order.materialPrice,
+                                                        orderCalculations?.usedMetalCost ?? 0,
                                                         2,
                                                     )}{' '}
                                                     грн
@@ -441,7 +477,11 @@ const CompleteOrderPage = () => {
                                             </TableCell>
                                             <TableCell>
                                                 <span style={{ fontWeight: 900 }}>
-                                                    {toFixedNumber(stonesPrice, 2)} грн
+                                                    {toFixedNumber(
+                                                        orderCalculations?.stoneCost ?? 0,
+                                                        2,
+                                                    )}{' '}
+                                                    грн
                                                 </span>
                                             </TableCell>
                                         </TableRow>
@@ -456,13 +496,17 @@ const CompleteOrderPage = () => {
                                 marginTop={theme.spacing(4)}
                             >
                                 <Typography variant="body1">
-                                    Сума без знижки – {toFixedNumber(subtotal, 2)} грн
+                                    Сума без знижки –{' '}
+                                    {toFixedNumber(orderCalculations?.sumWithoutDiscount ?? 0, 2)}{' '}
+                                    грн
                                 </Typography>
                                 <Typography variant="body1">
-                                    Знижка – {toFixedNumber(discount, 2)} грн
+                                    Знижка – {toFixedNumber(orderCalculations?.discount ?? 0, 2)}{' '}
+                                    грн
                                 </Typography>
                                 <Typography variant="body1" fontWeight={900}>
-                                    Сума зі знижкою – {toFixedNumber(total, 2)} грн
+                                    Сума зі знижкою –{' '}
+                                    {toFixedNumber(orderCalculations?.totalSum ?? 0, 2)} грн
                                 </Typography>
                             </Box>
                         </>
@@ -550,7 +594,7 @@ const CompleteOrderPage = () => {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {orderCalculations.entries.map((entry) => (
+                                        {(orderCalculations.entries ?? []).map((entry) => (
                                             <TableRow key={entry.materialId}>
                                                 <TableCell sx={{ padding: theme.spacing(2) }}>
                                                     <Typography variant="body2">
@@ -584,7 +628,7 @@ const CompleteOrderPage = () => {
                                     marginBottom={theme.spacing(4)}
                                     paddingRight={theme.spacing(2)}
                                 >
-                                    Усього {orderCalculations.allMaterialsCost}
+                                    Усього {toFixedNumber(orderCalculations.allMaterialsCost, 2)}
                                 </Typography>
                             </TableContainer>
 
@@ -687,12 +731,12 @@ const CompleteOrderPage = () => {
                                                                 margin="normal"
                                                                 type="number"
                                                                 {...register(
-                                                                    `payments.${index}.materialCurrencyEquivalent`,
+                                                                    `paymentData.${index}.amountToPay`,
                                                                     { valueAsNumber: true },
                                                                 )}
                                                                 error={
-                                                                    !!errors.payments?.[index]
-                                                                        ?.materialCurrencyEquivalent
+                                                                    !!errors.paymentData?.[index]
+                                                                        ?.amountToPay
                                                                 }
                                                                 sx={{
                                                                     margin: 0,
@@ -703,8 +747,8 @@ const CompleteOrderPage = () => {
                                                             />
                                                             <FormHelperText
                                                                 error={
-                                                                    !!errors.payments?.[index]
-                                                                        ?.materialCurrencyEquivalent
+                                                                    !!errors.paymentData?.[index]
+                                                                        ?.amountToPay
                                                                 }
                                                                 sx={{
                                                                     margin: 0,
@@ -712,9 +756,8 @@ const CompleteOrderPage = () => {
                                                                 }}
                                                             >
                                                                 {
-                                                                    errors.payments?.[index]
-                                                                        ?.materialCurrencyEquivalent
-                                                                        ?.message
+                                                                    errors.paymentData?.[index]
+                                                                        ?.amountToPay?.message
                                                                 }
                                                             </FormHelperText>
                                                         </FormControl>
@@ -735,20 +778,32 @@ const CompleteOrderPage = () => {
                                     </TableBody>
                                 </Table>
                             </TableContainer>
-                            <RadioGroup value={paymentMethod} onChange={handleChangePaymentMethod}>
-                                <FormControlLabel
-                                    value="card"
-                                    control={<Radio />}
-                                    label="Сплачено карткою"
-                                />
-                                <FormControlLabel
-                                    value="cash"
-                                    control={<Radio />}
-                                    label="Сплачено готівкою"
-                                />
-                            </RadioGroup>
 
-                            {orderPaymentDifference && !!total && (
+                            {paidMoney > 0 && (
+                                <>
+                                    <Typography variant="body1" sx={{ mt: 2 }}>
+                                        Вкажіть тип оплати
+                                    </Typography>
+
+                                    <FormControl fullWidth sx={{ mt: 3 }}>
+                                        <InputLabel id="payment-type-label">Тип оплати</InputLabel>
+                                        <Select
+                                            labelId="payment-type-label"
+                                            value={paymentType}
+                                            label="Тип оплати"
+                                            onChange={(e) => setPaymentType(Number(e.target.value))}
+                                        >
+                                            {paymentTypes.map((option) => (
+                                                <MenuItem key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </>
+                            )}
+
+                            {orderPaymentDifference && !!orderCalculations && (
                                 <Paper
                                     elevation={3}
                                     className={paperStyles.paper}
@@ -783,7 +838,7 @@ const CompleteOrderPage = () => {
                                         грн
                                         <br />
                                         {selectedOrderPaymentEntries.length
-                                            ? `${toFixedNumber(total, 2)}${selectedOrderPaymentEntries.map((p) => ` – ${p.toFixed(2)}`).join('')} = ${orderPaymentDifference.toFixed(2)} грн`
+                                            ? `${toFixedNumber(orderCalculations.totalSum, 2)}${selectedOrderPaymentEntries.map((p) => ` – ${p.toFixed(2)}`).join('')} = ${orderPaymentDifference.toFixed(2)} грн`
                                             : `Жоден матеріал ще не був обраний для оплати`}
                                     </Typography>
                                 </Paper>
@@ -799,11 +854,19 @@ const CompleteOrderPage = () => {
                                     variant="contained"
                                     color="primary"
                                     type="submit"
-                                    disabled={!paymentMethod}
+                                    disabled={
+                                        paidMoney > 0 &&
+                                        (!paymentType || paymentType === '' || !isShiftOpen)
+                                    }
                                 >
                                     Закрити замовлення
                                 </Button>
                             </Box>
+                            <FormHelperText error={true} sx={{ textAlign: 'center' }}>
+                                {paidMoney > 0 &&
+                                    !isShiftOpen &&
+                                    `Відкрийте зміну, щоб закрити замовлення`}
+                            </FormHelperText>
                         </>
                     )}
                 </AccordionDetails>

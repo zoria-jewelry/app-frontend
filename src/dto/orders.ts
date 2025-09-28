@@ -18,6 +18,8 @@ export interface OrderBriefInfoDto {
     closedAt: Date | null;
     status: OrderStatus;
     cancellationReason?: string;
+    paidMoney?: number;
+    receiptUrl?: string;
     entries: OrderBriefInfoEntryDto[];
 }
 
@@ -39,7 +41,7 @@ export interface OrderDto {
     closedAt?: Date | null;
     status: OrderStatus;
     cancellationReason?: string;
-    entries: OrderEntryDto[];
+    products: OrderEntryDto[];
     materialName: string;
     materialPrice: number;
     materialId: number;
@@ -47,18 +49,27 @@ export interface OrderDto {
     executors: string[];
     executorsIds: number[];
 
-    loss?: number; // угар
-    workPrice: number; // ціна обробки граму металу
-    totalWeight?: number; // загальна вага виробів (з камінням)
-    totalMetalWeight?: number; // загальна вага виробів (без каміння)
-    metalWeightWithLoss?: number; // totalMetalWeight * ((100% + loss) / 100)
-    metalWorkPrice?: number; // metalWeightWithLoss * workPrice
-    totalMetalPrice?: number; // totalMetalWeight * ціна_металу_за_грам
-    stonesPrice: number;
+    loss?: number;
+    workPrice: number;
+    finalWeight?: number;
+    metalMassWithLoss?: number;
+    workCost?: number;
+    usedMetalCost?: number;
+    stoneCost: number;
 
     discount?: number | null;
     total?: number | null; // сума без знижки
     totalWithDiscount?: number | null; // сума зі знижкою
+
+    paidMoney?: number;
+    receiptUrl?: string;
+}
+
+export interface RequestOrderCalculationDto {
+    discount?: number;
+    lossPercentage: number;
+    finalMetalWeight: number;
+    stoneCost?: number;
 }
 
 export interface CompleteOrderCalculationsEntryDto {
@@ -73,4 +84,18 @@ export interface CompleteOrderCalculationsDto {
     allMaterialsCost: number;
     clientIsAbleToFullyPay: boolean;
     entries: CompleteOrderCalculationsEntryDto[];
+    finalWeight: number;
+    metalMassWithLoss: number;
+    workCost: number;
+    usedMetalCost: number;
+    stoneCost: number;
+    sumWithoutDiscount: number;
+    discount: number;
+    totalSum: number;
 }
+
+export const paymentTypes = [
+    { value: 0, label: 'Готівка' },
+    { value: 1, label: 'Безготівка (банківський переказ)' },
+    { value: 2, label: 'Картка' },
+];

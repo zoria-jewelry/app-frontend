@@ -251,14 +251,14 @@ const EmployeePage = () => {
             <EmployeesArchiveComponent
                 handleClose={() => setIsArchiveOpened(false)}
                 isOpen={isArchiveOpened}
-                callback={listUpdateCallback}
+                onArchive={listUpdateCallback}
             />
 
             {/* Add new employee modal window */}
             <CreateEmployeeComponent
                 handleClose={() => setIsCreateComponentOpened(false)}
                 isOpen={isCreateComponentOpened}
-                callback={listUpdateCallback}
+                onCreate={listUpdateCallback}
             />
         </Paper>
     );

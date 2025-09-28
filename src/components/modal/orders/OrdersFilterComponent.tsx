@@ -88,19 +88,6 @@ const OrdersFilterModal = ({ open, onClose, onApply }: OrdersFilterModalProps) =
         onClose();
     };
 
-    const handleClose = () => {
-        setFromDate(undefined);
-        setToDate(undefined);
-        setStatuses({
-            inProgress: false,
-            completed: false,
-            canceled: false,
-        });
-        setExecutors([]);
-        setDatesError(undefined);
-        onClose();
-    };
-
     useEffect(() => {
         EmployeesApiClient.getAllActive().then((employees) => {
             if (employees) {
@@ -113,13 +100,13 @@ const OrdersFilterModal = ({ open, onClose, onApply }: OrdersFilterModalProps) =
 
     return (
         <BootstrapDialog
-            onClose={handleClose}
+            onClose={handleApply}
             aria-labelledby="customized-dialog-title"
             open={open}
         >
             <IconButton
                 aria-label="close"
-                onClick={handleClose}
+                onClick={handleApply}
                 size="large"
                 sx={(theme) => ({
                     position: 'absolute',

@@ -206,9 +206,10 @@ const CustomerInfoPage = () => {
 
                 {orders && (
                     <OrdersTableComponent
+                        customerId={customerId}
                         orders={orders}
                         setPage={setOrdersPage}
-                        updateCallback={updateOrdersList}
+                        onUpdate={updateOrdersList}
                     />
                 )}
             </Paper>
@@ -219,10 +220,14 @@ const CustomerInfoPage = () => {
                 onApply={setOrdersFilterData}
             />
 
-            <CreateOrderComponent
-                handleClose={() => setIsCreateOrderModalOpen(false)}
-                isOpen={isCreateOrderModalOpen}
-            />
+            {customerId && (
+                <CreateOrderComponent
+                    clientId={customerId}
+                    handleClose={() => setIsCreateOrderModalOpen(false)}
+                    isOpen={isCreateOrderModalOpen}
+                    onCreate={updateOrdersList}
+                />
+            )}
         </Box>
     );
 };

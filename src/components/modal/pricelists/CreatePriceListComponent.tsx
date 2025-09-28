@@ -41,7 +41,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export interface CreatePriceListComponentProps {
     isOpen: boolean;
     handleClose: () => void;
-    callback: () => void;
+    onCreate: () => void;
 }
 
 const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
@@ -108,7 +108,7 @@ const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
         };
 
         PriceListsApiClient.create(transformed)
-            .then(props.callback)
+            .then(props.onCreate)
             .catch((error) => {
                 console.log(error);
                 // TODO: add toast

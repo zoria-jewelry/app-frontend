@@ -108,7 +108,7 @@ const OrdersPage = () => {
                     <OrdersTableComponent
                         orders={orders}
                         setPage={setOrdersPage}
-                        updateCallback={updateOrdersList}
+                        onUpdate={updateOrdersList}
                     />
                 )}
             </Paper>

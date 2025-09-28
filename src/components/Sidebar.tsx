@@ -17,6 +17,7 @@ import CustomerIcon from '@mui/icons-material/Portrait';
 import PercentIcon from '@mui/icons-material/Percent';
 import StoreIcon from '@mui/icons-material/Store';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import ShiftSidebarActions from './vchasno/ShiftSidebarActions.tsx';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -39,16 +40,15 @@ const Sidebar = (props: SidebarProps) => {
     const navigate = useNavigate();
 
     const DrawerList = (
-        <Box sx={{ width: 300 }} role="presentation" onClick={toggleDrawer(false)}>
-            {/* Close sidebar button */}
+        <Box sx={{ width: 300, height: '100%', display: 'flex', flexDirection: 'column' }}>
             <DrawerHeader>
                 <IconButton onClick={() => props.setIsOpen(false)}>
                     <ChevronLeftIcon />
                 </IconButton>
             </DrawerHeader>
             <Divider />
-            {/* Sidebar buttons */}
-            <List>
+
+            <List sx={{ flexGrow: 1 }}>
                 <ListItem key="Orders" disablePadding>
                     <ListItemButton onClick={() => navigate('/orders')}>
                         <ListItemIcon>
@@ -114,6 +114,8 @@ const Sidebar = (props: SidebarProps) => {
                     </ListItemButton>
                 </ListItem>
             </List>
+
+            <ShiftSidebarActions />
         </Box>
     );
 

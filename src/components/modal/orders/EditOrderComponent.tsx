@@ -50,14 +50,14 @@ export interface EditOrderComponentProps {
     orderId: number;
     handleClose: () => void;
     open: boolean;
-    callback: () => void;
+    onUpdate: () => void;
 }
 
 const EditOrderComponent = (props: EditOrderComponentProps) => {
     const theme = useTheme();
     const [order, setOrder] = useState<OrderDto | undefined>();
 
-    const positions = order?.entries?.map((p) => ({
+    const products = order?.products?.map((p) => ({
         productId: p.productId,
         size: p.size,
         count: p.count,
@@ -75,21 +75,21 @@ const EditOrderComponent = (props: EditOrderComponentProps) => {
         resolver: zodResolver(createUpdateOrderSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
-            metalId: order?.materialId,
+            materialId: order?.materialId,
             workPrice: order?.workPrice,
-            positions,
+            products,
             executorsIds: order?.executorsIds,
         },
     });
 
     const { fields, append, remove } = useFieldArray({
         control,
-        name: 'positions',
+        name: 'products',
     });
 
     const [materials, setMaterials] = useState<MaterialDto[]>([]);
     const [employees, setEmployees] = useState<EmployeeDto[]>([]);
-    const [products, setProducts] = useState<ProductEntryDto[]>([]);
+    const [jewelryProducts, setJewelryProducts] = useState<ProductEntryDto[]>([]);
     const [searchPhrase, setSearchPhrase] = useState('');
 
     const handleClose = (): void => {
@@ -100,9 +100,16 @@ const EditOrderComponent = (props: EditOrderComponentProps) => {
 
     const onSubmit = (data: UpdateOrderFormData) => {
         console.log('Submit order update:', data);
-        // TODO: call API Endpoint
-        handleClose();
-        props.callback();
+        OrdersApiClient.change(props.orderId, data)
+            .then(() => {
+                // TODO: add toast
+                handleClose();
+                props.onUpdate();
+            })
+            .catch((err) => {
+                // TODO: add toast
+                console.log(err);
+            });
     };
 
     useEffect(() => {
@@ -124,9 +131,9 @@ const EditOrderComponent = (props: EditOrderComponentProps) => {
                 if (orderData) {
                     setOrder(orderData);
                     reset({
-                        metalId: orderData.materialId,
+                        materialId: orderData.materialId,
                         workPrice: orderData.workPrice,
-                        positions: orderData.entries.map((p) => ({
+                        products: orderData.products.map((p) => ({
                             productId: p.productId,
                             size: p.size,
                             count: p.count,
@@ -151,7 +158,7 @@ const EditOrderComponent = (props: EditOrderComponentProps) => {
         let cancelled = false;
 
         ProductsApiClient.getAll(searchPhrase).then((data) => {
-            if (!cancelled && data) setProducts(data);
+            if (!cancelled && data) setJewelryProducts(data);
         });
 
         return () => {
@@ -200,7 +207,7 @@ const EditOrderComponent = (props: EditOrderComponentProps) => {
                         <FormLabel>Метал</FormLabel>
                         <Controller
                             control={control}
-                            name="metalId"
+                            name="materialId"
                             render={({ field }) => (
                                 <Autocomplete
                                     value={materials.find((m) => m.id === field.value) || null}
@@ -211,8 +218,8 @@ const EditOrderComponent = (props: EditOrderComponentProps) => {
                                 />
                             )}
                         />
-                        <FormHelperText error={!!errors.metalId}>
-                            {errors?.metalId?.message as string}
+                        <FormHelperText error={!!errors.materialId}>
+                            {errors?.materialId?.message as string}
                         </FormHelperText>
                     </FormControl>
 
@@ -249,14 +256,17 @@ const EditOrderComponent = (props: EditOrderComponentProps) => {
                         >
                             <Controller
                                 control={control}
-                                name={`positions.${index}.productId`}
+                                name={`products.${index}.productId`}
                                 render={({ field }) => (
                                     <Autocomplete
-                                        options={products}
+                                        options={jewelryProducts}
                                         noOptionsText="Нічого не знайдено"
                                         getOptionLabel={(option) => option.name}
                                         onInputChange={(_, value) => setSearchPhrase(value)}
-                                        value={products.find((p) => p.id === field.value) || null}
+                                        value={
+                                            jewelryProducts.find((p) => p.id === field.value) ||
+                                            null
+                                        }
                                         onChange={(_, value) =>
                                             field.onChange(value ? value.id : undefined)
                                         }
@@ -274,14 +284,14 @@ const EditOrderComponent = (props: EditOrderComponentProps) => {
                                                         sx={{ width: 50, height: 50, mr: 4 }}
                                                     />
                                                 )}
-                                                {option.name}
+                                                {option.name} (Арт. {option.article})
                                             </li>
                                         )}
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
                                                 placeholder="Виберіть виріб"
-                                                error={!!errors.positions?.[index]?.productId}
+                                                error={!!errors.products?.[index]?.productId}
                                             />
                                         )}
                                     />
@@ -291,23 +301,23 @@ const EditOrderComponent = (props: EditOrderComponentProps) => {
                             <TextField
                                 type="number"
                                 placeholder="Розмір"
-                                {...register(`positions.${index}.size`, { valueAsNumber: true })}
-                                error={!!errors.positions?.[index]?.size}
+                                {...register(`products.${index}.size`, { valueAsNumber: true })}
+                                error={!!errors.products?.[index]?.size}
                                 sx={{ flex: 0.5, minWidth: 100 }}
                             />
 
                             <TextField
                                 type="number"
                                 placeholder="К-ть"
-                                {...register(`positions.${index}.count`, { valueAsNumber: true })}
-                                error={!!errors.positions?.[index]?.count}
+                                {...register(`products.${index}.count`, { valueAsNumber: true })}
+                                error={!!errors.products?.[index]?.count}
                                 sx={{ flex: 0.5, minWidth: 100 }}
                             />
 
                             <TextField
                                 placeholder="Примітки"
-                                {...register(`positions.${index}.notes`)}
-                                error={!!errors.positions?.[index]?.notes}
+                                {...register(`products.${index}.notes`)}
+                                error={!!errors.products?.[index]?.notes}
                                 sx={{ flex: 2 }}
                                 multiline
                                 maxRows={4}
@@ -318,8 +328,8 @@ const EditOrderComponent = (props: EditOrderComponentProps) => {
                             </IconButton>
                         </Box>
                     ))}
-                    <FormHelperText error={!!errors.positions}>
-                        {errors.positions?.root?.message || errors.positions?.message}
+                    <FormHelperText error={!!errors.products}>
+                        {errors.products?.root?.message || errors.products?.message}
                     </FormHelperText>
                 </Box>
 

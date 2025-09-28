@@ -178,7 +178,7 @@ const MaterialsPage = () => {
             <CreateMaterialComponent
                 handleClose={() => setIsCreateMaterialModalOpen(false)}
                 isOpen={isCreateMaterialModalOpen}
-                callback={fetchMaterials}
+                onCreate={fetchMaterials}
             />
         </Paper>
     );

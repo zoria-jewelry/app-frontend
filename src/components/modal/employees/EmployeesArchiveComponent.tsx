@@ -42,7 +42,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export interface EmployeesArchiveComponentProps {
     handleClose: () => void;
     isOpen: boolean;
-    callback: () => void;
+    onArchive: () => void;
 }
 
 const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
@@ -79,7 +79,7 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
                 } else {
                     setPage(0);
                 }
-                props.callback();
+                props.onArchive();
             });
         }
     };

@@ -67,7 +67,6 @@
     "materialPrice": 2600.0,
     "loss": 5,
     "workPrice": 500,
-    "totalWeight": 30,
     "totalMetalWeight": 28,
     "metalWeightWithLoss": 29.4,
     "metalWorkPrice": 1470,

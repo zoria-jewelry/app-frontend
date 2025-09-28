@@ -40,7 +40,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export interface CreateProductComponentProps {
     isOpen: boolean;
     handleClose: () => void;
-    callback: () => void;
+    onCreate: () => void;
 }
 
 const CreateProductComponent = (props: CreateProductComponentProps) => {
@@ -85,7 +85,7 @@ const CreateProductComponent = (props: CreateProductComponentProps) => {
         ProductsApiClient.create(data)
             .then(() => {
                 handleClose();
-                props.callback();
+                props.onCreate();
             })
             .catch((error) => {
                 console.log(error);

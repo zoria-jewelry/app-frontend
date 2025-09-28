@@ -7,11 +7,11 @@ export interface WorkUnitDto {
     metalReturned?: number;
     loss?: number;
     metalReturnedWithLoss?: number;
+    materialName: string;
 }
 
 export interface WorkUnitsReportDto {
     employeeFullName: string;
-    reportMetalName: string;
     periodStart: Date;
     periodEnd: Date;
     totalIssued: number;

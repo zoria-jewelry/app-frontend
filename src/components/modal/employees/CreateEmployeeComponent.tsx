@@ -38,7 +38,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export interface CreateEmployeeComponentProps {
     handleClose: () => void;
     isOpen: boolean;
-    callback: () => void;
+    onCreate: () => void;
 }
 
 const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
@@ -68,7 +68,7 @@ const CreateEmployeeComponent = (props: CreateEmployeeComponentProps) => {
     const onSubmit = (data: CreateEmployeeFormData) => {
         console.log(data);
         EmployeesApiClient.create(data).then(() => {
-            props.callback();
+            props.onCreate();
             handleClose();
         });
     };
