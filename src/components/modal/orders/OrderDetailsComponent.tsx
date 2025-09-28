@@ -184,24 +184,24 @@ export default function OrderDetailsComponent({ id, open, onClose }: OrderDetail
                                     </>
                                 )}
 
-                                {order.totalMetalWeight && (
+                                {order.finalWeight && (
                                     <>
                                         <Typography variant="body2">
                                             Загальна вага металу у виробах
                                         </Typography>
                                         <Typography variant="body2">
-                                            <b>{order.totalMetalWeight} г</b>
+                                            <b>{order.finalWeight} г</b>
                                         </Typography>
                                     </>
                                 )}
 
-                                {order.metalWeightWithLoss && (
+                                {order.metalMassWithLoss && (
                                     <>
                                         <Typography variant="body2">
                                             Загальна маса металу у виробах (з угаром)
                                         </Typography>
                                         <Typography variant="body2">
-                                            <b>{order.metalWeightWithLoss} г</b>
+                                            <b>{order.metalMassWithLoss} г</b>
                                         </Typography>
                                     </>
                                 )}
@@ -224,24 +224,24 @@ export default function OrderDetailsComponent({ id, open, onClose }: OrderDetail
                                     <b>{order.workPrice} грн/г</b>
                                 </Typography>
 
-                                {order.metalWorkPrice && (
+                                {order.workCost && (
                                     <>
                                         <Typography variant="body2">
                                             Вартість обробки металу
                                         </Typography>
                                         <Typography variant="body2">
-                                            <b>{order.metalWorkPrice} грн</b>
+                                            <b>{order.workCost} грн</b>
                                         </Typography>
                                     </>
                                 )}
 
-                                {order.totalMetalPrice && (
+                                {order.usedMetalCost && (
                                     <>
                                         <Typography variant="body2">
                                             Вартість використаного металу
                                         </Typography>
                                         <Typography variant="body2">
-                                            <b>{order.totalMetalPrice} грн</b>
+                                            <b>{order.usedMetalCost} грн</b>
                                         </Typography>
                                     </>
                                 )}
@@ -250,7 +250,7 @@ export default function OrderDetailsComponent({ id, open, onClose }: OrderDetail
                                     Вартість використаних камінців
                                 </Typography>
                                 <Typography variant="body2">
-                                    <b>{order.stonesPrice} грн</b>
+                                    <b>{order.stoneCost} грн</b>
                                 </Typography>
                             </Box>
                         </Box>
