@@ -126,6 +126,16 @@ export class OrdersApiClient extends AbstractApiClient {
         });
     }
 
+    public static async addReceipt(orderId: number, receiptUrl: string): Promise<void> {
+        console.log(`OrdersApiClient.addReceipt: orderId - ${orderId}, receiptUrl - ${receiptUrl}`);
+        const data = { receiptUrl };
+        return await this.apiRequest<void>({
+            url: `/orders/${orderId}/add-receipt/`,
+            data,
+            method: 'POST',
+        });
+    }
+
     public static async getAllActiveIds(): Promise<number[] | undefined> {
         console.log('OrdersApiClient.getAllActiveIds');
         // TODO: replace with real endpoint via this.apiRequest when backend is ready

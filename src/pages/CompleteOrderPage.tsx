@@ -6,12 +6,12 @@ import {
     Box,
     Button,
     FormControl,
-    FormControlLabel,
     FormHelperText,
     FormLabel,
+    InputLabel,
+    MenuItem,
     Paper,
-    Radio,
-    RadioGroup,
+    Select,
     Table,
     TableBody,
     TableCell,
@@ -27,12 +27,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { type Resolver, useFieldArray, useForm } from 'react-hook-form';
 import { type CompleteOrderFormData, completeOrderSchema } from '../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ChangeEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toFixedNumber } from '../utils.ts';
-import type { CompleteOrderCalculationsDto, OrderDto } from '../dto/orders.ts';
+import { paymentTypes, type CompleteOrderCalculationsDto, type OrderDto } from '../dto/orders.ts';
 import { OrdersApiClient } from '../api/ordersApiClient.ts';
 import SuccessIcon from '@mui/icons-material/CheckCircle';
 import WarningIcon from '@mui/icons-material/Warning';
+import { VchasnoApiClient } from '../api/vchasnoApiClient.ts';
 
 const CompleteOrderPage = () => {
     const theme = useTheme();
@@ -51,11 +52,9 @@ const CompleteOrderPage = () => {
     const [orderPaymentDifference, setOrderPaymentDifference] = useState<number | undefined>();
     const [selectedOrderPaymentEntries, setSelectedOrderPaymentEntries] = useState<number[]>([]);
 
-    const [paymentMethod, setPaymentMethod] = useState<string>('');
+    const [isShiftOpen, setIsShiftOpen] = useState<boolean>(false);
 
-    const handleChangePaymentMethod = (event: ChangeEvent<HTMLInputElement>) => {
-        setPaymentMethod(event.target.value);
-    };
+    const [paymentType, setPaymentType] = useState<number | string>('');
 
     const resolver = zodResolver(completeOrderSchema) as Resolver<CompleteOrderFormData>;
 
@@ -81,6 +80,8 @@ const CompleteOrderPage = () => {
     const loss = watch('lossPercentage') || 0;
     const totalMetalWeight = watch('finalMetalWeight') || 0;
     const stonesPrice = watch('stoneCost') || 0;
+
+    const paidMoney = watch('paymentData.0.amountToPay') || 0;
 
     useEffect(() => {
         if (loss > 0 && totalMetalWeight > 0) {
@@ -112,9 +113,23 @@ const CompleteOrderPage = () => {
                 return;
             }
 
+            if (paidMoney > 0 && paymentType === '') {
+                console.log('Payment type is not selected');
+                return;
+            }
+
+            data.stoneCost = data.stoneCost ?? 0;
+
             OrdersApiClient.completeOrder(orderId, data)
-                .then(() => {
+                .then(async () => {
                     // TODO: add toast
+                    if (paidMoney > 0) {
+                        const receiptUrl: string = await VchasnoApiClient.checkout(
+                            paidMoney,
+                            Number(paymentType),
+                        );
+                        await OrdersApiClient.addReceipt(orderId, receiptUrl);
+                    }
                     clearErrors();
                     reset();
                     navigate(customerId ? `/customers/${customerId}` : '/orders');
@@ -148,6 +163,15 @@ const CompleteOrderPage = () => {
             });
         }
     }, [orderCalculations]);
+
+    useEffect(() => {
+        VchasnoApiClient.isShiftActive()
+            .then(setIsShiftOpen)
+            .catch((err) => {
+                // TODO: add toast
+                console.log(err);
+            });
+    }, []);
 
     return (
         <form
@@ -754,18 +778,30 @@ const CompleteOrderPage = () => {
                                     </TableBody>
                                 </Table>
                             </TableContainer>
-                            <RadioGroup value={paymentMethod} onChange={handleChangePaymentMethod}>
-                                <FormControlLabel
-                                    value="card"
-                                    control={<Radio />}
-                                    label="Сплачено карткою"
-                                />
-                                <FormControlLabel
-                                    value="cash"
-                                    control={<Radio />}
-                                    label="Сплачено готівкою"
-                                />
-                            </RadioGroup>
+
+                            {paidMoney > 0 && (
+                                <>
+                                    <Typography variant="body1" sx={{ mt: 2 }}>
+                                        Вкажіть тип оплати
+                                    </Typography>
+
+                                    <FormControl fullWidth sx={{ mt: 3 }}>
+                                        <InputLabel id="payment-type-label">Тип оплати</InputLabel>
+                                        <Select
+                                            labelId="payment-type-label"
+                                            value={paymentType}
+                                            label="Тип оплати"
+                                            onChange={(e) => setPaymentType(Number(e.target.value))}
+                                        >
+                                            {paymentTypes.map((option) => (
+                                                <MenuItem key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </>
+                            )}
 
                             {orderPaymentDifference && !!orderCalculations && (
                                 <Paper
@@ -818,11 +854,19 @@ const CompleteOrderPage = () => {
                                     variant="contained"
                                     color="primary"
                                     type="submit"
-                                    disabled={!paymentMethod}
+                                    disabled={
+                                        paidMoney > 0 &&
+                                        (!paymentType || paymentType === '' || !isShiftOpen)
+                                    }
                                 >
                                     Закрити замовлення
                                 </Button>
                             </Box>
+                            <FormHelperText error={true} sx={{ textAlign: 'center' }}>
+                                {paidMoney > 0 &&
+                                    !isShiftOpen &&
+                                    `Відкрийте зміну, щоб закрити замовлення`}
+                            </FormHelperText>
                         </>
                     )}
                 </AccordionDetails>

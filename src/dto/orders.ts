@@ -18,6 +18,8 @@ export interface OrderBriefInfoDto {
     closedAt: Date | null;
     status: OrderStatus;
     cancellationReason?: string;
+    paidMoney?: number;
+    receiptUrl?: string;
     entries: OrderBriefInfoEntryDto[];
 }
 
@@ -58,6 +60,9 @@ export interface OrderDto {
     discount?: number | null;
     total?: number | null; // сума без знижки
     totalWithDiscount?: number | null; // сума зі знижкою
+
+    paidMoney?: number;
+    receiptUrl?: string;
 }
 
 export interface RequestOrderCalculationDto {
@@ -88,3 +93,9 @@ export interface CompleteOrderCalculationsDto {
     discount: number;
     totalSum: number;
 }
+
+export const paymentTypes = [
+    { value: 0, label: 'Готівка' },
+    { value: 1, label: 'Безготівка (банківський переказ)' },
+    { value: 2, label: 'Картка' },
+];

@@ -43,8 +43,8 @@ const WorkUnitsPage = () => {
     const [filterData, setFilterData] = useState<WorkUnitsFilterData>({
         startDate: currentMonth.start,
         endDate: currentMonth.end,
-        employeeId: 1,
-        materialId: 1,
+        employeeId: undefined,
+        materialId: undefined,
     });
 
     const [report, setReport] = useState<WorkUnitsReportDto | undefined>();
@@ -230,18 +230,23 @@ const WorkUnitsPage = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{ backgroundColor: '#b7cfd2', borderTopLeftRadius: 10 }}>
-                                Дата видачі
+                                Метал
                             </TableCell>
+                            <TableCell sx={{ backgroundColor: '#b7cfd2' }}>Дата видачі</TableCell>
                             <TableCell sx={{ backgroundColor: '#b7cfd2' }}>
                                 Дата прийняття
                             </TableCell>
                             <TableCell sx={{ backgroundColor: '#b7cfd2' }}>Замовлення, №</TableCell>
-                            <TableCell sx={{ backgroundColor: '#b7cfd2' }}>
+                            <TableCell sx={{ backgroundColor: '#b7cfd2', width: '100px' }}>
                                 Метал (видано), г
                             </TableCell>
 
                             <TableCell
-                                sx={{ backgroundColor: '#b7cfd2', borderLeft: '1px solid black' }}
+                                sx={{
+                                    backgroundColor: '#b7cfd2',
+                                    borderLeft: '1px solid black',
+                                    width: '100px',
+                                }}
                             >
                                 Метал (повернено), г
                             </TableCell>
@@ -266,6 +271,7 @@ const WorkUnitsPage = () => {
                                                   : 'transparent',
                                     }}
                                 >
+                                    <TableCell>{entry.materialName}</TableCell>
                                     <TableCell>{toLocalDate(entry.issuedDate)}</TableCell>
                                     <TableCell>
                                         {entry.returnedDate ? toLocalDate(entry.returnedDate) : '–'}

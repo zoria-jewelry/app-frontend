@@ -105,12 +105,15 @@ export const completeOrderSchema = z.object({
         .number({ error: 'Введіть число' })
         .positive({ error: 'Вага металу у виробах повинна бути більшою за 0' })
         .multipleOf(0.001, { error: 'Крок значення — 0.001' }),
-    stoneCost: z
-        .number({ error: 'Введіть число' })
-        .nonnegative({ error: 'Вартість не може бути відʼємною' })
-        .multipleOf(0.01, { error: 'Крок значення – 0.01' })
-        .optional()
-        .nullish(),
+    stoneCost: z.preprocess(
+        (val) => (isNaN(Number(val)) || val === '' ? undefined : val),
+        z
+            .number({ error: 'Введіть число' })
+            .nonnegative({ error: 'Вартість не може бути відʼємною' })
+            .multipleOf(0.01, { error: 'Крок значення – 0.01' })
+            .optional()
+            .nullish(),
+    ),
     paymentData: z.array(
         z.object({
             materialId: z.number().nullable(),
