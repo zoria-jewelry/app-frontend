@@ -51,3 +51,16 @@ export const orderStatusToHumanText = (status: OrderStatus) => {
             return 'Скасовано';
     }
 };
+
+export const toUtcString = (date: Date | undefined, endOfDay = false): string | undefined => {
+    if (!date) return undefined;
+
+    const local = new Date(date);
+    if (endOfDay) {
+        local.setHours(23, 59, 59, 999);
+    } else {
+        local.setHours(0, 0, 0, 0);
+    }
+
+    return local.toISOString();
+};

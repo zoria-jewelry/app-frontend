@@ -11,6 +11,7 @@ import type {
     CreateOrderFormData,
     UpdateOrderFormData,
 } from '../validation/schemas.ts';
+import { toUtcString } from '../utils.ts';
 
 export interface OrdersFilterData {
     fromDate?: Date;
@@ -21,19 +22,6 @@ export interface OrdersFilterData {
 
 export class OrdersApiClient extends AbstractApiClient {
     private static mapFilterData(filterData?: OrdersFilterData): any {
-        const toUtcString = (date: Date | undefined, endOfDay = false): string | undefined => {
-            if (!date) return undefined;
-
-            const local = new Date(date);
-            if (endOfDay) {
-                local.setHours(23, 59, 59, 999);
-            } else {
-                local.setHours(0, 0, 0, 0);
-            }
-
-            return local.toISOString();
-        };
-
         return {
             fromDate: toUtcString(filterData?.fromDate, false),
             toDate: toUtcString(filterData?.toDate, true),
@@ -138,13 +126,6 @@ export class OrdersApiClient extends AbstractApiClient {
 
     public static async getAllActiveIds(): Promise<number[] | undefined> {
         console.log('OrdersApiClient.getAllActiveIds');
-        // TODO: replace with real endpoint via this.apiRequest when backend is ready
-        const response = await fetch('/orders.json');
-        const json = (await response.json()) as unknown as { pages: OrdersListDto[] };
-        const firstPage = json.pages?.[0];
-        return firstPage?.entries?.map((o) => o.id) ?? [];
-        // Example real call:
-        // const data = await this.apiRequest<{ ids: number[] }>({ url: '/orders/active-ids/' });
-        // return data?.ids;
+        return this.apiRequest<number[]>({ url: '/orders/active-ids/' });
     }
 }

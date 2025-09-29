@@ -49,8 +49,8 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 export interface WorkUnitsFilterData {
     employeeId?: number;
-    startDate?: Date;
-    endDate?: Date;
+    periodStart?: Date;
+    periodEnd?: Date;
     materialId?: number;
     orderId?: number;
 }
@@ -71,7 +71,6 @@ const WorkUnitsFilterComponent = ({ open, onClose, onApply }: WorkUnitsFilterMod
 
     const {
         handleSubmit,
-        reset,
         setValue,
         watch,
         formState: { errors },
@@ -79,8 +78,8 @@ const WorkUnitsFilterComponent = ({ open, onClose, onApply }: WorkUnitsFilterMod
         resolver: zodResolver(workUnitsFilterSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
-            startDate: currentMonth.start,
-            endDate: currentMonth.end,
+            periodStart: currentMonth.start,
+            periodEnd: currentMonth.end,
             employeeId: 0,
             materialId: 0,
             orderId: undefined,
@@ -104,10 +103,11 @@ const WorkUnitsFilterComponent = ({ open, onClose, onApply }: WorkUnitsFilterMod
     }, [setValue]);
 
     const onSubmit = (data: WorkUnitsFilterFormData) => {
+        console.log(data);
         onApply({
             employeeId: data.employeeId,
-            startDate: data.startDate,
-            endDate: data.endDate,
+            periodStart: data.periodStart,
+            periodEnd: data.periodEnd,
             materialId: data.materialId,
             orderId: data.orderId,
         });
@@ -115,14 +115,6 @@ const WorkUnitsFilterComponent = ({ open, onClose, onApply }: WorkUnitsFilterMod
     };
 
     const handleClose = () => {
-        const currentMonth = getCurrentMonthRange();
-        reset({
-            startDate: currentMonth.start,
-            endDate: currentMonth.end,
-            employeeId: 0,
-            materialId: 0,
-            orderId: undefined,
-        });
         onClose();
     };
 
@@ -178,12 +170,14 @@ const WorkUnitsFilterComponent = ({ open, onClose, onApply }: WorkUnitsFilterMod
                     <TextField
                         type="date"
                         fullWidth
-                        value={watch('startDate') ? formatDateToYYYYMMDD(watch('startDate')) : ''}
+                        value={
+                            watch('periodStart') ? formatDateToYYYYMMDD(watch('periodStart')) : ''
+                        }
                         onChange={(e) => {
                             const value = e.target.value;
-                            setValue('startDate', new Date(value));
+                            setValue('periodStart', new Date(value));
                         }}
-                        error={!!errors.startDate}
+                        error={!!errors.periodStart}
                     />
                     <FormHelperText
                         error={true}
@@ -192,19 +186,19 @@ const WorkUnitsFilterComponent = ({ open, onClose, onApply }: WorkUnitsFilterMod
                             minHeight: '30px',
                         }}
                     >
-                        {errors.startDate ? errors.startDate.message : ''}
+                        {errors.periodStart ? errors.periodStart.message : ''}
                     </FormHelperText>
 
                     <Typography>До дати включно</Typography>
                     <TextField
                         type="date"
                         fullWidth
-                        value={watch('endDate') ? formatDateToYYYYMMDD(watch('endDate')) : ''}
+                        value={watch('periodEnd') ? formatDateToYYYYMMDD(watch('periodEnd')) : ''}
                         onChange={(e) => {
                             const value = e.target.value;
-                            setValue('endDate', new Date(value));
+                            setValue('periodEnd', new Date(value));
                         }}
-                        error={!!errors.endDate}
+                        error={!!errors.periodEnd}
                     />
                     <FormHelperText
                         error={true}
@@ -213,7 +207,7 @@ const WorkUnitsFilterComponent = ({ open, onClose, onApply }: WorkUnitsFilterMod
                             minHeight: '30px',
                         }}
                     >
-                        {errors.endDate ? errors.endDate.message : ''}
+                        {errors.periodEnd ? errors.periodEnd.message : ''}
                     </FormHelperText>
                 </Box>
 
