@@ -18,6 +18,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { OrdersApiClient } from '../../../api/ordersApiClient.ts';
 import type { OrderDto } from '../../../dto/orders.ts';
 import { orderStatusToHumanText, toLocalDateTime } from '../../../utils.ts';
+import { showToast } from '../../common/Toast.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialog-container': {
@@ -53,7 +54,7 @@ export default function OrderDetailsComponent({ id, open, onClose }: OrderDetail
         OrdersApiClient.getById(id)
             .then((data) => {
                 if (!data) {
-                    // TODO: show toast
+                    showToast('Не вдалось завантажити дані замовлення', 'error');
                     return;
                 }
                 setOrder(data);

@@ -15,6 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { CustomersApiClient } from '../../../api/customersApiClient.ts';
+import { showToast } from '../../common/Toast.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -67,11 +68,11 @@ const CreateCustomerComponent = (props: CreateEmployeeComponentProps) => {
     const onSubmit = (data: CreateCustomerFormData) => {
         CustomersApiClient.create(data)
             .then(() => {
-                // TODO: add toast
+                showToast('Новий клієнт був успішно доданий');
             })
             .catch((err) => {
+                showToast('Не вдалось додати клієнта', 'error');
                 console.log(err);
-                // TODO: add toast
             })
             .finally(() => {
                 handleClose();

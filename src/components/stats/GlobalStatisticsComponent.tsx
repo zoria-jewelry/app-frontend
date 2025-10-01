@@ -2,10 +2,11 @@ import paperStyles from '../../styles/Paper.module.css';
 import commonStyles from '../../styles/Common.module.css';
 import { Box, Button, Paper, TextField, Typography, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { formatDateToYYYYMMDD, toFixedNumber } from '../../utils.ts';
+import { formatDateToYYYYMMDD, toFixedNumber, toLocalDate } from '../../utils.ts';
 import { StatisticsApiClient } from '../../api/statsApiClient.ts';
 import type { MaterialStatsDto } from '../../dto/stats.ts';
 import UpdateBalanceModal from '../modal/stats/UpdateBalanceModal.tsx';
+import { showToast } from '../common/Toast.tsx';
 
 export interface GlobalStatisticsProps {
     onUpdate: () => void;
@@ -29,7 +30,7 @@ const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
                 setStatsWithoutCustomerData(data.statsWithoutCustomerData);
             })
             .catch((err) => {
-                // TODO: add toast
+                showToast(`Не вдалось завантажити дані за ${toLocalDate(date)}`, 'error');
                 console.log(err);
             });
     }, [date]);

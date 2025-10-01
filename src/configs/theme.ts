@@ -67,7 +67,6 @@ export const applicationTheme: Theme = createTheme({
             contrastText: '#000',
             light: '#ffd54f',
         },
-        // info: {}, // TODO: for toast messages?
         success: {
             main: '#c5f0cf',
         },

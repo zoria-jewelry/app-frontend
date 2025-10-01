@@ -21,6 +21,7 @@ import { OrderStatus } from '../../../dto/orders.ts';
 import ListItemText from '@mui/material/ListItemText';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
+import { showToast } from '../../common/Toast.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -93,7 +94,7 @@ const OrdersFilterModal = ({ open, onClose, onApply }: OrdersFilterModalProps) =
             if (employees) {
                 setEmployees(employees);
             } else {
-                // TODO: add toast
+                showToast('Не вдалось завантажити реєстр працівників', 'error');
             }
         });
     }, []);

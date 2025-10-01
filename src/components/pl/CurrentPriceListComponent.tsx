@@ -18,6 +18,7 @@ import { PriceListsApiClient } from '../../api/priceListsApiClient.ts';
 import type { PriceListEntryDto } from '../../dto/price-lists.ts';
 import { toLocalDate } from '../../utils.ts';
 import CreatePriceListComponent from '../modal/pricelists/CreatePriceListComponent.tsx';
+import { showToast } from '../common/Toast.tsx';
 
 export interface CurrentPriceListComponentProps {
     onPriceListCreated: () => void;
@@ -35,7 +36,7 @@ const CurrentPriceListComponent = ({ onPriceListCreated }: CurrentPriceListCompo
     const fetchCurrentPriceList = useCallback(() => {
         PriceListsApiClient.getActiveListDetails().then((priceList) => {
             if (!priceList) {
-                // TODO: add toast
+                showToast('Не вдалось завантажити поточний прайс лист', 'error');
             } else {
                 setEntries(priceList.entries);
                 setActiveListId(priceList.id);

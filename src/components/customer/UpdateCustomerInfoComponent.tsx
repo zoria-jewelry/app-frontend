@@ -8,6 +8,7 @@ import { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CustomersApiClient } from '../../api/customersApiClient.ts';
 import { Button, FormControl, FormHelperText, FormLabel, TextField, useTheme } from '@mui/material';
+import { showToast } from '../common/Toast.tsx';
 
 const UpdateCustomerInfoComponent = () => {
     const theme = useTheme();
@@ -30,7 +31,7 @@ const UpdateCustomerInfoComponent = () => {
         if (customerId) {
             CustomersApiClient.getInfoById(customerId).then((customerInfo) => {
                 if (!customerInfo) {
-                    // TODO: add toast
+                    showToast('Не вдалось завантажити дані клієнта', 'error');
                 } else {
                     console.log(customerInfo);
                     reset({
@@ -46,11 +47,11 @@ const UpdateCustomerInfoComponent = () => {
         CustomersApiClient.updateData(customerId!, data)
             .then(() => {
                 fetchCustomerInfo();
-                // TODO: add toast
+                showToast('Дані клієнта були успішно оновлені');
             })
             .catch((err) => {
                 console.log(err);
-                // TODO: add toast
+                showToast('Не вдалось оновити дані клієнта', 'error');
             });
         clearErrors();
     };

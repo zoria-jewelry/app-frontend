@@ -34,6 +34,7 @@ import { OrdersApiClient } from '../api/ordersApiClient.ts';
 import SuccessIcon from '@mui/icons-material/CheckCircle';
 import WarningIcon from '@mui/icons-material/Warning';
 import { VchasnoApiClient } from '../api/vchasnoApiClient.ts';
+import { showToast } from '../components/common/Toast.tsx';
 
 const CompleteOrderPage = () => {
     const theme = useTheme();
@@ -93,7 +94,7 @@ const CompleteOrderPage = () => {
             })
                 .then(setOrderCalculations)
                 .catch((err) => {
-                    // TODO: add toast
+                    showToast('Не вдалось обчислити вартість замовлення', 'error');
                     console.log(err);
                 });
         }
@@ -122,20 +123,30 @@ const CompleteOrderPage = () => {
 
             OrdersApiClient.completeOrder(orderId, data)
                 .then(async () => {
-                    // TODO: add toast
+                    showToast('Замовлення було успішно закрите');
                     if (paidMoney > 0) {
-                        const receiptUrl: string = await VchasnoApiClient.checkout(
-                            paidMoney,
-                            Number(paymentType),
-                        );
-                        await OrdersApiClient.addReceipt(orderId, receiptUrl);
+                        try {
+                            const receiptUrl: string = await VchasnoApiClient.checkout(
+                                paidMoney,
+                                Number(paymentType),
+                            );
+                            await OrdersApiClient.addReceipt(orderId, receiptUrl);
+                        } catch (err) {
+                            showToast(
+                                `Не вдалось додати чек до замовлення. Негайно зверніться до адміністратора – ${JSON.stringify(err)}`,
+                                'error',
+                            );
+                        }
                     }
                     clearErrors();
                     reset();
                     navigate(customerId ? `/customers/${customerId}` : '/orders');
                 })
                 .catch((err) => {
-                    // TODO: add toast
+                    showToast(
+                        `Не вдалось створити чек до замовлення – ${JSON.stringify(err)}`,
+                        'error',
+                    );
                     console.log(err);
                 });
         }
@@ -146,8 +157,8 @@ const CompleteOrderPage = () => {
             OrdersApiClient.getById(orderId)
                 .then(setOrder)
                 .catch((err) => {
+                    showToast('Не вдалось завантажити дані замовлення', 'error');
                     console.log(err);
-                    // TODO: add toast
                 });
         }
     }, [orderId]);
@@ -168,7 +179,10 @@ const CompleteOrderPage = () => {
         VchasnoApiClient.isShiftActive()
             .then(setIsShiftOpen)
             .catch((err) => {
-                // TODO: add toast
+                showToast(
+                    `Не вдалось дізнатись, чи була розпочата зміна. Перевірте, чи запущений застосунок Vchasno Kasa на вашому компʼютері – ${JSON.stringify(err)}`,
+                    'error',
+                );
                 console.log(err);
             });
     }, []);

@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import type { ChangeEvent } from 'react';
 import { ProductsApiClient } from '../../../api/productsApiClient.ts';
+import { showToast } from '../../common/Toast.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -88,8 +89,8 @@ const CreateProductComponent = (props: CreateProductComponentProps) => {
                 props.onCreate();
             })
             .catch((error) => {
+                showToast('Не вдалось додати новий продукт у каталог', 'error');
                 console.log(error);
-                // TODO: add toast
             });
     };
 

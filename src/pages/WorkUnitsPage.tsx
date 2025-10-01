@@ -32,6 +32,7 @@ import {
 import ReturnWorkUnitComponent from '../components/modal/work-units/ReturnWorkUnitComponent.tsx';
 import SaveMaterialComponent from '../components/modal/work-units/SaveMaterialComponent.tsx';
 import DialogComponent from '../components/modal/DialogComponent.tsx';
+import { showToast } from '../components/common/Toast.tsx';
 
 const WorkUnitsPage = () => {
     const theme = useTheme();
@@ -212,11 +213,11 @@ const WorkUnitsPage = () => {
                     console.log('Create work unit', data);
                     WorkUnitsApiClient.issueMetal(data)
                         .then(async () => {
+                            showToast('Матеріал був успішно виданий ювеліру');
                             await fetchReport();
-                            // TODO: add toast
                         })
                         .catch((err) => {
-                            // TODO: add toast
+                            showToast('Не вдалось видати матеріал ювеліру', 'error');
                             console.log(err);
                         });
                 }}
@@ -230,11 +231,14 @@ const WorkUnitsPage = () => {
                     onSave={(data: ReturnWorkUnitFormData) => {
                         WorkUnitsApiClient.returnMetal(data)
                             .then(async () => {
-                                // TODO: add toast
+                                showToast('Повернення матеріалу ювеліром було успішно зафіксоване');
                                 await fetchReport();
                             })
                             .catch((err) => {
-                                // TODO: add toast
+                                showToast(
+                                    'Не вдалось зафіксувати повернення матеріалу ювеліром',
+                                    'error',
+                                );
                                 console.log(err);
                             });
                     }}
@@ -510,11 +514,14 @@ const WorkUnitsPage = () => {
                     onSave={(data: SaveMaterialFormData) => {
                         WorkUnitsApiClient.saveMetal(data)
                             .then(() => {
-                                // TODO: add toast
+                                showToast('Повернення угорілого матеріалу успішно зафіксовано');
                                 fetchReport();
                             })
                             .catch((err) => {
-                                // TODO: add toast
+                                showToast(
+                                    'Не вдалось зафіксувати повернення угорілого матеріалу',
+                                    'error',
+                                );
                                 console.log(err);
                             });
                     }}
@@ -542,12 +549,17 @@ const WorkUnitsPage = () => {
                 handleAction={() => {
                     WorkUnitsApiClient.rolloverWorkUnits()
                         .then(() => {
-                            // TODO: add toast
+                            showToast(
+                                'Початок нового місяця був успішно зафіксований. Усі відкриті наряди були успішно продубльовані з поточною датою',
+                            );
                             fetchReport();
                             setIsStartNewMonthModalOpen(false);
                         })
                         .catch((err) => {
-                            // TODO: add toast
+                            showToast(
+                                'Не вдалось зафіксувати початок нового місяця. Негайно зверніться до адміністратора!',
+                                'error',
+                            );
                             console.log(err);
                         });
                 }}

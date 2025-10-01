@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { type OrderBriefInfoDto, paymentTypes } from '../../../dto/orders.ts';
 import { VchasnoApiClient } from '../../../api/vchasnoApiClient.ts';
 import { OrdersApiClient } from '../../../api/ordersApiClient.ts';
+import { showToast } from '../../common/Toast.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -66,15 +67,16 @@ const SelectReceiptTypeComponent = (props: SelectReceiptTypeComponentProps) => {
                 await OrdersApiClient.addReceipt(props.order.id, receiptUrl);
                 window.open(receiptUrl, '_blank');
             } catch (error) {
+                showToast(
+                    `Не вдалось отримати чек до замовлення – ${JSON.stringify(error)}`,
+                    'error',
+                );
                 console.log(error);
-                // TODO: add toast
             }
             setLoading(false);
             props.handleClose();
             return;
         }
-
-        // TODO: add toast
     };
 
     return (

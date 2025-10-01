@@ -20,6 +20,7 @@ import SearchBar from '../components/SearchBar.tsx';
 import CreateProductComponent from '../components/modal/products/CreateProductComponent.tsx';
 import DialogComponent from '../components/modal/DialogComponent.tsx';
 import ProductsArchiveComponent from '../components/modal/products/ProductsArchiveComponent.tsx';
+import { showToast } from '../components/common/Toast.tsx';
 
 const ProductsCataloguePage = () => {
     const theme = useTheme();
@@ -46,15 +47,15 @@ const ProductsCataloguePage = () => {
     const loadProducts = useCallback(() => {
         ProductsApiClient.getAll(searchPhrase)
             .then((productsList) => {
-                if (productsList) {
-                    setEntries(productsList);
+                if (!productsList) {
+                    showToast('Не вдалось завантажити каталог продуктів', 'error');
                 } else {
-                    // TODO: add toast
+                    setEntries(productsList);
                 }
             })
             .catch((error) => {
+                showToast('Не вдалось завантажити каталог продуктів', 'error');
                 console.log(error);
-                // TODO: add toast
             });
     }, [searchPhrase]);
 
@@ -62,10 +63,13 @@ const ProductsCataloguePage = () => {
         if (id) {
             setProductToArchive(null);
             ProductsApiClient.moveToArchive(id)
-                .then(loadProducts)
+                .then(() => {
+                    showToast('Продукт був успішно архівований');
+                    loadProducts();
+                })
                 .catch((error) => {
+                    showToast('Не вдалось архівувати продукт', 'error');
                     console.log(error);
-                    // TODO: add toast
                 });
         }
     };

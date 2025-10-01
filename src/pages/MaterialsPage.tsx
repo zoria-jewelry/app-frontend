@@ -19,6 +19,7 @@ import type { MaterialDto } from '../dto/materials.ts';
 import { MaterialsApiClient } from '../api/materialsApiClient.ts';
 import CreateMaterialComponent from '../components/modal/materials/CreateMaterialComponent.tsx';
 import { toFixedNumber } from '../utils.ts';
+import { showToast } from '../components/common/Toast.tsx';
 
 const MaterialsPage = () => {
     const theme = useTheme();
@@ -29,14 +30,19 @@ const MaterialsPage = () => {
     const [isCreateMaterialModalOpen, setIsCreateMaterialModalOpen] = useState<boolean>(false);
 
     const fetchMaterials = useCallback(() => {
-        MaterialsApiClient.get(page).then((materialsList) => {
-            if (!materialsList) {
-                // TODO: add toast
-            } else {
-                setEntries(materialsList.entries);
-                setTotal(materialsList.total);
-            }
-        });
+        MaterialsApiClient.get(page)
+            .then((materialsList) => {
+                if (!materialsList) {
+                    showToast('Не вдалось завантажити реєстр матеріалів', 'error');
+                } else {
+                    setEntries(materialsList.entries);
+                    setTotal(materialsList.total);
+                }
+            })
+            .catch((err) => {
+                showToast('Не вдалось завантажити реєстр матеріалів', 'error');
+                console.log(err);
+            });
     }, [page]);
 
     useEffect(() => {
