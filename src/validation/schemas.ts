@@ -19,12 +19,12 @@ export const createEmployeeSchema = z.object({
 
 export type CreateEmployeeFormData = z.infer<typeof createEmployeeSchema>;
 
-export const signinSchema = z.object({
+export const signInSchema = z.object({
     email: z.string().nonempty({ error: 'Введіть електронну адресу' }),
     password: z.string().nonempty({ error: 'Введіть пароль' }),
 });
 
-export type SigninFormData = z.infer<typeof signinSchema>;
+export type SignInFormData = z.infer<typeof signInSchema>;
 
 export const createProductSchema = z.object({
     name: z.string().nonempty({ error: 'Це поле є обовʼязковим' }),
