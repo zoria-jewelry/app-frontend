@@ -26,7 +26,7 @@ const App = () => {
     return (
         <Box className={`${commonStyles.bodyBox} ${commonStyles.flexColumn}`}>
             {/* Only authenticated user will see header and will be able to open the sidebar */}
-            {path?.pathname !== '/login' && (
+            {path?.pathname !== '/login' && path?.pathname !== '/login/' && (
                 <>
                     <HeaderComponent toggleOpenSidebar={() => setIsSidebarOpen((v) => !v)} />
                     <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
