@@ -31,6 +31,7 @@ import { ProductsApiClient } from '../../../api/productsApiClient.ts';
 import ListItemText from '@mui/material/ListItemText';
 import type { OrderDto } from '../../../dto/orders.ts';
 import { OrdersApiClient } from '../../../api/ordersApiClient.ts';
+import { showToast } from '../../common/Toast.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -99,15 +100,14 @@ const EditOrderComponent = (props: EditOrderComponentProps) => {
     };
 
     const onSubmit = (data: UpdateOrderFormData) => {
-        console.log('Submit order update:', data);
         OrdersApiClient.change(props.orderId, data)
             .then(() => {
-                // TODO: add toast
+                showToast('Замовлення було успішно оновлене');
                 handleClose();
                 props.onUpdate();
             })
             .catch((err) => {
-                // TODO: add toast
+                showToast('Не вдалось оновити замовлення', 'error');
                 console.log(err);
             });
     };

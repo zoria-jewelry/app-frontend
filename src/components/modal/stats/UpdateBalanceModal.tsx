@@ -11,6 +11,7 @@ import {
     updateGlobalBalancesSchema,
 } from '../../../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { showToast } from '../../common/Toast.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -62,8 +63,7 @@ const UpdateBalanceModal = ({ onUpdate, handleClose, isOpen }: UpdateBalanceModa
         const filteredEntries = data.entries.filter((entry) => entry.delta !== 0);
 
         if (filteredEntries.length === 0) {
-            console.log('No entries to update (all deltas are 0)');
-            // TODO: add toast
+            showToast('Внесіть зміну хоча б в одному полі, щоб продовжити', 'error');
             return;
         }
 
@@ -99,7 +99,7 @@ const UpdateBalanceModal = ({ onUpdate, handleClose, isOpen }: UpdateBalanceModa
                 });
             })
             .catch((err) => {
-                // TODO: add toast
+                showToast('Не вдалось оновити баланс компанії', 'error');
                 console.log(err);
             });
     }, [reset]);

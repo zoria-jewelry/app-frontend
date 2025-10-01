@@ -20,6 +20,7 @@ import type { PriceListBundleEntryDto } from '../../dto/price-lists.ts';
 import { toLocalDate } from '../../utils.ts';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import ExpiredPriceListDetailsComponent from '../modal/pricelists/ExpiredPriceListDetailsComponent.tsx';
+import { showToast } from '../common/Toast.tsx';
 
 export interface ExpiredPriceListsComponentProps {
     refreshTrigger: number;
@@ -37,7 +38,7 @@ const ExpiredPriceListsComponent = ({ refreshTrigger }: ExpiredPriceListsCompone
     useEffect(() => {
         PriceListsApiClient.getClosed(page).then((closedLists) => {
             if (!closedLists) {
-                // TODO: add toast
+                showToast('Не вдалось завантажити дані про закриті прайс листи', 'error');
             } else {
                 setEntries(closedLists.entries);
                 setTotal(closedLists.total);

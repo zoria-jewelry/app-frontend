@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import { Button, CircularProgress } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { VchasnoApiClient } from '../../api/vchasnoApiClient.ts';
+import { showToast } from '../common/Toast.tsx';
 
 const ShiftSidebarActions = () => {
     const [isShiftOpen, setIsShiftOpen] = useState<boolean>(false);
@@ -11,14 +12,17 @@ const ShiftSidebarActions = () => {
         VchasnoApiClient.isShiftActive()
             .then(setIsShiftOpen)
             .catch((err) => {
-                // TODO: add toast
+                showToast(
+                    'Не вдалось визначити, чи зміна активна. Перевірте, чи запущений застосунок Vchasno Kasa на вашому компʼютері',
+                    'error',
+                );
                 console.log(err);
             });
     }, [isShiftOpen]);
 
     const handleApiError = (errorText?: string) => {
         if (errorText && errorText.trim() !== '') {
-            // TODO: add toast
+            showToast(`Помилка від Vchasno Kasa – ${errorText}`, 'error');
             console.error('API reported error:', errorText);
         }
     };
@@ -27,9 +31,11 @@ const ShiftSidebarActions = () => {
         setLoading(true);
         try {
             const response = await VchasnoApiClient.startShift();
+            showToast('Зміна була успішно розпочата');
             handleApiError(response?.errortxt);
             fetchShiftState();
         } catch (e) {
+            showToast(`Не вдалось почати зміну – ${JSON.stringify(e)}`, 'error');
             console.error('Failed to open shift:', e);
         } finally {
             setLoading(false);
@@ -40,9 +46,11 @@ const ShiftSidebarActions = () => {
         setLoading(true);
         try {
             const response = await VchasnoApiClient.endShift();
+            showToast('Зміна була успішно завершена');
             handleApiError(response?.errortxt);
             fetchShiftState();
         } catch (e) {
+            showToast(`Не вдалось закрити зміну – ${JSON.stringify(e)}`, 'error');
             console.error('Failed to close shift:', e);
         } finally {
             setLoading(false);

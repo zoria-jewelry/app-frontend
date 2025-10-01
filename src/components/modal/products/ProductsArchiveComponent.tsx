@@ -17,6 +17,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogComponent from '../DialogComponent.tsx';
 import type { ProductEntryDto } from '../../../dto/products.ts';
 import { ProductsApiClient } from '../../../api/productsApiClient.ts';
+import { showToast } from '../../common/Toast.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -60,7 +61,7 @@ const ProductsArchiveComponent = (props: ProductsArchiveComponentProps) => {
     const loadArchivedProducts = useCallback(() => {
         ProductsApiClient.getArchived().then((products) => {
             if (!products) {
-                // TODO: add toast
+                showToast('Не вдалось завантажити архівовані продукти', 'error');
             } else {
                 setEntries(products);
             }
@@ -73,12 +74,13 @@ const ProductsArchiveComponent = (props: ProductsArchiveComponentProps) => {
             setIsUnarchiveDialogOpened(false);
             ProductsApiClient.removeFromArchive(id)
                 .then(() => {
+                    showToast('Продукт був успішно розархівований');
                     loadArchivedProducts();
                     props.onArchive();
                 })
                 .catch((error) => {
+                    showToast('Не вдалось розархівувати продукт', 'error');
                     console.log(error);
-                    // TODO: add toast
                 });
         }
     };

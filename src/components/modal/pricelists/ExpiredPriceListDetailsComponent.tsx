@@ -16,6 +16,7 @@ import {
     useTheme,
 } from '@mui/material';
 import { toLocalDate } from '../../../utils.ts';
+import { showToast } from '../../common/Toast.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -53,7 +54,7 @@ const ExpiredPriceListDetailsComponent = (props: ExpiredPriceListDetailsProps) =
         if (props.priceListId) {
             PriceListsApiClient.getPriceListDetails(props.priceListId).then((priceList) => {
                 if (!priceList) {
-                    // TODO: add toast
+                    showToast('Не вдалось завантажити дані прайс листа', 'error');
                 } else {
                     setEntries(priceList.entries);
                 }

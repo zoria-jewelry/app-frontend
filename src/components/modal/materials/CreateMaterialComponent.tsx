@@ -15,6 +15,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type CreateMaterialFormData, createMaterialSchema } from '../../../validation/schemas.ts';
 import { MaterialsApiClient } from '../../../api/materialsApiClient.ts';
+import { showToast } from '../../common/Toast.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -69,8 +70,8 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
         MaterialsApiClient.create(data)
             .then(props.onCreate)
             .catch((error) => {
+                showToast('Не вдалось створити новий матеріал', 'error');
                 console.log(error);
-                // TODO: add toast
             });
         handleClose();
     };

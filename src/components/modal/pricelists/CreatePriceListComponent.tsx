@@ -18,6 +18,7 @@ import { toLocalDate } from '../../../utils.ts';
 import type { PriceListEntryDto } from '../../../dto/price-lists.ts';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { showToast } from '../../common/Toast.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -108,10 +109,13 @@ const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
         };
 
         PriceListsApiClient.create(transformed)
-            .then(props.onCreate)
+            .then(() => {
+                showToast('Прайс ліст був успішно оновлений');
+                props.onCreate();
+            })
             .catch((error) => {
+                showToast('Не вдалось оновити прайс лист', 'error');
                 console.log(error);
-                // TODO: add toast
             });
         handleClose();
     };

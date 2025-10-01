@@ -3,8 +3,6 @@ import commonStyles from '../styles/Common.module.css';
 import {
     Box,
     Button,
-    FormControl,
-    FormHelperText,
     Paper,
     Table,
     TableBody,
@@ -12,14 +10,13 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    TextField,
     Typography,
     useTheme,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import type { WorkUnitsReportDto } from '../dto/work-units.ts';
 import { WorkUnitsApiClient } from '../api/workUnitsApiClient.ts';
-import { getCurrentMonthRange, toLocalDate } from '../utils.ts';
+import { getCurrentMonthRange, toFixedNumber, toLocalDateTime } from '../utils.ts';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
 import FilterIcon from '@mui/icons-material/TuneOutlined';
@@ -29,47 +26,34 @@ import WorkUnitsFilterComponent, {
 import CreateWorkUnitComponent from '../components/modal/work-units/CreateWorkUnitComponent.tsx';
 import {
     type CreateWorkUnitFormData,
-    saveMetalSchema,
-    type SaveMetalFormData,
+    type SaveMaterialFormData,
+    type ReturnWorkUnitFormData,
 } from '../validation/schemas.ts';
 import ReturnWorkUnitComponent from '../components/modal/work-units/ReturnWorkUnitComponent.tsx';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import SaveMaterialComponent from '../components/modal/work-units/SaveMaterialComponent.tsx';
+import DialogComponent from '../components/modal/DialogComponent.tsx';
+import { showToast } from '../components/common/Toast.tsx';
 
 const WorkUnitsPage = () => {
     const theme = useTheme();
 
     const currentMonth = getCurrentMonthRange();
     const [filterData, setFilterData] = useState<WorkUnitsFilterData>({
-        startDate: currentMonth.start,
-        endDate: currentMonth.end,
-        employeeId: undefined,
+        periodStart: currentMonth.start,
+        periodEnd: currentMonth.end,
+        employeeId: 1,
         materialId: undefined,
     });
+
+    const [isStartNewMonthModalOpen, setIsStartNewMonthModalOpen] = useState<boolean>(false);
 
     const [report, setReport] = useState<WorkUnitsReportDto | undefined>();
     const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
     const [isCreateOpen, setIsCreateOpen] = useState<boolean>(false);
 
+    const [isSaveMetalOpen, setIsSaveMetalOpen] = useState<boolean>(false);
+
     const [workUnitIdToReturn, setWorkUnitIdToReturn] = useState<number | undefined>();
-
-    const {
-        register,
-        handleSubmit,
-        reset,
-        formState: { errors },
-    } = useForm<SaveMetalFormData>({
-        resolver: zodResolver(saveMetalSchema),
-        reValidateMode: 'onSubmit',
-        defaultValues: {
-            metalWeight: 0,
-        },
-    });
-
-    const onSave = (data: SaveMetalFormData) => {
-        console.log(data);
-        reset();
-    };
 
     const fetchReport = useCallback(async () => {
         if (filterData) {
@@ -136,7 +120,8 @@ const WorkUnitsPage = () => {
                                 fontWeight: 400,
                             }}
                         >
-                            {toLocalDate(report.periodStart)} – {toLocalDate(report.periodEnd)}
+                            {toLocalDateTime(report.periodStart)} –{' '}
+                            {toLocalDateTime(report.periodEnd)}
                         </Typography>
                     </Box>
                 )}
@@ -173,6 +158,27 @@ const WorkUnitsPage = () => {
 
                     <Button
                         variant="contained"
+                        onClick={() => setIsSaveMetalOpen(true)}
+                        size="large"
+                        sx={{
+                            minWidth: { xs: '100%', sm: '200px', md: '250px' },
+                            height: { xs: '48px', sm: '40px' },
+                            fontWeight: 600,
+                            borderRadius: 2,
+                            boxShadow: 2,
+                            '&:hover': {
+                                boxShadow: 4,
+                                transform: 'translateY(-1px)',
+                            },
+                            transition: 'all 0.2s ease-in-out',
+                            backgroundColor: '#e5f6df',
+                        }}
+                    >
+                        Повернути без видачі
+                    </Button>
+
+                    <Button
+                        variant="contained"
                         color="primary"
                         onClick={() => setIsCreateOpen(true)}
                         size="large"
@@ -204,8 +210,16 @@ const WorkUnitsPage = () => {
                 open={isCreateOpen}
                 onClose={() => setIsCreateOpen(false)}
                 onSave={(data: CreateWorkUnitFormData) => {
-                    // TODO: Call create work-unit endpoint when available
                     console.log('Create work unit', data);
+                    WorkUnitsApiClient.issueMetal(data)
+                        .then(async () => {
+                            showToast('Матеріал був успішно виданий ювеліру');
+                            await fetchReport();
+                        })
+                        .catch((err) => {
+                            showToast('Не вдалось видати матеріал ювеліру', 'error');
+                            console.log(err);
+                        });
                 }}
             />
 
@@ -214,7 +228,20 @@ const WorkUnitsPage = () => {
                     workUnitId={workUnitIdToReturn}
                     open={!!workUnitIdToReturn}
                     onClose={() => setWorkUnitIdToReturn(undefined)}
-                    onSave={() => fetchReport()}
+                    onSave={(data: ReturnWorkUnitFormData) => {
+                        WorkUnitsApiClient.returnMetal(data)
+                            .then(async () => {
+                                showToast('Повернення матеріалу ювеліром було успішно зафіксоване');
+                                await fetchReport();
+                            })
+                            .catch((err) => {
+                                showToast(
+                                    'Не вдалось зафіксувати повернення матеріалу ювеліром',
+                                    'error',
+                                );
+                                console.log(err);
+                            });
+                    }}
                 />
             )}
 
@@ -230,7 +257,7 @@ const WorkUnitsPage = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{ backgroundColor: '#b7cfd2', borderTopLeftRadius: 10 }}>
-                                Метал
+                                Матеріал
                             </TableCell>
                             <TableCell sx={{ backgroundColor: '#b7cfd2' }}>Дата видачі</TableCell>
                             <TableCell sx={{ backgroundColor: '#b7cfd2' }}>
@@ -238,7 +265,7 @@ const WorkUnitsPage = () => {
                             </TableCell>
                             <TableCell sx={{ backgroundColor: '#b7cfd2' }}>Замовлення, №</TableCell>
                             <TableCell sx={{ backgroundColor: '#b7cfd2', width: '100px' }}>
-                                Метал (видано), г
+                                Матеріал (видано), г
                             </TableCell>
 
                             <TableCell
@@ -248,10 +275,10 @@ const WorkUnitsPage = () => {
                                     width: '100px',
                                 }}
                             >
-                                Метал (повернено), г
+                                Матеріал (повернено), г
                             </TableCell>
                             <TableCell sx={{ backgroundColor: '#b7cfd2' }}>ПН, %</TableCell>
-                            <TableCell sx={{ backgroundColor: '#b7cfd2' }}>Метал з %</TableCell>
+                            <TableCell sx={{ backgroundColor: '#b7cfd2' }}>Матеріал з %</TableCell>
                             <TableCell
                                 sx={{ backgroundColor: '#b7cfd2', borderTopRightRadius: 10 }}
                             ></TableCell>
@@ -272,24 +299,30 @@ const WorkUnitsPage = () => {
                                     }}
                                 >
                                     <TableCell>{entry.materialName}</TableCell>
-                                    <TableCell>{toLocalDate(entry.issuedDate)}</TableCell>
+                                    <TableCell>{toLocalDateTime(entry.issuedDate)}</TableCell>
                                     <TableCell>
-                                        {entry.returnedDate ? toLocalDate(entry.returnedDate) : '–'}
+                                        {entry.returnedDate
+                                            ? toLocalDateTime(entry.returnedDate)
+                                            : '–'}
                                     </TableCell>
                                     <TableCell>{entry.orderId ? entry.orderId : '–'}</TableCell>
                                     <TableCell>
-                                        {entry.metalIssued ? entry.metalIssued.toFixed(3) : '–'}
+                                        {entry.metalIssued
+                                            ? toFixedNumber(entry.metalIssued, 3)
+                                            : '–'}
                                     </TableCell>
 
                                     <TableCell sx={{ borderLeft: '1px solid black' }}>
-                                        {entry.metalReturned ? entry.metalReturned.toFixed(3) : '–'}
+                                        {entry.metalReturned
+                                            ? toFixedNumber(entry.metalReturned, 3)
+                                            : '–'}
                                     </TableCell>
                                     <TableCell>
-                                        {entry.loss ? entry.loss.toFixed(2) : '–'}
+                                        {entry.loss ? toFixedNumber(entry.loss, 2) : '–'}
                                     </TableCell>
                                     <TableCell>
                                         {entry.metalReturnedWithLoss
-                                            ? entry.metalReturnedWithLoss.toFixed(3)
+                                            ? toFixedNumber(entry.metalReturnedWithLoss, 3)
                                             : '–'}
                                     </TableCell>
                                     <TableCell width="50px">
@@ -346,10 +379,9 @@ const WorkUnitsPage = () => {
                                 ></TableCell>
                                 <TableCell sx={{ padding: 0, border: 'none' }}>
                                     <Typography variant="body1" fontWeight={900} textAlign="right">
-                                        {report.savedByEmployee
-                                            ? report.spentOnOrders.toFixed(3)
+                                        {report.spentOnOrders
+                                            ? `${toFixedNumber(report.spentOnOrders, 3)} г`
                                             : '–'}{' '}
-                                        г
                                     </Typography>
                                 </TableCell>
                             </TableRow>
@@ -392,7 +424,7 @@ const WorkUnitsPage = () => {
                                     }}
                                 >
                                     <Typography variant="body1" color="text.secondary">
-                                        Угорілий метал
+                                        Угорілий матеріал
                                     </Typography>
                                 </TableCell>
                                 <TableCell
@@ -416,7 +448,7 @@ const WorkUnitsPage = () => {
                                         textAlign="right"
                                         color="error"
                                     >
-                                        {report.lost.toFixed(3)} г
+                                        {toFixedNumber(report.lost, 3)} г
                                     </Typography>
                                 </TableCell>
                             </TableRow>
@@ -437,16 +469,15 @@ const WorkUnitsPage = () => {
                                         color="green"
                                     >
                                         {report.savedByEmployee
-                                            ? report.savedByEmployee.toFixed(3)
+                                            ? `${toFixedNumber(report.savedByEmployee, 3)} г`
                                             : '–'}{' '}
-                                        г
                                     </Typography>
                                 </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell sx={{ padding: 0, border: 'none' }}>
                                     <Typography variant="body1" color="text.secondary">
-                                        Втрачено металу
+                                        Сальдо на кінець періоду
                                     </Typography>
                                 </TableCell>
                                 <TableCell
@@ -465,7 +496,7 @@ const WorkUnitsPage = () => {
                                                   : 'error'
                                         }
                                     >
-                                        {report.delta.toFixed(3)} г
+                                        {toFixedNumber(report.delta, 3)} г
                                     </Typography>
                                 </TableCell>
                             </TableRow>
@@ -474,64 +505,69 @@ const WorkUnitsPage = () => {
                 </Box>
             )}
 
+            {filterData.employeeId && filterData.employeeId > 0 && report && (
+                <SaveMaterialComponent
+                    open={isSaveMetalOpen}
+                    employeeId={filterData.employeeId}
+                    employeeName={report.employeeFullName}
+                    onClose={() => setIsSaveMetalOpen(false)}
+                    onSave={(data: SaveMaterialFormData) => {
+                        WorkUnitsApiClient.saveMetal(data)
+                            .then(() => {
+                                showToast('Повернення угорілого матеріалу успішно зафіксовано');
+                                fetchReport();
+                            })
+                            .catch((err) => {
+                                showToast(
+                                    'Не вдалось зафіксувати повернення угорілого матеріалу',
+                                    'error',
+                                );
+                                console.log(err);
+                            });
+                    }}
+                />
+            )}
+
             <Box
-                sx={{
-                    width: '100%',
-                    marginTop: theme.spacing(3),
-                    padding: theme.spacing(4),
-                    backgroundColor: 'rgba(0, 0, 0, 0.02)',
-                    borderRadius: 1,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                }}
+                width="100%"
+                display="flex"
+                justifyContent="flex-end"
+                mt={theme.spacing(8)}
+                mb={theme.spacing(4)}
             >
-                <form onSubmit={handleSubmit(onSave)} noValidate>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: theme.spacing(2),
-                            flexWrap: 'wrap',
-                        }}
-                    >
-                        <Box sx={{ flex: 1, minWidth: '200px' }}>
-                            <Typography variant="body2" sx={{ marginBottom: 1, fontWeight: 500 }}>
-                                Повернено металу без видачі, г
-                            </Typography>
-                            <FormControl fullWidth error={!!errors.metalWeight}>
-                                <TextField
-                                    type="number"
-                                    fullWidth
-                                    size="small"
-                                    {...register('metalWeight', { valueAsNumber: true })}
-                                    error={!!errors.metalWeight}
-                                    placeholder="Введіть вагу"
-                                />
-                                <FormHelperText
-                                    error={!!errors.metalWeight}
-                                    sx={{
-                                        margin: 0,
-                                        minHeight: '30px',
-                                    }}
-                                >
-                                    {errors.metalWeight ? errors.metalWeight.message : ''}
-                                </FormHelperText>
-                            </FormControl>
-                        </Box>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            sx={{
-                                height: '40px',
-                                minWidth: '160px',
-                            }}
-                        >
-                            Зафіксувати повернення
-                        </Button>
-                    </Box>
-                </form>
+                <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => setIsStartNewMonthModalOpen(true)}
+                >
+                    Почати новий місяць
+                </Button>
             </Box>
+
+            <DialogComponent
+                handleClose={() => setIsStartNewMonthModalOpen(false)}
+                handleAction={() => {
+                    WorkUnitsApiClient.rolloverWorkUnits()
+                        .then(() => {
+                            showToast(
+                                'Початок нового місяця був успішно зафіксований. Усі відкриті наряди були успішно продубльовані з поточною датою',
+                            );
+                            fetchReport();
+                            setIsStartNewMonthModalOpen(false);
+                        })
+                        .catch((err) => {
+                            showToast(
+                                'Не вдалось зафіксувати початок нового місяця. Негайно зверніться до адміністратора!',
+                                'error',
+                            );
+                            console.log(err);
+                        });
+                }}
+                isOpen={isStartNewMonthModalOpen}
+                dialogText="Ця дія закриє всі незавершені наряди і відкриє їх знову з поточною датою. Найкращий час для запуску цього процесу – наступний день після завершення інвентаризації. Ви впевнені, що хочете почати новий місяць?"
+                actionButtonText="Так, почати"
+                actionButtonVariant="error"
+            />
         </Paper>
     );
 };

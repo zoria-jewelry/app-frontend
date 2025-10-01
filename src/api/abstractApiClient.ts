@@ -4,18 +4,8 @@ import axios from 'axios';
 
 const acceptableStatuses: number[] = [200, 201];
 
-/**
- *
- * TODO: improve logic during development
- *
- */
 export abstract class AbstractApiClient {
     private static refreshTokenPromise: Promise<void> | null = null;
-
-    protected static async handleError(message?: string) {
-        // TODO: Add toast here
-        console.error(message);
-    }
 
     protected static async apiRequest<T>(
         cfg: AxiosRequestConfig & { _retry?: boolean } = {},
@@ -81,12 +71,10 @@ export abstract class AbstractApiClient {
                 try {
                     const retryResp = await axios.request<T>(cfg);
                     if (!acceptableStatuses.includes(retryResp.status)) {
-                        await this.handleError();
                         return undefined;
                     }
                     return retryResp.data as T;
                 } catch (err: any) {
-                    await this.handleError();
                     return undefined;
                 }
             }
@@ -99,11 +87,7 @@ export abstract class AbstractApiClient {
                 `${config.apiBase}/public/users/refresh-token`,
             );
 
-            if (!acceptableStatuses.includes(resp.status)) {
-                await this.handleError(); // TODO: remove here?
-            }
-
-            return true;
+            return acceptableStatuses.includes(resp.status);
         } catch {
             return false;
         }

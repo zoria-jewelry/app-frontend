@@ -8,6 +8,7 @@ import OrdersTableComponent from '../components/common/OrdersTableComponent.tsx'
 import OrdersFilterModal from '../components/modal/orders/OrdersFilterComponent.tsx';
 import type { OrdersListDto } from '../dto/orders.ts';
 import { OrdersApiClient, type OrdersFilterData } from '../api/ordersApiClient.ts';
+import { showToast } from '../components/common/Toast.tsx';
 
 const OrdersPage = () => {
     const theme = useTheme();
@@ -21,19 +22,26 @@ const OrdersPage = () => {
 
     const updateOrdersList = useCallback(
         (page: number = ordersPage) => {
-            OrdersApiClient.getAll(orderSearchPhrase, ordersFilterData, page).then((orders) => {
-                if (orders) {
-                    setOrders(orders);
-                } else {
-                    // TODO: add toast?
-                }
-            });
+            OrdersApiClient.getAll(orderSearchPhrase, ordersFilterData, page)
+                .then((orders) => {
+                    if (!orders) {
+                        showToast('Не вдалось завантажити реєстр замовлень', 'error');
+                    } else {
+                        setOrders(orders);
+                    }
+                })
+                .catch((err) => {
+                    showToast('Не вдалось завантажити реєстр замовлень', 'error');
+                    console.log(err);
+                });
         },
         [orderSearchPhrase, ordersFilterData],
     );
 
     useEffect(() => {
-        updateOrdersList(ordersPage);
+        if (ordersPage && updateOrdersList) {
+            updateOrdersList(ordersPage);
+        }
     }, [ordersPage, updateOrdersList]);
 
     useEffect(() => {

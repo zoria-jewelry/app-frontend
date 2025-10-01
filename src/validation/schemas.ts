@@ -132,16 +132,16 @@ export const workUnitsFilterSchema = z
         employeeId: z
             .number({ error: 'Оберіть працівника' })
             .positive({ error: 'Оберіть працівника' }),
-        startDate: z
+        periodStart: z
             .date({ error: "Дата початку обов'язкова" })
             .nonoptional({ error: "Дата початку обов'язкова" }),
-        endDate: z
+        periodEnd: z
             .date({ error: "Дата кінця обов'язкова" })
             .nonoptional({ error: "Дата початку обов'язкова" }),
         materialId: z.number({ error: 'Оберіть метал' }).positive({ error: 'Оберіть метал' }),
         orderId: z.number().positive().optional(),
     })
-    .refine((data) => data.startDate <= data.endDate, {
+    .refine((data) => data.periodStart <= data.periodEnd, {
         message: 'Дата кінця не може бути раніше дати початку',
         path: ['endDate'],
     });
@@ -175,14 +175,16 @@ export const returnWorkUnitSchema = z.object({
 
 export type ReturnWorkUnitFormData = z.infer<typeof returnWorkUnitSchema>;
 
-export const saveMetalSchema = z.object({
+export const saveMaterialSchema = z.object({
+    employeeId: z.number({ error: 'Оберіть працівника' }).positive({ error: 'Оберіть метал' }),
+    materialId: z.number({ error: 'Оберіть метал' }).positive({ error: 'Оберіть метал' }),
     metalWeight: z
         .number({ error: 'Введіть число' })
         .positive({ error: 'Введіть невідʼємне число' })
         .multipleOf(0.001, { message: 'Крок значення — 0.001' }),
 });
 
-export type SaveMetalFormData = z.infer<typeof saveMetalSchema>;
+export type SaveMaterialFormData = z.infer<typeof saveMaterialSchema>;
 
 export const updateCustomerBalancesSchema = z.object({
     description: z.string().trim().nonempty({ error: 'Опис є обовʼязковим' }),

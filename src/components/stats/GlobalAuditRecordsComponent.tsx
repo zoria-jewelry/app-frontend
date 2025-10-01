@@ -5,11 +5,13 @@ import {
     formatDateToYYYYMMDD,
     getCurrentMonthRange,
     toFixedNumber,
+    toLocalDate,
     toLocalDateTime,
 } from '../../utils.ts';
 import { useEffect, useState } from 'react';
 import type { AuditRecord } from '../../dto/audit.ts';
 import { StatisticsApiClient } from '../../api/statsApiClient.ts';
+import { showToast } from '../common/Toast.tsx';
 
 export interface GlobalAuditRecordsComponentProps {
     refresher: number;
@@ -39,7 +41,10 @@ const GlobalAuditRecordsComponent = ({ refresher }: GlobalAuditRecordsComponentP
         StatisticsApiClient.getAuditForPeriod(fromDate, toDate)
             .then((data) => setRecords(data.entries))
             .catch((err) => {
-                // TODO: add toast
+                showToast(
+                    `Не вдалось завантажити історію за період ${toLocalDate(fromDate)} – ${toLocalDate(toDate)}`,
+                    'error',
+                );
                 console.log(err);
             });
     }, [fromDate, toDate, refresher]);

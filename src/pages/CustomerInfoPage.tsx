@@ -14,6 +14,7 @@ import FilterIcon from '@mui/icons-material/TuneOutlined';
 import IconButton from '@mui/material/IconButton';
 import OrdersFilterModal from '../components/modal/orders/OrdersFilterComponent.tsx';
 import CreateOrderComponent from '../components/modal/orders/CreateOrderComponent.tsx';
+import { showToast } from '../components/common/Toast.tsx';
 
 const CustomerInfoPage = () => {
     const theme = useTheme();
@@ -42,20 +43,27 @@ const CustomerInfoPage = () => {
                     orderSearchPhrase,
                     ordersFilterData,
                     page,
-                ).then((orders) => {
-                    if (orders) {
-                        setOrders(orders);
-                    } else {
-                        // TODO: add toast?
-                    }
-                });
+                )
+                    .then((orders) => {
+                        if (orders) {
+                            setOrders(orders);
+                        } else {
+                            showToast('Не вдалось завантажити замовлення клієнта', 'error');
+                        }
+                    })
+                    .catch((err) => {
+                        showToast('Не вдалось завантажити замовлення клієнта', 'error');
+                        console.log(err);
+                    });
             }
         },
         [customerId, orderSearchPhrase, ordersFilterData],
     );
 
     useEffect(() => {
-        updateOrdersList(ordersPage);
+        if (updateOrdersList && ordersPage) {
+            updateOrdersList(ordersPage);
+        }
     }, [ordersPage, updateOrdersList]);
 
     useEffect(() => {

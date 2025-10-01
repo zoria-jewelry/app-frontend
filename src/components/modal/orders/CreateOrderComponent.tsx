@@ -30,6 +30,7 @@ import { EmployeesApiClient } from '../../../api/employeesApiClient.ts';
 import { ProductsApiClient } from '../../../api/productsApiClient.ts';
 import ListItemText from '@mui/material/ListItemText';
 import { OrdersApiClient } from '../../../api/ordersApiClient.ts';
+import { showToast } from '../../common/Toast.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -103,12 +104,12 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
         console.log('Submit:', data);
         OrdersApiClient.create(data)
             .then(() => {
-                // TODO: add toast
+                showToast('Замовлення було успішно створене');
                 props.onCreate();
                 handleClose();
             })
             .catch((err) => {
-                // TODO: add toast
+                showToast('Не вдалось створити замовлення', 'error');
                 console.log(err);
             });
     };

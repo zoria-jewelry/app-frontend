@@ -9,6 +9,7 @@ import {
     updateCustomerBalancesSchema,
     type UpdateCustomerBalancesFormData,
 } from '../../validation/schemas.ts';
+import { showToast } from '../common/Toast.tsx';
 
 export interface UpdateCustomerBalancesComponentProps {
     onUpdate: () => void;
@@ -62,10 +63,11 @@ const UpdateCustomerBalancesComponent = ({ onUpdate }: UpdateCustomerBalancesCom
         if (customerId) {
             CustomersApiClient.updateCustomerBalance(customerId, data)
                 .then(() => {
+                    showToast('Баланс клієнта був успішно оновлений');
                     clearErrors();
                 })
                 .catch((err) => {
-                    // TODO: add toast
+                    showToast('Не вдалось оновити баланс клієнта', 'error');
                     console.log(err);
                 })
                 .finally(onUpdate);

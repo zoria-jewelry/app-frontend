@@ -50,7 +50,9 @@ const OrdersTableComponent = ({ customerId, orders, setPage, onUpdate }: OrdersT
     };
 
     useEffect(() => {
-        onUpdate();
+        if (orderForReceiptRequest != undefined) {
+            onUpdate();
+        }
     }, [orderForReceiptRequest]);
 
     return (

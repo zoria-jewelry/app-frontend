@@ -22,6 +22,7 @@ import { EmployeesApiClient } from '../api/employeesApiClient.ts';
 import DialogComponent from '../components/modal/DialogComponent.tsx';
 import EmployeesArchiveComponent from '../components/modal/employees/EmployeesArchiveComponent.tsx';
 import CreateEmployeeComponent from '../components/modal/employees/CreateEmployeeComponent.tsx';
+import { showToast } from '../components/common/Toast.tsx';
 
 const EmployeePage = () => {
     const theme = useTheme();
@@ -55,6 +56,7 @@ const EmployeePage = () => {
         if (id) {
             EmployeesApiClient.moveToArchive(id)
                 .then(() => {
+                    showToast('Працівник був успішно архівований');
                     if (page === 0) {
                         loadEmployees();
                     } else {
@@ -62,7 +64,7 @@ const EmployeePage = () => {
                     }
                 })
                 .catch(() => {
-                    // TODO: add toast
+                    showToast('Не вдалось заархівувати працівника', 'error');
                 });
         }
     };

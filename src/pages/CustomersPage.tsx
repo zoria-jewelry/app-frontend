@@ -22,6 +22,7 @@ import InfoIcon from '@mui/icons-material/InfoOutline';
 import { useNavigate } from 'react-router-dom';
 import CreateCustomerComponent from '../components/modal/customers/CreateCustomerComponent.tsx';
 import SearchBar from '../components/SearchBar.tsx';
+import { showToast } from '../components/common/Toast.tsx';
 
 const CustomersPage = () => {
     const theme = useTheme();
@@ -36,14 +37,19 @@ const CustomersPage = () => {
     const [isCreateComponentOpened, setIsCreateComponentOpened] = useState<boolean>(false);
 
     const fetchCustomers = useCallback(async () => {
-        CustomersApiClient.get(page, searchPhrase).then((customersList) => {
-            if (!customersList) {
-                // TODO: add toast
-            } else {
-                setEntries(customersList.entries);
-                setTotal(customersList.total);
-            }
-        });
+        CustomersApiClient.get(page, searchPhrase)
+            .then((customersList) => {
+                if (!customersList) {
+                    showToast('Не вдалось завантажити реєстр працівників', 'error');
+                } else {
+                    setEntries(customersList.entries);
+                    setTotal(customersList.total);
+                }
+            })
+            .catch((err) => {
+                showToast('Не вдалось завантажити реєстр працівників', 'error');
+                console.log(err);
+            });
     }, [page, searchPhrase]);
 
     useEffect(() => {

@@ -12,6 +12,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
 import { useState } from 'react';
 import { OrdersApiClient } from '../../../api/ordersApiClient.ts';
+import { showToast } from '../../common/Toast.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -47,13 +48,12 @@ const CancelOrderComponent = ({ isOpen, orderId, handleClose }: CancelOrderCompo
         }
         await OrdersApiClient.cancelOrder(orderId, reason)
             .then(() => {
-                // TODO: add toast
+                showToast('Замовлення було успішно скасоване');
                 handleClose();
             })
             .catch((err) => {
-                // TODO: add toast
+                showToast('Не вдалось скасувати замовлення', 'error');
                 console.log(err);
-                setError('Не вдалося скасувати замовлення');
             });
     };
 
