@@ -194,7 +194,6 @@ export const updateCustomerBalancesSchema = z.object({
                 materialId: z.number().nullable(),
                 newValue: z
                     .number({ error: 'Введіть число' })
-                    .nonnegative({ error: 'Значення повинно бути невідʼємним' })
                     .multipleOf(0.001, { error: 'Крок значення — 0.001' }),
             }),
         )
