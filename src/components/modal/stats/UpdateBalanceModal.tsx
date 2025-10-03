@@ -12,6 +12,7 @@ import {
 } from '../../../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { showToast } from '../../common/Toast.tsx';
+import { StatisticsApiClient } from '../../../api/statsApiClient.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -72,9 +73,16 @@ const UpdateBalanceModal = ({ onUpdate, handleClose, isOpen }: UpdateBalanceModa
             entries: filteredEntries,
         };
 
-        console.log('Submitting global balance update:', filteredData);
+        StatisticsApiClient.addTransactionInGlobalBalance(filteredData)
+            .then(() => {
+                showToast('Баланс компанії був успішно оновлений');
+            })
+            .catch((err) => {
+                showToast('Не вдалось оновити баланс компанії', 'error');
+                console.log(err);
+            });
+
         clearErrors();
-        // TODO: Implement API call to update global balances
         onUpdate();
         handleClose();
     };

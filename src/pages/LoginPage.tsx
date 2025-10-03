@@ -11,11 +11,13 @@ import {
 } from '@mui/material';
 import paperStyles from '../styles/Paper.module.css';
 import { useForm } from 'react-hook-form';
-import { type SigninFormData, signinSchema } from '../validation/schemas.ts';
+import { type SignInFormData, signInSchema } from '../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { AuthApiClient } from '../api/authApiClient.ts';
+import { showToast } from '../components/common/Toast.tsx';
 
 const LoginPage = () => {
     const theme = useTheme();
@@ -26,8 +28,8 @@ const LoginPage = () => {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<SigninFormData>({
-        resolver: zodResolver(signinSchema),
+    } = useForm<SignInFormData>({
+        resolver: zodResolver(signInSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
             email: '',
@@ -35,14 +37,17 @@ const LoginPage = () => {
         },
     });
 
-    const onSubmit = (data: SigninFormData) => {
+    const onSubmit = (data: SignInFormData) => {
         setIsLoading((prev) => !prev);
-        setTimeout(() => {
-            setIsLoading((prev) => !prev);
-            navigate('/materials'); // TODO: change to '/statistics' for owner and '/work-units' for manager
-        }, 3000);
-        console.log(data);
-        // TODO: call API endpoint and set new auth context
+        AuthApiClient.signIn(data)
+            .then(() => {
+                setIsLoading(false);
+                navigate('/work-units'); // TODO: change to '/statistics' for owner and '/work-units' for manager
+            })
+            .catch((err) => {
+                showToast('Не вдалось увійти в акаунт', 'error');
+                console.log(err);
+            });
     };
 
     return (

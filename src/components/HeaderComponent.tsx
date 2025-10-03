@@ -3,6 +3,7 @@ import headerStyles from '../styles/HeaderComponent.module.css';
 import MenuIcon from '@mui/icons-material/Menu';
 import iconsStyles from '../styles/Icons.module.css';
 import commonStyles from '../styles/Common.module.css';
+import ProfileHeaderPartComponent from './common/ProfileHeaderPartComponent.tsx';
 
 export interface HeaderComponentProps {
     toggleOpenSidebar: () => void;
@@ -14,7 +15,11 @@ const HeaderComponent = (props: HeaderComponentProps) => {
         <AppBar
             position="sticky"
             className={headerStyles.headerComponent}
-            style={{ marginBottom: theme.spacing(10), padding: theme.spacing(5) }}
+            sx={{
+                marginBottom: theme.spacing(10),
+                padding: theme.spacing(5),
+                flexDirection: 'row',
+            }}
         >
             <Box className={commonStyles.flexRow} style={{ gap: theme.spacing(5) }}>
                 <Box
@@ -48,6 +53,8 @@ const HeaderComponent = (props: HeaderComponentProps) => {
                 </Box>
                 <Typography variant="h2">Zoria</Typography>
             </Box>
+
+            <ProfileHeaderPartComponent />
         </AppBar>
     );
 };
