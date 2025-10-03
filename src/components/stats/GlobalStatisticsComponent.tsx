@@ -109,7 +109,7 @@ const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
                     sx={{ width: '49%', boxShadow: 4, p: theme.spacing(8) }}
                 >
                     <Typography variant="h5" pb={theme.spacing(2)}>
-                        Металу в сховищі (загальне)
+                        Матеріалів у сховищі (загалом)
                     </Typography>
                     {globalStats.map((stat) => (
                         <Typography key={stat.materialId} variant="body1">
@@ -131,7 +131,7 @@ const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
                     }}
                 >
                     <Typography variant="h5" pb={theme.spacing(2)}>
-                        Металу в сховищі (без клієнтського)
+                        Матеріалів у сховищі (без клієнтських)
                     </Typography>
                     {statsWithoutCustomerData.map((stat) => (
                         <Typography key={stat.materialId} variant="body1">

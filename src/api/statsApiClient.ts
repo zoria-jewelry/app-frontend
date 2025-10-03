@@ -32,7 +32,7 @@ export class StatisticsApiClient extends AbstractApiClient {
         );
         const params = {
             fromDate: toUtcString(fromDate),
-            toDate: toUtcString(toDate),
+            toDate: toUtcString(toDate, true),
         };
         return (
             (await this.apiRequest<AuditRecord[]>({ url: '/stats/global-audits/', params })) || []
