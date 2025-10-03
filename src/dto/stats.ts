@@ -1,7 +1,7 @@
 export interface MaterialStatsDto {
     materialId: number | null;
     materialName: string;
-    value: number;
+    totalBalance: number;
 }
 
 export interface GlobalStatsReport {

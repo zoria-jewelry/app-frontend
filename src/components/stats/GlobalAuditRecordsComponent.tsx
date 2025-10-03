@@ -39,7 +39,7 @@ const GlobalAuditRecordsComponent = ({ refresher }: GlobalAuditRecordsComponentP
         setError(false);
 
         StatisticsApiClient.getAuditForPeriod(fromDate, toDate)
-            .then((data) => setRecords(data.entries))
+            .then(setRecords)
             .catch((err) => {
                 showToast(
                     `Не вдалось завантажити історію за період ${toLocalDate(fromDate)} – ${toLocalDate(toDate)}`,
@@ -135,7 +135,7 @@ const GlobalAuditRecordsComponent = ({ refresher }: GlobalAuditRecordsComponentP
                 </Box>
             </Box>
 
-            <Box sx={{ overflowY: 'auto' }} padding={theme.spacing(2)}>
+            <Box sx={{ overflowY: 'auto', width: '100%' }} padding={theme.spacing(2)}>
                 {records.map((record) => (
                     <Paper
                         key={record.id}
@@ -150,7 +150,6 @@ const GlobalAuditRecordsComponent = ({ refresher }: GlobalAuditRecordsComponentP
                         <Box
                             display="flex"
                             flexWrap="wrap"
-                            gap={theme.spacing(4)}
                             mb={theme.spacing(4)}
                             height="fit-content"
                         >
@@ -178,13 +177,13 @@ const GlobalAuditRecordsComponent = ({ refresher }: GlobalAuditRecordsComponentP
                                 border={`2px solid ${theme.palette.divider}`}
                                 padding={theme.spacing(2)}
                             >
-                                {record.entryRows.map((entry) => (
+                                {record.rows.map((entry) => (
                                     <Typography
                                         key={entry.materialName}
                                         variant="body1"
                                         color="textSecondary"
                                         width={isMd ? '95%' : '45%'}
-                                    >{`${entry.materialName}: ${entry.delta > 0 ? '+' : ''}${toFixedNumber(entry.delta, entry.isMoney ? 2 : 3)} ${entry.isMoney ? 'грн' : 'г'}`}</Typography>
+                                    >{`${entry.materialName}: ${Number(entry.delta) > 0 ? '+' : ''}${toFixedNumber(entry.delta, entry.isMoney ? 2 : 3)} ${entry.isMoney ? 'грн' : 'г'}`}</Typography>
                                 ))}
                             </Box>
                         </Box>

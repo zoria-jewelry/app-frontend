@@ -26,8 +26,12 @@ const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
     useEffect(() => {
         StatisticsApiClient.getStatsForDate(date)
             .then((data) => {
-                setGlobalStats(data.globalStats);
-                setStatsWithoutCustomerData(data.statsWithoutCustomerData);
+                if (!data) {
+                    showToast(`Не вдалось завантажити дані за ${toLocalDate(date)}`, 'error');
+                } else {
+                    setGlobalStats(data.globalStats);
+                    setStatsWithoutCustomerData(data.statsWithoutCustomerData);
+                }
             })
             .catch((err) => {
                 showToast(`Не вдалось завантажити дані за ${toLocalDate(date)}`, 'error');
@@ -109,9 +113,9 @@ const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
                     </Typography>
                     {globalStats.map((stat) => (
                         <Typography key={stat.materialId} variant="body1">
-                            {stat.materialName} –{' '}
+                            {stat.materialName}:{' '}
                             <span style={{ fontWeight: 900 }}>
-                                {toFixedNumber(stat.value, stat.materialId ? 3 : 2)}{' '}
+                                {toFixedNumber(stat.totalBalance, stat.materialId ? 3 : 2)}{' '}
                                 {stat.materialId ? 'г' : 'грн'}
                             </span>
                         </Typography>
@@ -131,9 +135,9 @@ const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
                     </Typography>
                     {statsWithoutCustomerData.map((stat) => (
                         <Typography key={stat.materialId} variant="body1">
-                            {stat.materialName} –{' '}
+                            {stat.materialName}:{' '}
                             <span style={{ fontWeight: 900 }}>
-                                {toFixedNumber(stat.value, stat.materialId ? 3 : 2)}{' '}
+                                {toFixedNumber(stat.totalBalance, stat.materialId ? 3 : 2)}{' '}
                                 {stat.materialId ? 'г' : 'грн'}
                             </span>
                         </Typography>
