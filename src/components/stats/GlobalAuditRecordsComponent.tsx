@@ -177,7 +177,7 @@ const GlobalAuditRecordsComponent = ({ refresher }: GlobalAuditRecordsComponentP
                                 border={`2px solid ${theme.palette.divider}`}
                                 padding={theme.spacing(2)}
                             >
-                                {record.rows.map((entry) => (
+                                {record.rows?.map((entry) => (
                                     <Typography
                                         key={entry.materialName}
                                         variant="body1"
