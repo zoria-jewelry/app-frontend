@@ -20,7 +20,7 @@ export const createEmployeeSchema = z.object({
 export type CreateEmployeeFormData = z.infer<typeof createEmployeeSchema>;
 
 export const signInSchema = z.object({
-    email: z.string().nonempty({ error: 'Введіть електронну адресу' }),
+    username: z.string().nonempty({ error: 'Введіть електронну адресу' }),
     password: z.string().nonempty({ error: 'Введіть пароль' }),
 });
 

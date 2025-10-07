@@ -17,6 +17,7 @@ import CompleteOrderPage from './pages/CompleteOrderPage.tsx';
 import WorkUnitsPage from './pages/WorkUnitsPage.tsx';
 import OrdersPage from './pages/OrdersPage.tsx';
 import StatisticsPage from './pages/StatisticsPage.tsx';
+import PublicRoutes from './auth/PublicRoutes.tsx';
 
 const App = () => {
     const path = useLocation();
@@ -50,7 +51,7 @@ const App = () => {
                     <Route path="/*" element={<Navigate to="/materials" />} />
                 </Route>
                 {/* Guests */}
-                <Route element={<PrivateRoutes />}>
+                <Route element={<PublicRoutes />}>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="*" element={<Navigate to="/login" />} />
                 </Route>

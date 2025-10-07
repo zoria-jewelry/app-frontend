@@ -42,7 +42,7 @@ const WorkUnitsPage = () => {
         periodStart: currentMonth.start,
         periodEnd: currentMonth.end,
         employeeId: 1,
-        materialId: undefined,
+        materialId: 1,
     });
 
     const [isStartNewMonthModalOpen, setIsStartNewMonthModalOpen] = useState<boolean>(false);

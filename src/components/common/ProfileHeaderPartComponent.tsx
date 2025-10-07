@@ -1,17 +1,18 @@
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
 import { Box, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Tooltip } from '@mui/material';
+import { useAuth } from '../../auth/AuthContext.tsx';
 
 const ProfileHeaderPartComponent = () => {
     const navigate = useNavigate();
+    const { logout, user } = useAuth();
 
     const onLogout = (): void => {
-        Cookies.remove('accessToken');
-        Cookies.remove('refreshToken');
-        navigate('/login');
+        logout().then(() => {
+            navigate('/login');
+        });
     };
 
     return (
@@ -27,7 +28,7 @@ const ProfileHeaderPartComponent = () => {
                 maxWidth: '400px',
             }}
         >
-            <Tooltip title="Панов Максим Ігорович" arrow>
+            <Tooltip title={user?.full_name} arrow>
                 <Typography
                     variant="body1"
                     noWrap
@@ -42,7 +43,7 @@ const ProfileHeaderPartComponent = () => {
                         whiteSpace: 'nowrap',
                     }}
                 >
-                    Панов Максим Ігорович
+                    {user?.full_name}
                 </Typography>
             </Tooltip>
 
