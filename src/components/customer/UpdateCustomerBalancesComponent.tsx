@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { CustomerBalanceEntryDto } from '../../dto/customers.ts';
 import { useParams } from 'react-router-dom';
 import { CustomersApiClient } from '../../api/customersApiClient.ts';
@@ -37,7 +37,7 @@ const UpdateCustomerBalancesComponent = ({ onUpdate }: UpdateCustomerBalancesCom
         },
     });
 
-    useEffect(() => {
+    const fetchCustomerBalances = useCallback(() => {
         if (!customerId) {
             return;
         }
@@ -59,12 +59,17 @@ const UpdateCustomerBalancesComponent = ({ onUpdate }: UpdateCustomerBalancesCom
         });
     }, [customerId, reset]);
 
+    useEffect(() => {
+        fetchCustomerBalances();
+    }, [customerId, reset]);
+
     const onSubmit = (data: UpdateCustomerBalancesFormData) => {
         if (customerId) {
             CustomersApiClient.updateCustomerBalance(customerId, data)
                 .then(() => {
                     showToast('Баланс клієнта був успішно оновлений');
                     clearErrors();
+                    fetchCustomerBalances();
                 })
                 .catch((err) => {
                     showToast('Не вдалось оновити баланс клієнта', 'error');

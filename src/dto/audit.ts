@@ -11,7 +11,8 @@ export interface AuditRecord {
     affectedCustomerId: number | null;
     affectedCustomerFullName: string | null;
     description: string;
-    entryRows: AuditRecordRow[];
+    rows?: AuditRecordRow[];
+    entryRows?: AuditRecordRow[];
 }
 
 export interface AuditDetailsDto {

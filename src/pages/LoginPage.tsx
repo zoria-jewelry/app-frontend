@@ -11,38 +11,45 @@ import {
 } from '@mui/material';
 import paperStyles from '../styles/Paper.module.css';
 import { useForm } from 'react-hook-form';
-import { type SigninFormData, signinSchema } from '../validation/schemas.ts';
+import { type SignInFormData, signInSchema } from '../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { showToast } from '../components/common/Toast.tsx';
+import { useAuth, type User, UserRole } from '../auth/AuthContext.tsx';
 
 const LoginPage = () => {
     const theme = useTheme();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
+    const { login } = useAuth();
+
     const {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<SigninFormData>({
-        resolver: zodResolver(signinSchema),
+    } = useForm<SignInFormData>({
+        resolver: zodResolver(signInSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
-            email: '',
+            username: '',
             password: '',
         },
     });
 
-    const onSubmit = (data: SigninFormData) => {
-        setIsLoading((prev) => !prev);
-        setTimeout(() => {
-            setIsLoading((prev) => !prev);
-            navigate('/materials'); // TODO: change to '/statistics' for owner and '/work-units' for manager
-        }, 3000);
-        console.log(data);
-        // TODO: call API endpoint and set new auth context
+    const onSubmit = (data: SignInFormData) => {
+        setIsLoading(true);
+        login(data.username, data.password)
+            .then((loggedUser: User) => {
+                navigate(loggedUser.role === UserRole.OWNER ? '/stats' : '/work-units');
+            })
+            .catch((err) => {
+                showToast('Не вдалось увійти в акаунт', 'error');
+                console.log(err);
+            })
+            .finally(() => setIsLoading(false));
     };
 
     return (
@@ -90,8 +97,8 @@ const LoginPage = () => {
                             fullWidth
                             margin="normal"
                             defaultValue=""
-                            {...register('email')}
-                            error={!!errors.email}
+                            {...register('username')}
+                            error={!!errors.username}
                             sx={{
                                 margin: 0,
                                 '& .MuiOutlinedInput-root': {
@@ -100,10 +107,10 @@ const LoginPage = () => {
                             }}
                         />
                         <FormHelperText
-                            error={!!errors.email}
+                            error={!!errors.username}
                             sx={{ margin: 0, marginBottom: theme.spacing(2), minHeight: '30px' }}
                         >
-                            {errors.email?.message}
+                            {errors.username?.message}
                         </FormHelperText>
                     </FormControl>
 

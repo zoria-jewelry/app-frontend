@@ -73,7 +73,7 @@ const CustomerAuditRecordsComponent = ({ refresher }: CustomerAuditRecordsProps)
                             border={`2px solid ${theme.palette.divider}`}
                             padding={theme.spacing(2)}
                         >
-                            {record.entryRows.map((entry) => (
+                            {record.entryRows?.map((entry) => (
                                 <Typography
                                     key={entry.materialName}
                                     variant="body1"
