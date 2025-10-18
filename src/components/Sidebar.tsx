@@ -18,6 +18,7 @@ import PercentIcon from '@mui/icons-material/Percent';
 import StoreIcon from '@mui/icons-material/Store';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import ShiftSidebarActions from './vchasno/ShiftSidebarActions.tsx';
+import { useAuth, UserRole } from '../auth/AuthContext.tsx';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -36,6 +37,8 @@ const Sidebar = (props: SidebarProps) => {
     const toggleDrawer = (newOpen: boolean) => () => {
         props.setIsOpen(newOpen);
     };
+
+    const { user } = useAuth();
 
     const navigate = useNavigate();
 
@@ -105,14 +108,16 @@ const Sidebar = (props: SidebarProps) => {
                         <ListItemText secondary="Каталог виробів" />
                     </ListItemButton>
                 </ListItem>
-                <ListItem key="Statistics" disablePadding>
-                    <ListItemButton onClick={() => navigate('/stats')}>
-                        <ListItemIcon>
-                            <QueryStatsIcon />
-                        </ListItemIcon>
-                        <ListItemText secondary="Статистика" />
-                    </ListItemButton>
-                </ListItem>
+                {user?.role === UserRole.OWNER && (
+                    <ListItem key="Statistics" disablePadding>
+                        <ListItemButton onClick={() => navigate('/stats')}>
+                            <ListItemIcon>
+                                <QueryStatsIcon />
+                            </ListItemIcon>
+                            <ListItemText secondary="Статистика" />
+                        </ListItemButton>
+                    </ListItem>
+                )}
             </List>
 
             <ShiftSidebarActions />

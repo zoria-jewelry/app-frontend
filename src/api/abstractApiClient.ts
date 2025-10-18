@@ -9,6 +9,7 @@ const acceptableStatuses: number[] = [200, 201];
 export abstract class AbstractApiClient {
     private static refreshTokenPromise: Promise<boolean> | null = null;
     private static isRefreshing = false;
+    private static hasTriggeredRedirect = false;
 
     protected static async apiRequest<T>(
         cfg: AxiosRequestConfig & { _retry?: boolean } = {},
@@ -74,8 +75,7 @@ export abstract class AbstractApiClient {
                     }
                 } else {
                     console.error('Token refresh failed, redirecting to login');
-                    Cookies.remove('access_token');
-                    Cookies.remove('refresh_token');
+                    this.handleUnauthorizedFinal();
                     return undefined;
                 }
             }
@@ -131,6 +131,16 @@ export abstract class AbstractApiClient {
         } catch (error: any) {
             console.error('Token refresh failed:', error.response?.status, error.message);
             return false;
+        }
+    }
+
+    private static handleUnauthorizedFinal(): void {
+        Cookies.remove('access_token');
+        Cookies.remove('refresh_token');
+        if (this.hasTriggeredRedirect) return;
+        this.hasTriggeredRedirect = true;
+        if (typeof window !== 'undefined') {
+            window.location.replace('/login');
         }
     }
 }

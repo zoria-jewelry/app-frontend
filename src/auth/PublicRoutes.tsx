@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { useAuth } from './AuthContext.tsx';
 import { CircularProgress, Box } from '@mui/material';
 
@@ -19,7 +19,7 @@ const PublicRoutes = () => {
             </Box>
         );
     }
-    return isAuthenticated ? <Navigate to="/materials" /> : <Outlet />;
+    return isAuthenticated ? null : <Outlet />;
 };
 
 export default PublicRoutes;
