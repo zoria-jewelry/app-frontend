@@ -30,6 +30,6 @@ export class MaterialsApiClient extends AbstractApiClient {
 
     public static async update(id: number, data: UpdateMaterialFormData): Promise<void> {
         console.log(`MaterialsApiClient.update: id=${id}, data`);
-        await this.apiRequest<void>({ url: `/materials/${id}/`, data: data, method: 'PATCH' });
+        await this.apiRequest<void>({ url: `/materials/${id}`, data: data, method: 'PATCH' });
     }
 }
