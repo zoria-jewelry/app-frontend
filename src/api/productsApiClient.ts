@@ -1,6 +1,6 @@
 import { AbstractApiClient } from './abstractApiClient.ts';
 import type { ProductEntryDto } from '../dto/products.ts';
-import type { CreateProductFormData } from '../validation/schemas.ts';
+import type { CreateProductFormData, UpdateProductFormData } from '../validation/schemas.ts';
 
 export class ProductsApiClient extends AbstractApiClient {
     public static async getAll(searchPhrase: string): Promise<ProductEntryDto[] | undefined> {
@@ -40,5 +40,16 @@ export class ProductsApiClient extends AbstractApiClient {
     public static async create(data: CreateProductFormData): Promise<void> {
         console.log(`ProductsApiClient.create: data=${data}`);
         await this.apiRequest<void>({ url: `/products/`, method: 'POST', data });
+    }
+
+    public static async getById(id: number): Promise<ProductEntryDto | undefined> {
+        console.log(`ProductsApiClient.getById: ${id}`);
+        const products = await this.getAll('');
+        return products?.find((p) => p.id === id);
+    }
+
+    public static async update(id: number, data: UpdateProductFormData): Promise<void> {
+        console.log(`ProductsApiClient.update: id=${id}, data`);
+        await this.apiRequest<void>({ url: `/products/${id}/`, method: 'PATCH', data });
     }
 }

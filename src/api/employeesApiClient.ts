@@ -1,6 +1,6 @@
 import { AbstractApiClient } from './abstractApiClient.ts';
 import type { EmployeeDto, EmployeesListDto } from '../dto/employees.ts';
-import type { CreateEmployeeFormData } from '../validation/schemas.ts';
+import type { CreateEmployeeFormData, UpdateEmployeeFormData } from '../validation/schemas.ts';
 
 export class EmployeesApiClient extends AbstractApiClient {
     public static async get(page: number): Promise<EmployeesListDto | undefined> {
@@ -42,6 +42,22 @@ export class EmployeesApiClient extends AbstractApiClient {
             url: `/employees/${id}/`,
             method: 'PATCH',
             data: { isArchived: false },
+        });
+    }
+
+    public static async getById(id: number): Promise<EmployeeDto | undefined> {
+        console.log(`EmployeesApiClient.getById: ${id}`);
+        const params = { page: 1, isArchived: false, page_size: 100 };
+        const response = await this.apiRequest<EmployeesListDto>({ url: `/employees/`, params });
+        return response?.entries.find((e) => e.id === id);
+    }
+
+    public static async update(id: number, data: UpdateEmployeeFormData): Promise<void> {
+        console.log(`EmployeesApiClient.update: id=${id}, data`);
+        return await this.apiRequest<void>({
+            url: `/employees/${id}/`,
+            method: 'PATCH',
+            data,
         });
     }
 }

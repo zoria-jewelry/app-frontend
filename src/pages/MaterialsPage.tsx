@@ -1,6 +1,7 @@
 import {
     Box,
     Button,
+    IconButton,
     Paper,
     Table,
     TableBody,
@@ -12,12 +13,14 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import paperStyles from '../styles/Paper.module.css';
 import commonStyles from '../styles/Common.module.css';
 import { useCallback, useEffect, useState } from 'react';
 import type { MaterialDto } from '../dto/materials.ts';
 import { MaterialsApiClient } from '../api/materialsApiClient.ts';
 import CreateMaterialComponent from '../components/modal/materials/CreateMaterialComponent.tsx';
+import EditMaterialComponent from '../components/modal/materials/EditMaterialComponent.tsx';
 import { toFixedNumber } from '../utils.ts';
 import { showToast } from '../components/common/Toast.tsx';
 
@@ -28,6 +31,7 @@ const MaterialsPage = () => {
     const [entries, setEntries] = useState<MaterialDto[]>([]);
 
     const [isCreateMaterialModalOpen, setIsCreateMaterialModalOpen] = useState<boolean>(false);
+    const [materialIdToEdit, setMaterialIdToEdit] = useState<number | null>(null);
 
     const fetchMaterials = useCallback(() => {
         MaterialsApiClient.get(page)
@@ -141,12 +145,17 @@ const MaterialsPage = () => {
                             <TableCell
                                 style={{
                                     backgroundColor: '#b7cfd2',
-                                    borderTopRightRadius: 10,
                                     textAlign: 'right',
                                 }}
                             >
                                 Вартість (грн за г)
                             </TableCell>
+                            <TableCell
+                                style={{
+                                    backgroundColor: '#b7cfd2',
+                                    borderTopRightRadius: 10,
+                                }}
+                            ></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -162,6 +171,21 @@ const MaterialsPage = () => {
                                     <Typography variant="body2">
                                         {toFixedNumber(material.price, 2)}
                                     </Typography>
+                                </TableCell>
+                                <TableCell
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        justifyContent: 'flex-end',
+                                    }}
+                                >
+                                    <IconButton
+                                        onClick={() => setMaterialIdToEdit(material.id)}
+                                        size="small"
+                                        style={{ padding: 0 }}
+                                    >
+                                        <EditIcon />
+                                    </IconButton>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -186,6 +210,15 @@ const MaterialsPage = () => {
                 isOpen={isCreateMaterialModalOpen}
                 onCreate={fetchMaterials}
             />
+
+            {materialIdToEdit && (
+                <EditMaterialComponent
+                    handleClose={() => setMaterialIdToEdit(null)}
+                    isOpen={!!materialIdToEdit}
+                    materialId={materialIdToEdit}
+                    onUpdate={fetchMaterials}
+                />
+            )}
         </Paper>
     );
 };
