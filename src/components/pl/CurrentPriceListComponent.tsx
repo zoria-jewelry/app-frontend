@@ -88,7 +88,9 @@ const CurrentPriceListComponent = ({ onPriceListCreated }: CurrentPriceListCompo
                         wordBreak: 'break-word',
                     }}
                 >
-                    {`Поточний прайс-лист №${activeListId} (від ${activeListStartDate && toLocalDate(activeListStartDate)})`}
+                    {activeListId
+                        ? `Поточний прайс-лист №${activeListId} (від ${activeListStartDate && toLocalDate(activeListStartDate)})`
+                        : 'Поточний прайс лист'}
                 </Typography>
 
                 <Button

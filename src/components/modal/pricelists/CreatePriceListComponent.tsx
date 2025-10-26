@@ -73,7 +73,7 @@ const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
                 const newDefaults: Record<string, string> = {};
                 const newShape: Record<string, z.ZodString> = {};
 
-                priceList.entries.forEach((entry) => {
+                priceList.entries?.forEach((entry) => {
                     const key = String(entry.materialId);
                     newDefaults[key] = String(entry.materialPrice);
                     newShape[key] = z
@@ -102,7 +102,7 @@ const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
 
     const onSubmit = (data: { [key: string]: string }) => {
         const transformed = {
-            entries: Object.entries(data).map(([materialId, materialPrice]) => ({
+            entries: Object.entries(data)?.map(([materialId, materialPrice]) => ({
                 materialId: Number(materialId),
                 materialPrice: Number(materialPrice),
             })),
@@ -152,7 +152,7 @@ const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
                 noValidate
             >
                 {/* Each price list entry, fetched from the backend */}
-                {entries.map((entry) => {
+                {entries?.map((entry) => {
                     const key = String(entry.materialId);
                     return (
                         <FormControl fullWidth key={key}>
