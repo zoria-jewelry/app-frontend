@@ -186,6 +186,30 @@ export const saveMaterialSchema = z.object({
 
 export type SaveMaterialFormData = z.infer<typeof saveMaterialSchema>;
 
+export const updateMaterialSchema = z.object({
+    name: z.string().nonempty({ error: 'Це поле є обовʼязковим' }),
+});
+
+export type UpdateMaterialFormData = z.infer<typeof updateMaterialSchema>;
+
+export const updateEmployeeSchema = z.object({
+    name: z.string().nonempty({ error: 'Це поле є обовʼязковим' }),
+    phone: z
+        .string()
+        .nonempty({ error: 'Це поле є обовʼязковим' })
+        .regex(/^\s*(\+38)?\d{10}\s*$/im, { message: 'Неправильний формат' }),
+});
+
+export type UpdateEmployeeFormData = z.infer<typeof updateEmployeeSchema>;
+
+export const updateProductSchema = z.object({
+    name: z.string().nonempty({ error: 'Це поле є обовʼязковим' }),
+    article: z.string().nonempty({ error: 'Це поле є обовʼязковим' }),
+    pictureBase64: z.string().optional(),
+});
+
+export type UpdateProductFormData = z.infer<typeof updateProductSchema>;
+
 export const updateCustomerBalancesSchema = z.object({
     description: z.string().trim().nonempty({ error: 'Опис є обовʼязковим' }),
     entries: z

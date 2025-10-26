@@ -18,10 +18,12 @@ import type { EmployeeDto } from '../dto/employees.ts';
 import paperStyles from '../styles/Paper.module.css';
 import commonStyles from '../styles/Common.module.css';
 import ArchiveIcon from '@mui/icons-material/Inventory2Outlined';
+import EditIcon from '@mui/icons-material/Edit';
 import { EmployeesApiClient } from '../api/employeesApiClient.ts';
 import DialogComponent from '../components/modal/DialogComponent.tsx';
 import EmployeesArchiveComponent from '../components/modal/employees/EmployeesArchiveComponent.tsx';
 import CreateEmployeeComponent from '../components/modal/employees/CreateEmployeeComponent.tsx';
+import EditEmployeeComponent from '../components/modal/employees/EditEmployeeComponent.tsx';
 import { showToast } from '../components/common/Toast.tsx';
 
 const EmployeePage = () => {
@@ -36,6 +38,7 @@ const EmployeePage = () => {
     const [isArchiveOpened, setIsArchiveOpened] = useState<boolean>(false);
 
     const [isCreateComponentOpened, setIsCreateComponentOpened] = useState<boolean>(false);
+    const [employeeIdToEdit, setEmployeeIdToEdit] = useState<number | null>(null);
 
     const loadEmployees = useCallback(() => {
         EmployeesApiClient.get(page).then((employeesList) => {
@@ -208,8 +211,16 @@ const EmployeePage = () => {
                                         display: 'flex',
                                         flexDirection: 'row',
                                         justifyContent: 'flex-end',
+                                        gap: theme.spacing(1),
                                     }}
                                 >
+                                    <IconButton
+                                        onClick={() => setEmployeeIdToEdit(employee.id)}
+                                        size="small"
+                                        style={{ padding: 0 }}
+                                    >
+                                        <EditIcon />
+                                    </IconButton>
                                     <IconButton
                                         onClick={() => handleOpenArchiveEmployeeDialog(employee)}
                                         size="small"
@@ -262,6 +273,16 @@ const EmployeePage = () => {
                 isOpen={isCreateComponentOpened}
                 onCreate={listUpdateCallback}
             />
+
+            {/* Edit employee modal window */}
+            {employeeIdToEdit && (
+                <EditEmployeeComponent
+                    handleClose={() => setEmployeeIdToEdit(null)}
+                    isOpen={!!employeeIdToEdit}
+                    employeeId={employeeIdToEdit}
+                    onUpdate={listUpdateCallback}
+                />
+            )}
         </Paper>
     );
 };

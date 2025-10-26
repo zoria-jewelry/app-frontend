@@ -13,11 +13,13 @@ import {
     useTheme,
 } from '@mui/material';
 import ArchiveIcon from '@mui/icons-material/Inventory2Outlined';
+import EditIcon from '@mui/icons-material/Edit';
 import { useCallback, useEffect, useState } from 'react';
 import type { ProductEntryDto } from '../dto/products.ts';
 import { ProductsApiClient } from '../api/productsApiClient.ts';
 import SearchBar from '../components/SearchBar.tsx';
 import CreateProductComponent from '../components/modal/products/CreateProductComponent.tsx';
+import EditProductComponent from '../components/modal/products/EditProductComponent.tsx';
 import DialogComponent from '../components/modal/DialogComponent.tsx';
 import ProductsArchiveComponent from '../components/modal/products/ProductsArchiveComponent.tsx';
 import { showToast } from '../components/common/Toast.tsx';
@@ -32,6 +34,7 @@ const ProductsCataloguePage = () => {
 
     const [isArchiveOpened, setIsArchiveOpened] = useState<boolean>(false);
     const [productToArchive, setProductToArchive] = useState<ProductEntryDto | null>(null);
+    const [productIdToEdit, setProductIdToEdit] = useState<number | null>(null);
 
     const isXs = useMediaQuery(theme.breakpoints.down('sm')); // <600px
     const isSm = useMediaQuery(theme.breakpoints.between('sm', 'md')); // 600–900px
@@ -206,17 +209,32 @@ const ProductsCataloguePage = () => {
                                 p: 2,
                             }}
                         >
-                            <IconButton
-                                onClick={() => setProductToArchive(p)}
+                            <Box
                                 sx={{
-                                    backgroundColor: 'white',
                                     position: 'absolute',
                                     right: 8,
                                     top: 8,
+                                    display: 'flex',
+                                    gap: 1,
                                 }}
                             >
-                                <ArchiveIcon />
-                            </IconButton>
+                                <IconButton
+                                    onClick={() => setProductIdToEdit(p.id)}
+                                    sx={{
+                                        backgroundColor: 'white',
+                                    }}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                                <IconButton
+                                    onClick={() => setProductToArchive(p)}
+                                    sx={{
+                                        backgroundColor: 'white',
+                                    }}
+                                >
+                                    <ArchiveIcon />
+                                </IconButton>
+                            </Box>
                             <CardMedia
                                 component="img"
                                 sx={{
@@ -245,6 +263,15 @@ const ProductsCataloguePage = () => {
                 handleClose={() => setIsCreateProductModalOpen(false)}
                 onCreate={loadProducts}
             />
+
+            {productIdToEdit && (
+                <EditProductComponent
+                    handleClose={() => setProductIdToEdit(null)}
+                    isOpen={!!productIdToEdit}
+                    productId={productIdToEdit}
+                    onUpdate={loadProducts}
+                />
+            )}
 
             {productToArchive && (
                 <DialogComponent
