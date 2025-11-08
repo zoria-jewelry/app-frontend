@@ -15,7 +15,9 @@ export interface GlobalStatisticsProps {
 const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
     const theme = useTheme();
 
-    const [date, setDate] = useState<Date>(new Date());
+    const baseDate: Date = new Date();
+    baseDate.setSeconds(0, 0);
+    const [date, setDate] = useState<Date>(baseDate);
     const [globalStats, setGlobalStats] = useState<MaterialStatsDto[]>([]);
     const [statsWithoutCustomerData, setStatsWithoutCustomerData] = useState<MaterialStatsDto[]>(
         [],
