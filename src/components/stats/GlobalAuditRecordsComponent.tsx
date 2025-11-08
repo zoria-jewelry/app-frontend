@@ -152,6 +152,7 @@ const GlobalAuditRecordsComponent = ({ refresher }: GlobalAuditRecordsComponentP
                             flexWrap="wrap"
                             mb={theme.spacing(4)}
                             height="fit-content"
+                            gap={theme.spacing(4)}
                         >
                             <Typography variant="body1" color="textPrimary" fontWeight={900}>
                                 {toLocalDateTime(record.date)}
