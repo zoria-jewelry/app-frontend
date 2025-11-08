@@ -154,7 +154,7 @@ const GlobalAuditRecordsComponent = ({ refresher }: GlobalAuditRecordsComponentP
                             height="fit-content"
                         >
                             <Typography variant="body1" color="textPrimary" fontWeight={900}>
-                                {toLocalDateTime(record.time)}
+                                {toLocalDateTime(record.date)}
                             </Typography>
                             <Typography variant="body1" color="textPrimary">
                                 Виконавець дії: {record.actorFullName}

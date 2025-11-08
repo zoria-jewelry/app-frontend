@@ -7,6 +7,7 @@ export interface AuditRecordRow {
 export interface AuditRecord {
     id: number;
     time: Date;
+    date: Date;
     actorFullName: string;
     affectedCustomerId: number | null;
     affectedCustomerFullName: string | null;
