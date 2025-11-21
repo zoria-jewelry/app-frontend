@@ -870,7 +870,7 @@ const CompleteOrderPage = () => {
                                     type="submit"
                                     disabled={
                                         paidMoney > 0 &&
-                                        (!paymentType || paymentType === '' || !isShiftOpen)
+                                        (paymentType == null || paymentType === '' || !isShiftOpen)
                                     }
                                 >
                                     Закрити замовлення
