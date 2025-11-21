@@ -60,7 +60,9 @@ const DEFAULT_DESCRIPTION = 'Немає опису наряду';
 const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnitComponentProps) => {
     const theme = useTheme();
     const hasReturn = !!workUnit?.returnedDate;
-    const canEditDescription = hasReturn && !!workUnit?.orderId;
+    const hasOrder = !!workUnit?.orderId;
+    const canEditLoss = hasReturn && hasOrder;
+    const canEditDescription = hasReturn && hasOrder;
     const descriptionValue = canEditDescription
         ? (workUnit?.description ?? DEFAULT_DESCRIPTION)
         : undefined;
@@ -76,7 +78,7 @@ const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnit
         defaultValues: {
             workUnitId: workUnit?.id ?? 0,
             metalWeight: getWeightValue(workUnit),
-            loss: hasReturn ? (workUnit?.loss ?? 0) : undefined,
+            loss: canEditLoss ? (workUnit?.loss ?? 0) : undefined,
             description: descriptionValue,
         },
     });
@@ -89,16 +91,16 @@ const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnit
         reset({
             workUnitId: workUnit.id,
             metalWeight: getWeightValue(workUnit),
-            loss: hasReturn ? (workUnit.loss ?? 0) : undefined,
+            loss: canEditLoss ? (workUnit.loss ?? 0) : undefined,
             description: descriptionValue,
         });
-    }, [workUnit, reset, hasReturn, canEditDescription, descriptionValue]);
+    }, [workUnit, reset, hasReturn, canEditDescription, canEditLoss, descriptionValue]);
 
     const handleClose = () => {
         reset({
             workUnitId: workUnit?.id ?? 0,
             metalWeight: getWeightValue(workUnit),
-            loss: hasReturn ? (workUnit?.loss ?? 0) : undefined,
+            loss: canEditLoss ? (workUnit?.loss ?? 0) : undefined,
             description: descriptionValue,
         });
         onClose();
@@ -109,6 +111,7 @@ const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnit
             ? {
                   ...data,
                   description: canEditDescription ? data.description : undefined,
+                  loss: canEditLoss ? data.loss : undefined,
               }
             : {
                   workUnitId: data.workUnitId,
@@ -167,7 +170,7 @@ const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnit
                     </FormHelperText>
                 </Box>
 
-                {hasReturn && (
+                {canEditLoss && (
                     <Box mt={4}>
                         <Typography>Втрати, %</Typography>
                         <TextField
