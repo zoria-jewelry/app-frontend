@@ -93,7 +93,7 @@ const LoginPage = () => {
                         <TextField
                             id="email"
                             type="email"
-                            placeholder="zoriia@gmail.com"
+                            placeholder="zoria@gmail.com"
                             fullWidth
                             margin="normal"
                             defaultValue=""

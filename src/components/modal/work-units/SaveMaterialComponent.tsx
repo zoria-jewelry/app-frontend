@@ -85,6 +85,10 @@ const SaveMaterialComponent = ({
         });
     }, [setValue]);
 
+    useEffect(() => {
+        setValue('employeeId', employeeId);
+    }, [employeeId, setValue]);
+
     const onSubmit = (data: SaveMaterialFormData) => {
         onSave(data);
         handleClose();
@@ -92,7 +96,7 @@ const SaveMaterialComponent = ({
 
     const handleClose = () => {
         reset({
-            employeeId: 0,
+            employeeId,
             materialId: 0,
             metalWeight: 0,
         });
