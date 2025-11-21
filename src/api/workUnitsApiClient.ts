@@ -5,6 +5,7 @@ import type {
     CreateWorkUnitFormData,
     ReturnWorkUnitFormData,
     SaveMaterialFormData,
+    UpdateWorkUnitFormData,
 } from '../validation/schemas.ts';
 import { toUtcString } from '../utils.ts';
 
@@ -43,6 +44,24 @@ export class WorkUnitsApiClient extends AbstractApiClient {
     public static async saveMetal(data: SaveMaterialFormData): Promise<void> {
         console.log(`WorkUnitsApiClient.saveMetal: ${data}`);
         await this.apiRequest<void>({ url: '/work-units/save-metal/', method: 'POST', data });
+    }
+
+    public static async updateWorkUnit({
+        workUnitId,
+        ...payload
+    }: UpdateWorkUnitFormData): Promise<void> {
+        const data =
+            payload.loss === undefined
+                ? { metalWeight: payload.metalWeight }
+                : { metalWeight: payload.metalWeight, loss: payload.loss };
+        console.log(
+            `WorkUnitsApiClient.updateWorkUnit: ${JSON.stringify({ workUnitId, ...data })}`,
+        );
+        await this.apiRequest<void>({
+            url: `/work-units/${workUnitId}/`,
+            method: 'PATCH',
+            data,
+        });
     }
 
     public static async rolloverWorkUnits(): Promise<void> {

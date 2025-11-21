@@ -14,12 +14,13 @@ import {
     useTheme,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import type { WorkUnitsReportDto } from '../dto/work-units.ts';
+import type { WorkUnitDto, WorkUnitsReportDto } from '../dto/work-units.ts';
 import { WorkUnitsApiClient } from '../api/workUnitsApiClient.ts';
 import { getCurrentMonthRange, toFixedNumber, toLocalDateTime } from '../utils.ts';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
 import FilterIcon from '@mui/icons-material/TuneOutlined';
+import AddIcon from '@mui/icons-material/AddCircleOutline';
 import WorkUnitsFilterComponent, {
     type WorkUnitsFilterData,
 } from '../components/modal/work-units/WorkUnitsFilterComponent.tsx';
@@ -28,9 +29,11 @@ import {
     type CreateWorkUnitFormData,
     type SaveMaterialFormData,
     type ReturnWorkUnitFormData,
+    type UpdateWorkUnitFormData,
 } from '../validation/schemas.ts';
 import ReturnWorkUnitComponent from '../components/modal/work-units/ReturnWorkUnitComponent.tsx';
 import SaveMaterialComponent from '../components/modal/work-units/SaveMaterialComponent.tsx';
+import EditWorkUnitComponent from '../components/modal/work-units/EditWorkUnitComponent.tsx';
 import DialogComponent from '../components/modal/DialogComponent.tsx';
 import { showToast } from '../components/common/Toast.tsx';
 
@@ -54,6 +57,7 @@ const WorkUnitsPage = () => {
     const [isSaveMetalOpen, setIsSaveMetalOpen] = useState<boolean>(false);
 
     const [workUnitIdToReturn, setWorkUnitIdToReturn] = useState<number | undefined>();
+    const [workUnitToEdit, setWorkUnitToEdit] = useState<WorkUnitDto | undefined>();
 
     const fetchReport = useCallback(async () => {
         if (filterData) {
@@ -245,6 +249,25 @@ const WorkUnitsPage = () => {
                 />
             )}
 
+            {workUnitToEdit && (
+                <EditWorkUnitComponent
+                    open={!!workUnitToEdit}
+                    workUnit={workUnitToEdit}
+                    onClose={() => setWorkUnitToEdit(undefined)}
+                    onSave={(data: UpdateWorkUnitFormData) => {
+                        WorkUnitsApiClient.updateWorkUnit(data)
+                            .then(async () => {
+                                showToast('Наряд успішно оновлено');
+                                await fetchReport();
+                            })
+                            .catch((err) => {
+                                showToast('Не вдалось оновити наряд', 'error');
+                                console.log(err);
+                            });
+                    }}
+                />
+            )}
+
             <TableContainer
                 style={{
                     minWidth: '350px',
@@ -325,16 +348,25 @@ const WorkUnitsPage = () => {
                                             ? toFixedNumber(entry.metalReturnedWithLoss, 3)
                                             : '–'}
                                     </TableCell>
-                                    <TableCell width="50px">
-                                        {!entry.returnedDate && (
+                                    <TableCell width="80px">
+                                        <Box display="flex" gap={1}>
+                                            {!entry.returnedDate && (
+                                                <IconButton
+                                                    size="small"
+                                                    style={{ padding: 0 }}
+                                                    onClick={() => setWorkUnitIdToReturn(entry.id)}
+                                                >
+                                                    <AddIcon fontSize="small" />
+                                                </IconButton>
+                                            )}
                                             <IconButton
                                                 size="small"
                                                 style={{ padding: 0 }}
-                                                onClick={() => setWorkUnitIdToReturn(entry.id)}
+                                                onClick={() => setWorkUnitToEdit(entry)}
                                             >
-                                                <EditIcon />
+                                                <EditIcon fontSize="small" />
                                             </IconButton>
-                                        )}
+                                        </Box>
                                     </TableCell>
                                 </TableRow>
                             ))}
