@@ -8,6 +8,7 @@ export interface WorkUnitDto {
     loss?: number;
     metalReturnedWithLoss?: number;
     materialName: string;
+    description?: string;
 }
 
 export interface WorkUnitsReportDto {

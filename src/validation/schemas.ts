@@ -171,6 +171,11 @@ export const returnWorkUnitSchema = z.object({
         .min(0, { error: 'Значення не може бути меншим за 0' })
         .max(100, { error: 'Значення повинно бути менше 100' })
         .multipleOf(0.01, { message: 'Крок значення — 0.01' }),
+    description: z
+        .string({ error: 'Введіть опис' })
+        .trim()
+        .max(500, { message: 'Максимальна довжина — 500 символів' })
+        .optional(),
 });
 
 export type ReturnWorkUnitFormData = z.infer<typeof returnWorkUnitSchema>;
@@ -197,6 +202,11 @@ export const updateWorkUnitSchema = z.object({
         .min(0, { error: 'Значення не може бути меншим за 0' })
         .max(100, { error: 'Значення повинно бути менше 100' })
         .multipleOf(0.01, { message: 'Крок значення — 0.01' })
+        .optional(),
+    description: z
+        .string({ error: 'Введіть опис' })
+        .trim()
+        .max(500, { message: 'Максимальна довжина — 500 символів' })
         .optional(),
 });
 

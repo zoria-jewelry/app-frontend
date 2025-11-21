@@ -13,7 +13,9 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
+import TooltipMui, { tooltipClasses, type TooltipProps } from '@mui/material/Tooltip';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { WorkUnitDto, WorkUnitsReportDto } from '../dto/work-units.ts';
 import { WorkUnitsApiClient } from '../api/workUnitsApiClient.ts';
 import { getCurrentMonthRange, toFixedNumber, toLocalDateTime } from '../utils.ts';
@@ -39,6 +41,25 @@ import { showToast } from '../components/common/Toast.tsx';
 
 const WorkUnitsPage = () => {
     const theme = useTheme();
+    const DEFAULT_DESCRIPTION = 'Немає опису наряду';
+
+    const DescriptionTooltip = styled(({ className, ...props }: TooltipProps) => (
+        <TooltipMui {...props} arrow classes={{ popper: className }} />
+    ))(({ theme }) => ({
+        [`& .${tooltipClasses.tooltip}`]: {
+            backgroundColor: '#1f2a37',
+            color: '#f9fafb',
+            fontSize: '1rem',
+            padding: theme.spacing(2),
+            borderRadius: theme.spacing(2),
+            boxShadow: theme.shadows[6],
+            maxWidth: 360,
+            whiteSpace: 'pre-wrap',
+        },
+        [`& .${tooltipClasses.arrow}`]: {
+            color: '#1f2a37',
+        },
+    }));
 
     const currentMonth = getCurrentMonthRange();
     const [filterData, setFilterData] = useState<WorkUnitsFilterData>({
@@ -56,8 +77,24 @@ const WorkUnitsPage = () => {
 
     const [isSaveMetalOpen, setIsSaveMetalOpen] = useState<boolean>(false);
 
-    const [workUnitIdToReturn, setWorkUnitIdToReturn] = useState<number | undefined>();
+    const [workUnitToReturn, setWorkUnitToReturn] = useState<WorkUnitDto | undefined>();
     const [workUnitToEdit, setWorkUnitToEdit] = useState<WorkUnitDto | undefined>();
+
+    const entriesToDisplay = useMemo(() => {
+        if (!report?.entries) {
+            return [];
+        }
+
+        const uniqueEntries = new Map<number, WorkUnitDto>();
+
+        report.entries.forEach((entry) => {
+            if (!uniqueEntries.has(entry.id)) {
+                uniqueEntries.set(entry.id, entry);
+            }
+        });
+
+        return Array.from(uniqueEntries.values());
+    }, [report]);
 
     const fetchReport = useCallback(async () => {
         if (filterData) {
@@ -227,11 +264,11 @@ const WorkUnitsPage = () => {
                 }}
             />
 
-            {workUnitIdToReturn && (
+            {workUnitToReturn && (
                 <ReturnWorkUnitComponent
-                    workUnitId={workUnitIdToReturn}
-                    open={!!workUnitIdToReturn}
-                    onClose={() => setWorkUnitIdToReturn(undefined)}
+                    workUnit={workUnitToReturn}
+                    open={!!workUnitToReturn}
+                    onClose={() => setWorkUnitToReturn(undefined)}
                     onSave={(data: ReturnWorkUnitFormData) => {
                         WorkUnitsApiClient.returnMetal(data)
                             .then(async () => {
@@ -287,7 +324,7 @@ const WorkUnitsPage = () => {
                                 Дата прийняття
                             </TableCell>
                             <TableCell sx={{ backgroundColor: '#b7cfd2' }}>Замовлення, №</TableCell>
-                            <TableCell sx={{ backgroundColor: '#b7cfd2', width: '100px' }}>
+                            <TableCell sx={{ backgroundColor: '#b7cfd2', width: '140px' }}>
                                 Матеріал (видано), г
                             </TableCell>
 
@@ -295,21 +332,36 @@ const WorkUnitsPage = () => {
                                 sx={{
                                     backgroundColor: '#b7cfd2',
                                     borderLeft: '1px solid black',
-                                    width: '100px',
+                                    width: '140px',
                                 }}
                             >
                                 Матеріал (повернено), г
                             </TableCell>
-                            <TableCell sx={{ backgroundColor: '#b7cfd2' }}>ПН, %</TableCell>
-                            <TableCell sx={{ backgroundColor: '#b7cfd2' }}>Матеріал з %</TableCell>
+                            <TableCell sx={{ backgroundColor: '#b7cfd2', width: '90px' }}>
+                                ПН, %
+                            </TableCell>
+                            <TableCell sx={{ backgroundColor: '#b7cfd2', width: '130px' }}>
+                                Матеріал з %
+                            </TableCell>
+                            <TableCell sx={{ backgroundColor: '#b7cfd2', width: '260px' }}>
+                                Опис
+                            </TableCell>
                             <TableCell
-                                sx={{ backgroundColor: '#b7cfd2', borderTopRightRadius: 10 }}
+                                sx={{
+                                    backgroundColor: '#b7cfd2',
+                                    borderTopRightRadius: 10,
+                                    width: '70px',
+                                }}
                             ></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {report &&
-                            report.entries.map((entry) => (
+                        {entriesToDisplay.map((entry) => {
+                            const descriptionText =
+                                entry.description && entry.description.trim().length > 0
+                                    ? entry.description
+                                    : DEFAULT_DESCRIPTION;
+                            return (
                                 <TableRow
                                     key={entry.id}
                                     sx={{
@@ -329,32 +381,61 @@ const WorkUnitsPage = () => {
                                             : '–'}
                                     </TableCell>
                                     <TableCell>{entry.orderId ? entry.orderId : '–'}</TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ width: '140px' }}>
                                         {entry.metalIssued
                                             ? toFixedNumber(entry.metalIssued, 3)
                                             : '–'}
                                     </TableCell>
 
-                                    <TableCell sx={{ borderLeft: '1px solid black' }}>
+                                    <TableCell
+                                        sx={{ borderLeft: '1px solid black', width: '140px' }}
+                                    >
                                         {entry.metalReturned
                                             ? toFixedNumber(entry.metalReturned, 3)
                                             : '–'}
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ width: '90px' }}>
                                         {entry.loss ? toFixedNumber(entry.loss, 2) : '–'}
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ width: '130px' }}>
                                         {entry.metalReturnedWithLoss
                                             ? toFixedNumber(entry.metalReturnedWithLoss, 3)
                                             : '–'}
                                     </TableCell>
-                                    <TableCell width="80px">
-                                        <Box display="flex" gap={1}>
+                                    <TableCell
+                                        sx={{
+                                            maxWidth: '260px',
+                                            width: '260px',
+                                        }}
+                                    >
+                                        <DescriptionTooltip
+                                            title={descriptionText}
+                                            arrow
+                                            placement="top-start"
+                                        >
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    display: 'block',
+                                                    maxHeight: '72px',
+                                                    overflowY: 'auto',
+                                                    overflowX: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'pre-line',
+                                                    pr: 1,
+                                                }}
+                                            >
+                                                {descriptionText}
+                                            </Typography>
+                                        </DescriptionTooltip>
+                                    </TableCell>
+                                    <TableCell width="70px">
+                                        <Box display="flex" gap={0.5}>
                                             {!entry.returnedDate && (
                                                 <IconButton
                                                     size="small"
                                                     style={{ padding: 0 }}
-                                                    onClick={() => setWorkUnitIdToReturn(entry.id)}
+                                                    onClick={() => setWorkUnitToReturn(entry)}
                                                 >
                                                     <AddIcon fontSize="small" />
                                                 </IconButton>
@@ -369,7 +450,8 @@ const WorkUnitsPage = () => {
                                         </Box>
                                     </TableCell>
                                 </TableRow>
-                            ))}
+                            );
+                        })}
                     </TableBody>
                 </Table>
             </TableContainer>

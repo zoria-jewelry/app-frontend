@@ -55,9 +55,15 @@ const getWeightValue = (workUnit?: WorkUnitDto): number => {
     return workUnit.metalIssued ?? 0;
 };
 
+const DEFAULT_DESCRIPTION = 'Немає опису наряду';
+
 const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnitComponentProps) => {
     const theme = useTheme();
     const hasReturn = !!workUnit?.returnedDate;
+    const canEditDescription = hasReturn && !!workUnit?.orderId;
+    const descriptionValue = canEditDescription
+        ? (workUnit?.description ?? DEFAULT_DESCRIPTION)
+        : undefined;
 
     const {
         register,
@@ -71,6 +77,7 @@ const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnit
             workUnitId: workUnit?.id ?? 0,
             metalWeight: getWeightValue(workUnit),
             loss: hasReturn ? (workUnit?.loss ?? 0) : undefined,
+            description: descriptionValue,
         },
     });
 
@@ -83,21 +90,26 @@ const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnit
             workUnitId: workUnit.id,
             metalWeight: getWeightValue(workUnit),
             loss: hasReturn ? (workUnit.loss ?? 0) : undefined,
+            description: descriptionValue,
         });
-    }, [workUnit, reset, hasReturn]);
+    }, [workUnit, reset, hasReturn, canEditDescription, descriptionValue]);
 
     const handleClose = () => {
         reset({
             workUnitId: workUnit?.id ?? 0,
             metalWeight: getWeightValue(workUnit),
             loss: hasReturn ? (workUnit?.loss ?? 0) : undefined,
+            description: descriptionValue,
         });
         onClose();
     };
 
     const onSubmit = (data: UpdateWorkUnitFormData) => {
         const payload = hasReturn
-            ? data
+            ? {
+                  ...data,
+                  description: canEditDescription ? data.description : undefined,
+              }
             : {
                   workUnitId: data.workUnitId,
                   metalWeight: data.metalWeight,
@@ -173,6 +185,29 @@ const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnit
                             }}
                         >
                             {errors.loss ? errors.loss.message : ''}
+                        </FormHelperText>
+                    </Box>
+                )}
+
+                {canEditDescription && (
+                    <Box mt={4}>
+                        <Typography>Опис</Typography>
+                        <TextField
+                            fullWidth
+                            multiline
+                            minRows={3}
+                            {...register('description')}
+                            error={!!errors.description}
+                        />
+                        <FormHelperText
+                            error={true}
+                            sx={{
+                                margin: 0,
+                                marginBottom: theme.spacing(2),
+                                minHeight: '30px',
+                            }}
+                        >
+                            {errors.description ? errors.description.message : ''}
                         </FormHelperText>
                     </Box>
                 )}

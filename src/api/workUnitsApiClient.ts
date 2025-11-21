@@ -50,10 +50,22 @@ export class WorkUnitsApiClient extends AbstractApiClient {
         workUnitId,
         ...payload
     }: UpdateWorkUnitFormData): Promise<void> {
-        const data =
-            payload.loss === undefined
-                ? { metalWeight: payload.metalWeight }
-                : { metalWeight: payload.metalWeight, loss: payload.loss };
+        const data: {
+            metalWeight: number;
+            loss?: number;
+            description?: string;
+        } = {
+            metalWeight: payload.metalWeight,
+        };
+
+        if (payload.loss !== undefined) {
+            data.loss = payload.loss;
+        }
+
+        if (payload.description !== undefined) {
+            data.description = payload.description;
+        }
+
         console.log(
             `WorkUnitsApiClient.updateWorkUnit: ${JSON.stringify({ workUnitId, ...data })}`,
         );

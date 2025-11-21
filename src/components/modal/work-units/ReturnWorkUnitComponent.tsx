@@ -13,6 +13,8 @@ import Dialog from '@mui/material/Dialog';
 import { returnWorkUnitSchema, type ReturnWorkUnitFormData } from '../../../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
+import type { WorkUnitDto } from '../../../dto/work-units.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -35,19 +37,20 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 export interface ReturnWorkUnitModalProps {
-    workUnitId: number;
+    workUnit: WorkUnitDto;
     open: boolean;
     onClose: () => void;
     onSave: (data: ReturnWorkUnitFormData) => void;
 }
 
-const ReturnWorkUnitComponent = ({
-    workUnitId,
-    open,
-    onClose,
-    onSave,
-}: ReturnWorkUnitModalProps) => {
+const DEFAULT_DESCRIPTION = 'Немає опису наряду';
+
+const ReturnWorkUnitComponent = ({ workUnit, open, onClose, onSave }: ReturnWorkUnitModalProps) => {
     const theme = useTheme();
+    const requiresDescription = !!workUnit.orderId;
+    const descriptionValue = requiresDescription
+        ? (workUnit.description ?? DEFAULT_DESCRIPTION)
+        : undefined;
 
     const {
         register,
@@ -58,25 +61,45 @@ const ReturnWorkUnitComponent = ({
         resolver: zodResolver(returnWorkUnitSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
-            workUnitId,
+            workUnitId: workUnit.id,
             metalWeight: undefined,
             loss: undefined,
+            description: descriptionValue,
         },
     });
 
-    const handleClose = () => {
+    useEffect(() => {
         reset({
-            workUnitId,
+            workUnitId: workUnit.id,
             metalWeight: undefined,
             loss: undefined,
+            description: descriptionValue,
+        });
+    }, [workUnit, requiresDescription, descriptionValue, reset]);
+
+    const handleClose = () => {
+        reset({
+            workUnitId: workUnit.id,
+            metalWeight: undefined,
+            loss: undefined,
+            description: descriptionValue,
         });
         onClose();
     };
 
     const onSubmit = (data: ReturnWorkUnitFormData) => {
-        onSave(data);
+        const payload = requiresDescription
+            ? data
+            : {
+                  workUnitId: data.workUnitId,
+                  metalWeight: data.metalWeight,
+                  loss: data.loss,
+              };
+        onSave(payload);
         handleClose();
     };
+
+    const descriptionError = errors.description ? errors.description.message : undefined;
 
     return (
         <BootstrapDialog onClose={handleClose} aria-labelledby="return-work-unit" open={open}>
@@ -137,6 +160,31 @@ const ReturnWorkUnitComponent = ({
                         {errors.loss ? errors.loss.message : ''}
                     </FormHelperText>
                 </Box>
+
+                {requiresDescription && (
+                    <Box mt={4}>
+                        <Typography>Опис</Typography>
+                        <TextField
+                            fullWidth
+                            multiline
+                            minRows={3}
+                            {...register('description', {
+                                required: requiresDescription ? 'Опис є обовʼязковим' : false,
+                            })}
+                            error={!!descriptionError}
+                        />
+                        <FormHelperText
+                            error={true}
+                            sx={{
+                                margin: 0,
+                                marginBottom: theme.spacing(2),
+                                minHeight: '30px',
+                            }}
+                        >
+                            {descriptionError || ''}
+                        </FormHelperText>
+                    </Box>
+                )}
 
                 <Box mt={8} display="flex" justifyContent="center">
                     <Button variant="contained" color="primary" type="submit">
