@@ -172,7 +172,7 @@ const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnit
 
                 {canEditLoss && (
                     <Box mt={4}>
-                        <Typography>Втрати, %</Typography>
+                        <Typography>ПН, %</Typography>
                         <TextField
                             type="number"
                             fullWidth

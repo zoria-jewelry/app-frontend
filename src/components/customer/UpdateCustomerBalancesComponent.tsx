@@ -4,7 +4,15 @@ import { useParams } from 'react-router-dom';
 import { CustomersApiClient } from '../../api/customersApiClient.ts';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, FormControl, FormHelperText, FormLabel, TextField, Typography, useTheme } from '@mui/material';
+import {
+    Button,
+    FormControl,
+    FormHelperText,
+    FormLabel,
+    TextField,
+    Typography,
+    useTheme,
+} from '@mui/material';
 import {
     updateCustomerBalancesSchema,
     type UpdateCustomerBalancesFormData,
@@ -99,7 +107,9 @@ const UpdateCustomerBalancesComponent = ({ onUpdate }: UpdateCustomerBalancesCom
             const evaluated = raw !== undefined ? evaluateExpression(raw) : null;
 
             const finalNumber =
-                evaluated !== null && evaluated !== undefined ? evaluated : (data.entries?.[idx]?.newValue ?? 0);
+                evaluated !== null && evaluated !== undefined
+                    ? evaluated
+                    : (data.entries?.[idx]?.newValue ?? 0);
 
             return {
                 materialId: entry.materialId,
@@ -107,13 +117,18 @@ const UpdateCustomerBalancesComponent = ({ onUpdate }: UpdateCustomerBalancesCom
             };
         });
 
-        const hasInvalid = payloadEntries.some((e) => typeof e.newValue !== 'number' || Number.isNaN(e.newValue));
+        const hasInvalid = payloadEntries.some(
+            (e) => typeof e.newValue !== 'number' || Number.isNaN(e.newValue),
+        );
         if (hasInvalid) {
             showToast('Некоректне значення в одному або більше полів', 'error');
             return;
         }
 
-        CustomersApiClient.updateCustomerBalance(customerId, { description: data.description, entries: payloadEntries })
+        CustomersApiClient.updateCustomerBalance(customerId, {
+            description: data.description,
+            entries: payloadEntries,
+        })
             .then(() => {
                 showToast('Баланс клієнта був успішно оновлений');
                 clearErrors();
@@ -165,7 +180,9 @@ const UpdateCustomerBalancesComponent = ({ onUpdate }: UpdateCustomerBalancesCom
 
                         <Typography variant="caption" sx={{ marginLeft: '4px', minHeight: 20 }}>
                             {rawValue.trim() === '' ? (
-                                <span style={{ color: '#666' }}>Поточне значення: {entry.value}</span>
+                                <span style={{ color: '#666' }}>
+                                    Поточне значення: {entry.value}
+                                </span>
                             ) : evaluated === null ? (
                                 <span style={{ color: '#c43' }}>Невірний вираз</span>
                             ) : (
@@ -177,7 +194,8 @@ const UpdateCustomerBalancesComponent = ({ onUpdate }: UpdateCustomerBalancesCom
                             type="hidden"
                             {...register(`entries.${index}.newValue`, {
                                 valueAsNumber: true,
-                                setValueAs: (v) => (typeof v === 'string' && v !== '' ? parseFloat(v) || 0 : v),
+                                setValueAs: (v) =>
+                                    typeof v === 'string' && v !== '' ? parseFloat(v) || 0 : v,
                             })}
                         />
 

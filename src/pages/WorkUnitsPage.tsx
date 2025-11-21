@@ -41,7 +41,7 @@ import { showToast } from '../components/common/Toast.tsx';
 
 const WorkUnitsPage = () => {
     const theme = useTheme();
-    const DEFAULT_DESCRIPTION = 'Немає опису наряду';
+    const DEFAULT_DESCRIPTION = '–';
 
     const DescriptionTooltip = styled(({ className, ...props }: TooltipProps) => (
         <TooltipMui {...props} arrow classes={{ popper: className }} />

@@ -10,9 +10,10 @@ import { showToast } from '../common/Toast.tsx';
 
 export interface GlobalStatisticsProps {
     onUpdate: () => void;
+    refresher?: number;
 }
 
-const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
+const GlobalStatisticsComponent = ({ onUpdate, refresher }: GlobalStatisticsProps) => {
     const theme = useTheme();
 
     const baseDate: Date = new Date();
@@ -39,7 +40,7 @@ const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
                 showToast(`Не вдалось завантажити дані за ${toLocalDate(date)}`, 'error');
                 console.log(err);
             });
-    }, [date]);
+    }, [date, refresher]);
 
     return (
         <Paper
@@ -161,7 +162,6 @@ const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
                     isOpen={isUpdateBalanceModalOpen}
                     handleClose={() => {
                         setIsUpdateBalanceModalOpen(false);
-                        onUpdate();
                     }}
                 />
             )}
