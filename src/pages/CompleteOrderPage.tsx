@@ -415,7 +415,7 @@ const CompleteOrderPage = () => {
                                                     borderRight: `1px solid ${theme.palette.divider}`,
                                                 }}
                                             >
-                                                Загальна вага виробів без каменів
+                                                Загальна маса металу у виробах
                                             </TableCell>
                                             <TableCell>
                                                 <span style={{ fontWeight: 900 }}>
@@ -470,7 +470,7 @@ const CompleteOrderPage = () => {
                                                 Вартість використаного металу
                                             </TableCell>
                                             <TableCell>
-                                                {`${toFixedNumber(totalMetalWeight, 3)} * ${toFixedNumber(order.materialPrice, 2)} = `}
+                                                {`${toFixedNumber(orderCalculations?.metalMassWithLoss, 3)} * ${toFixedNumber(order.materialPrice, 2)} = `}
                                                 <span style={{ fontWeight: 900 }}>
                                                     {toFixedNumber(
                                                         orderCalculations?.usedMetalCost ?? 0,
