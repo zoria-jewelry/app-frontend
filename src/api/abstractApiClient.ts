@@ -4,8 +4,6 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import type { TokenResponseDto } from './authApiClient.ts';
 
-const acceptableStatuses: number[] = [200, 201];
-
 export abstract class AbstractApiClient {
     private static refreshTokenPromise: Promise<boolean> | null = null;
     private static isRefreshing = false;
@@ -48,8 +46,13 @@ export abstract class AbstractApiClient {
 
         try {
             const resp = await axios.request<T>(cfg);
-            if (acceptableStatuses.includes(resp.status)) {
+            if (resp.status >= 200 && resp.status < 300) {
                 return resp.data as T;
+            } else {
+                const error = new Error(`Request failed with status ${resp.status}`);
+                (error as any).response = resp;
+                (error as any).status = resp.status;
+                throw error;
             }
         } catch (err: any) {
             const status = err.response?.status;
@@ -66,22 +69,31 @@ export abstract class AbstractApiClient {
 
                     try {
                         const retryResp = await axios.request<T>(cfg);
-                        if (acceptableStatuses.includes(retryResp.status)) {
+                        if (retryResp.status >= 200 && retryResp.status < 300) {
                             return retryResp.data as T;
+                        } else {
+                            const error = new Error(
+                                `Request failed with status ${retryResp.status}`,
+                            );
+                            (error as any).response = retryResp;
+                            (error as any).status = retryResp.status;
+                            throw error;
                         }
                     } catch (retryErr: any) {
                         console.error('Request failed after token refresh:', retryErr);
-                        return undefined;
+                        throw retryErr;
                     }
                 } else {
                     console.error('Token refresh failed, redirecting to login');
                     this.handleUnauthorizedFinal();
-                    return undefined;
+                    const error = new Error('Unauthorized: Token refresh failed');
+                    (error as any).status = 401;
+                    throw error;
                 }
+            } else {
+                throw err;
             }
         }
-
-        return undefined;
     }
 
     private static async handleTokenRefresh(): Promise<boolean> {
@@ -95,6 +107,8 @@ export abstract class AbstractApiClient {
         try {
             const success = await this.refreshTokenPromise;
             return success;
+        } catch (error) {
+            return false;
         } finally {
             this.isRefreshing = false;
             this.refreshTokenPromise = null;
@@ -120,17 +134,19 @@ export abstract class AbstractApiClient {
                 },
             );
 
-            if (acceptableStatuses.includes(resp.status) && resp.data?.access) {
+            if (resp.status >= 200 && resp.status < 300 && resp.data?.access) {
                 Cookies.set('access_token', resp.data.access);
                 console.log('Token refreshed successfully');
                 return true;
             }
 
-            console.error('Invalid refresh response:', resp.status, resp.data);
-            return false;
+            const error = new Error(`Token refresh failed with status ${resp.status}`);
+            (error as any).response = resp;
+            (error as any).status = resp.status;
+            throw error;
         } catch (error: any) {
             console.error('Token refresh failed:', error.response?.status, error.message);
-            return false;
+            throw error;
         }
     }
 

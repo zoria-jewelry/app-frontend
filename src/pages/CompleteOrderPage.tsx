@@ -85,14 +85,19 @@ const CompleteOrderPage = () => {
     const paidMoney = watch('paymentData.0.amountToPay') || 0;
 
     useEffect(() => {
+        console.log('effect');
         if (loss > 0 && totalMetalWeight > 0) {
+            console.log('entered');
             OrdersApiClient.getCompleteOrderCalculations(orderId, {
                 lossPercentage: loss,
                 finalMetalWeight: totalMetalWeight,
                 discount,
                 stoneCost: stonesPrice,
             })
-                .then(setOrderCalculations)
+                .then((data) => {
+                    console.log(data);
+                    setOrderCalculations(data);
+                })
                 .catch((err) => {
                     showToast('Не вдалось обчислити вартість замовлення', 'error');
                     console.log(err);
@@ -133,9 +138,10 @@ const CompleteOrderPage = () => {
                             await OrdersApiClient.addReceipt(orderId, receiptUrl);
                         } catch (err) {
                             showToast(
-                                `Не вдалось додати чек до замовлення. Негайно зверніться до адміністратора – ${JSON.stringify(err)}`,
+                                `Не вдалось додати чек до замовлення. Негайно зверніться до адміністратора`,
                                 'error',
                             );
+                            console.log(err);
                         }
                     }
                     clearErrors();
@@ -143,10 +149,7 @@ const CompleteOrderPage = () => {
                     navigate(customerId ? `/customers/${customerId}` : '/orders');
                 })
                 .catch((err) => {
-                    showToast(
-                        `Не вдалось створити чек до замовлення – ${JSON.stringify(err)}`,
-                        'error',
-                    );
+                    showToast(`Не вдалось створити чек до замовлення`, 'error');
                     console.log(err);
                 });
         }
@@ -180,7 +183,7 @@ const CompleteOrderPage = () => {
             .then(setIsShiftOpen)
             .catch((err) => {
                 showToast(
-                    `Не вдалось дізнатись, чи була розпочата зміна. Перевірте, чи запущений застосунок Vchasno Kasa на вашому компʼютері – ${JSON.stringify(err)}`,
+                    `Не вдалось дізнатись, чи була розпочата зміна. Перевірте, чи запущений застосунок Vchasno Kasa, або зверніться до адміністратора`,
                     'error',
                 );
                 console.log(err);

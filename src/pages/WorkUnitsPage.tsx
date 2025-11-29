@@ -258,7 +258,11 @@ const WorkUnitsPage = () => {
                             await fetchReport();
                         })
                         .catch((err) => {
-                            showToast('Не вдалось видати матеріал ювеліру', 'error');
+                            if (err.status === 400) {
+                                showToast('На складі недостатньо металу для видачі', 'error');
+                            } else {
+                                showToast('Не вдалось видати матеріал ювеліру', 'error');
+                            }
                             console.log(err);
                         });
                 }}
@@ -661,7 +665,10 @@ const WorkUnitsPage = () => {
             <DialogComponent
                 handleClose={() => setIsStartNewMonthModalOpen(false)}
                 handleAction={() => {
-                    WorkUnitsApiClient.rolloverWorkUnits()
+                    if (!filterData?.employeeId) {
+                        return;
+                    }
+                    WorkUnitsApiClient.rolloverWorkUnits(filterData.employeeId)
                         .then(() => {
                             showToast(
                                 'Початок нового місяця був успішно зафіксований. Усі відкриті наряди були успішно продубльовані з поточною датою',

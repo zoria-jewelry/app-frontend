@@ -76,8 +76,11 @@ export class WorkUnitsApiClient extends AbstractApiClient {
         });
     }
 
-    public static async rolloverWorkUnits(): Promise<void> {
+    public static async rolloverWorkUnits(employeeId: number): Promise<void> {
         console.log(`WorkUnitsApiClient.rolloverWorkUnits`);
-        await this.apiRequest<void>({ url: '/work-units/rollover-open-issues/', method: 'POST' });
+        await this.apiRequest<void>({
+            url: `/employees/${employeeId}/rollover-open-issues/`,
+            method: 'POST',
+        });
     }
 }
