@@ -85,7 +85,6 @@ export const createUpdateOrderSchema = z.object({
         .nonoptional({ error: 'Список товарів не може бути порожнім' }),
     executorsIds: z
         .array(z.number().positive())
-        .min(1, { error: 'Оберіть хоча б одного виконавця' }),
 });
 
 export type CreateOrderFormData = z.infer<typeof createUpdateOrderSchema>;
