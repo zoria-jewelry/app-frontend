@@ -1,5 +1,5 @@
 import { AbstractApiClient } from './abstractApiClient.ts';
-import type { WorkUnitsReportDto } from '../dto/work-units.ts';
+import type { WorkUnitDto, WorkUnitsReportDto } from '../dto/work-units.ts';
 import type { WorkUnitsFilterData } from '../components/modal/work-units/WorkUnitsFilterComponent.tsx';
 import type {
     CreateWorkUnitFormData,
@@ -46,24 +46,31 @@ export class WorkUnitsApiClient extends AbstractApiClient {
         await this.apiRequest<void>({ url: '/work-units/save-metal/', method: 'POST', data });
     }
 
-    public static async updateWorkUnit({
-        workUnitId,
-        ...payload
-    }: UpdateWorkUnitFormData): Promise<void> {
+    public static async updateWorkUnit(
+        payload: UpdateWorkUnitFormData,
+        workUnit?: Pick<WorkUnitDto, 'metalReturned'>,
+    ): Promise<void> {
+        const { workUnitId, metalWeight, ...rest } = payload;
+
         const data: {
-            metalWeight: number;
+            returned?: number;
+            issued?: number;
             loss?: number;
             description?: string;
-        } = {
-            metalWeight: payload.metalWeight,
-        };
+        } = {};
 
-        if (payload.loss !== undefined) {
-            data.loss = payload.loss;
+        if (workUnit?.metalReturned != null) {
+            data.returned = metalWeight;
+        } else {
+            data.issued = metalWeight;
         }
 
-        if (payload.description !== undefined) {
-            data.description = payload.description;
+        if (rest.loss !== undefined) {
+            data.loss = rest.loss;
+        }
+
+        if (rest.description !== undefined) {
+            data.description = rest.description;
         }
 
         console.log(

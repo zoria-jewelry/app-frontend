@@ -296,7 +296,7 @@ const WorkUnitsPage = () => {
                     workUnit={workUnitToEdit}
                     onClose={() => setWorkUnitToEdit(undefined)}
                     onSave={(data: UpdateWorkUnitFormData) => {
-                        WorkUnitsApiClient.updateWorkUnit(data)
+                        WorkUnitsApiClient.updateWorkUnit(data, workUnitToEdit)
                             .then(async () => {
                                 showToast('Наряд успішно оновлено');
                                 await fetchReport();
