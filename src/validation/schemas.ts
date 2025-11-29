@@ -83,8 +83,7 @@ export const createUpdateOrderSchema = z.object({
         .array(orderProductsSchema)
         .nonempty({ error: 'Список товарів не може бути порожнім' })
         .nonoptional({ error: 'Список товарів не може бути порожнім' }),
-    executorsIds: z
-        .array(z.number().positive())
+    executorsIds: z.array(z.number().positive()),
 });
 
 export type CreateOrderFormData = z.infer<typeof createUpdateOrderSchema>;

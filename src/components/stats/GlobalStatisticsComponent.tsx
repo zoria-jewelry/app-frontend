@@ -118,23 +118,23 @@ const GlobalStatisticsComponent = ({ onUpdate, refresher }: GlobalStatisticsProp
                         const statWithoutCustomer = statsWithoutCustomerData.find(
                             (s) => s.materialId === stat.materialId,
                         );
-                        
+
                         const globalBalance = Number(stat.totalBalance);
                         const balanceWithoutCustomer = statWithoutCustomer
                             ? Number(statWithoutCustomer.totalBalance)
                             : null;
-                        
+
                         const threshold = stat.materialId ? 0.001 : 0.01;
                         const hasCustomerDebt =
                             balanceWithoutCustomer !== null &&
                             globalBalance < balanceWithoutCustomer - threshold;
-                        
+
                         const customerDebt = hasCustomerDebt
                             ? balanceWithoutCustomer - globalBalance
                             : 0;
-                        
+
                         const displayedValue = globalBalance + customerDebt;
-                        
+
                         return (
                             <Box key={stat.materialId} sx={{ mb: hasCustomerDebt ? 0.5 : 0 }}>
                                 <Typography variant="body1">
@@ -156,7 +156,8 @@ const GlobalStatisticsComponent = ({ onUpdate, refresher }: GlobalStatisticsProp
                                             mt: 0.25,
                                         }}
                                     >
-                                        Загальний борг клієнтів – {toFixedNumber(customerDebt, stat.materialId ? 3 : 2)}{' '}
+                                        Загальний борг клієнтів –{' '}
+                                        {toFixedNumber(customerDebt, stat.materialId ? 3 : 2)}{' '}
                                         {stat.materialId ? 'г' : 'грн'}
                                     </Typography>
                                 )}

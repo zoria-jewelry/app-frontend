@@ -53,36 +53,35 @@ const evaluateExpression = (expr: string): number | null => {
     try {
         // Split by + and - operators (keeping the operators)
         const parts = cleaned.split(/(?=[+-])/g);
-        
+
         let acc = 0;
         for (const part of parts) {
             if (part === '' || part === '+' || part === '-') continue;
-            
+
             // Handle the sign - remove both + and - prefixes
-            let isNegative = part.startsWith('-');
-            let partToProcess = part.startsWith('+') || part.startsWith('-') 
-                ? part.substring(1) 
-                : part;
-            
+            const isNegative = part.startsWith('-');
+            const partToProcess =
+                part.startsWith('+') || part.startsWith('-') ? part.substring(1) : part;
+
             if (partToProcess === '') continue;
-            
+
             // Split by * and / operators
-            const multDivParts = partToProcess.split(/(?=[*/])|(?<=[*/])/g).filter(p => p !== '');
-            
+            const multDivParts = partToProcess.split(/(?=[*/])|(?<=[*/])/g).filter((p) => p !== '');
+
             if (multDivParts.length === 0) continue;
-            
+
             let partValue = parseFloat(multDivParts[0]);
             if (Number.isNaN(partValue)) return null;
-            
+
             // Process multiplication and division
             for (let i = 1; i < multDivParts.length; i += 2) {
                 if (i + 1 >= multDivParts.length) return null; // Missing operand
-                
+
                 const operator = multDivParts[i];
                 const operand = parseFloat(multDivParts[i + 1]);
-                
+
                 if (Number.isNaN(operand)) return null;
-                
+
                 if (operator === '*') {
                     partValue *= operand;
                 } else if (operator === '/') {
@@ -92,7 +91,7 @@ const evaluateExpression = (expr: string): number | null => {
                     return null; // Invalid operator
                 }
             }
-            
+
             // Add or subtract based on sign
             if (isNegative) {
                 acc -= partValue;
@@ -100,7 +99,7 @@ const evaluateExpression = (expr: string): number | null => {
                 acc += partValue;
             }
         }
-        
+
         return acc;
     } catch (error) {
         return null;
@@ -255,7 +254,7 @@ const CompleteOrderPage = () => {
             OrdersApiClient.completeOrder(orderId, formattedData)
                 .then(async () => {
                     showToast('Замовлення було успішно закрите');
-                    
+
                     // Find the "Валюта" payment entry
                     const currencyEntry = orderCalculations.entries.find(
                         (entry) => entry.materialName === 'Валюта',
@@ -270,7 +269,9 @@ const CompleteOrderPage = () => {
                     if (currencyAmount > 0) {
                         try {
                             // Format currency amount to 2 decimal places before sending to checkout
-                            const formattedCurrencyAmount = Number(toFixedNumber(currencyAmount, 2));
+                            const formattedCurrencyAmount = Number(
+                                toFixedNumber(currencyAmount, 2),
+                            );
                             const receiptUrl: string = await VchasnoApiClient.checkout(
                                 formattedCurrencyAmount,
                                 Number(paymentType),
@@ -318,7 +319,7 @@ const CompleteOrderPage = () => {
                     amountToPay: 0,
                 })),
             });
-            
+
             const raw: Record<number, string> = {};
             (orderCalculations.entries ?? []).forEach((_entry, idx) => {
                 raw[idx] = '0';
@@ -881,7 +882,7 @@ const CompleteOrderPage = () => {
                                             );
                                             const rawValue = rawPaymentInputs[index] ?? '0';
                                             const evaluated = evaluateExpression(rawValue);
-                                            
+
                                             return (
                                                 <TableRow key={entry?.materialId}>
                                                     <TableCell
@@ -894,16 +895,24 @@ const CompleteOrderPage = () => {
                                                                 {entry?.materialName}
                                                                 {entry?.materialName !== 'Валюта' &&
                                                                     entry?.materialPrice != null &&
-                                                                    typeof entry.materialPrice === 'number' && (
+                                                                    typeof entry.materialPrice ===
+                                                                        'number' && (
                                                                         <span
                                                                             style={{
                                                                                 marginLeft: '8px',
                                                                                 color: '#666',
-                                                                                fontSize: '0.875rem',
-                                                                                fontWeight: 'normal',
+                                                                                fontSize:
+                                                                                    '0.875rem',
+                                                                                fontWeight:
+                                                                                    'normal',
                                                                             }}
                                                                         >
-                                                                            (1 г = {toFixedNumber(entry.materialPrice, 2)} грн)
+                                                                            (1 г ={' '}
+                                                                            {toFixedNumber(
+                                                                                entry.materialPrice,
+                                                                                2,
+                                                                            )}{' '}
+                                                                            грн)
                                                                         </span>
                                                                     )}
                                                             </FormLabel>
@@ -940,7 +949,8 @@ const CompleteOrderPage = () => {
                                                             >
                                                                 {rawValue.trim() === '' ? (
                                                                     <span style={{ color: '#666' }}>
-                                                                        Поточне значення: {toFixedNumber(0, 2)}
+                                                                        Поточне значення:{' '}
+                                                                        {toFixedNumber(0, 2)}
                                                                     </span>
                                                                 ) : evaluated === null ? (
                                                                     <span style={{ color: '#c43' }}>
@@ -948,7 +958,11 @@ const CompleteOrderPage = () => {
                                                                     </span>
                                                                 ) : (
                                                                     <span style={{ color: '#666' }}>
-                                                                        = {toFixedNumber(evaluated, 2)}
+                                                                        ={' '}
+                                                                        {toFixedNumber(
+                                                                            evaluated,
+                                                                            2,
+                                                                        )}
                                                                     </span>
                                                                 )}
                                                             </Typography>
@@ -1078,7 +1092,9 @@ const CompleteOrderPage = () => {
                                     disabled={
                                         isSubmitting ||
                                         (currencyAmount > 0 &&
-                                            (paymentType == null || paymentType === '' || !isShiftOpen))
+                                            (paymentType == null ||
+                                                paymentType === '' ||
+                                                !isShiftOpen))
                                     }
                                     startIcon={
                                         isSubmitting ? (
