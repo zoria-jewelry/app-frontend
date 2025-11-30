@@ -7,4 +7,5 @@ export interface MaterialStatsDto {
 export interface GlobalStatsReport {
     globalStats: MaterialStatsDto[];
     statsWithoutCustomerData: MaterialStatsDto[];
+    employeesStats: MaterialStatsDto[];
 }

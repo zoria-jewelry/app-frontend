@@ -23,6 +23,7 @@ const GlobalStatisticsComponent = ({ onUpdate, refresher }: GlobalStatisticsProp
     const [statsWithoutCustomerData, setStatsWithoutCustomerData] = useState<MaterialStatsDto[]>(
         [],
     );
+    const [employeesStats, setEmployeesStats] = useState<MaterialStatsDto[]>([]);
 
     const [isUpdateBalanceModalOpen, setIsUpdateBalanceModalOpen] = useState<boolean>(false);
 
@@ -34,6 +35,7 @@ const GlobalStatisticsComponent = ({ onUpdate, refresher }: GlobalStatisticsProp
                 } else {
                     setGlobalStats(data.globalStats);
                     setStatsWithoutCustomerData(data.statsWithoutCustomerData);
+                    setEmployeesStats(data.employeesStats || []);
                 }
             })
             .catch((err) => {
@@ -188,6 +190,24 @@ const GlobalStatisticsComponent = ({ onUpdate, refresher }: GlobalStatisticsProp
                     ))}
                 </Paper>
             </Box>
+
+            <Paper
+                className={paperStyles.paper}
+                sx={{ width: '100%', boxShadow: 4, p: theme.spacing(8) }}
+            >
+                <Typography variant="h5" pb={theme.spacing(2)}>
+                    На руках у ювелірів
+                </Typography>
+                {employeesStats.map((stat) => (
+                    <Typography key={stat.materialId} variant="body1">
+                        {stat.materialName}:{' '}
+                        <span style={{ fontWeight: 900 }}>
+                            {toFixedNumber(stat.totalBalance, stat.materialId ? 3 : 2)}{' '}
+                            {stat.materialId ? 'г' : 'грн'}
+                        </span>
+                    </Typography>
+                ))}
+            </Paper>
 
             <Button
                 variant="contained"
