@@ -116,56 +116,37 @@ const GlobalStatisticsComponent = ({ onUpdate, refresher }: GlobalStatisticsProp
                     <Typography variant="h5" pb={theme.spacing(2)}>
                         Матеріалів у сховищі (загалом)
                     </Typography>
-                    {globalStats.map((stat) => {
-                        const statWithoutCustomer = statsWithoutCustomerData.find(
-                            (s) => s.materialId === stat.materialId,
-                        );
-
-                        const globalBalance = Number(stat.totalBalance);
-                        const balanceWithoutCustomer = statWithoutCustomer
-                            ? Number(statWithoutCustomer.totalBalance)
-                            : null;
-
-                        const threshold = stat.materialId ? 0.001 : 0.01;
-                        const hasCustomerDebt =
-                            balanceWithoutCustomer !== null &&
-                            globalBalance < balanceWithoutCustomer - threshold;
-
-                        const customerDebt = hasCustomerDebt
-                            ? balanceWithoutCustomer - globalBalance
-                            : 0;
-
-                        const displayedValue = globalBalance + customerDebt;
-
-                        return (
-                            <Box key={stat.materialId} sx={{ mb: hasCustomerDebt ? 0.5 : 0 }}>
-                                <Typography variant="body1">
-                                    {stat.materialName}:{' '}
-                                    <span style={{ fontWeight: 900 }}>
-                                        {toFixedNumber(displayedValue, stat.materialId ? 3 : 2)}{' '}
-                                        {stat.materialId ? 'г' : 'грн'}
-                                    </span>
+                    {globalStats.map((stat) => (
+                        <Box
+                            key={stat.materialId}
+                            sx={{ mb: Number(stat.totalDebt) > 0 ? 0.5 : 0 }}
+                        >
+                            <Typography variant="body1">
+                                {stat.materialName}:{' '}
+                                <span style={{ fontWeight: 900 }}>
+                                    {toFixedNumber(stat.totalBalance, stat.materialId ? 3 : 2)}{' '}
+                                    {stat.materialId ? 'г' : 'грн'}
+                                </span>
+                            </Typography>
+                            {Number(stat.totalDebt) > 0 && (
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: '1rem',
+                                        fontWeight: 700,
+                                        color: theme.palette.error.main,
+                                        display: 'block',
+                                        ml: 0,
+                                        mt: 0.25,
+                                    }}
+                                >
+                                    Загальний борг всіх клієнтів:{' '}
+                                    {toFixedNumber(stat.totalDebt, stat.materialId ? 3 : 2)}{' '}
+                                    {stat.materialId ? 'г' : 'грн'}
                                 </Typography>
-                                {hasCustomerDebt && (
-                                    <Typography
-                                        variant="body2"
-                                        sx={{
-                                            fontSize: '1rem',
-                                            fontWeight: 700,
-                                            color: theme.palette.error.main,
-                                            display: 'block',
-                                            ml: 0,
-                                            mt: 0.25,
-                                        }}
-                                    >
-                                        Загальний борг клієнтів –{' '}
-                                        {toFixedNumber(customerDebt, stat.materialId ? 3 : 2)}{' '}
-                                        {stat.materialId ? 'г' : 'грн'}
-                                    </Typography>
-                                )}
-                            </Box>
-                        );
-                    })}
+                            )}
+                        </Box>
+                    ))}
                 </Paper>
 
                 <Paper
