@@ -156,11 +156,6 @@ const CompleteOrderPage = () => {
     const totalMetalWeight = watch('finalMetalWeight') || 0;
     const stonesPrice = watch('stoneCost') || 0;
 
-    const paidMoney = Object.keys(rawPaymentInputs).reduce((sum, key) => {
-        const evaluated = evaluateExpression(rawPaymentInputs[Number(key)]);
-        return sum + (evaluated !== null && evaluated !== undefined ? evaluated : 0);
-    }, 0);
-
     // Calculate amount paid in "Валюта" (currency) only
     const currencyAmount = orderCalculations
         ? (() => {
