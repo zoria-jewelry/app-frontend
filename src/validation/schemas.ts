@@ -83,9 +83,7 @@ export const createUpdateOrderSchema = z.object({
         .array(orderProductsSchema)
         .nonempty({ error: 'Список товарів не може бути порожнім' })
         .nonoptional({ error: 'Список товарів не може бути порожнім' }),
-    executorsIds: z
-        .array(z.number().positive())
-        .min(1, { error: 'Оберіть хоча б одного виконавця' }),
+    executorsIds: z.array(z.number().positive()),
 });
 
 export type CreateOrderFormData = z.infer<typeof createUpdateOrderSchema>;
@@ -171,6 +169,11 @@ export const returnWorkUnitSchema = z.object({
         .min(0, { error: 'Значення не може бути меншим за 0' })
         .max(100, { error: 'Значення повинно бути менше 100' })
         .multipleOf(0.01, { message: 'Крок значення — 0.01' }),
+    description: z
+        .string({ error: 'Введіть опис' })
+        .trim()
+        .max(500, { message: 'Максимальна довжина — 500 символів' })
+        .optional(),
 });
 
 export type ReturnWorkUnitFormData = z.infer<typeof returnWorkUnitSchema>;
@@ -185,6 +188,27 @@ export const saveMaterialSchema = z.object({
 });
 
 export type SaveMaterialFormData = z.infer<typeof saveMaterialSchema>;
+
+export const updateWorkUnitSchema = z.object({
+    workUnitId: z.number({ error: 'Невірний ідентифікатор наряду' }).positive(),
+    metalWeight: z
+        .number({ error: 'Введіть число' })
+        .nonnegative({ error: 'Значення не може бути меншим за 0' })
+        .multipleOf(0.001, { message: 'Крок значення — 0.001' }),
+    loss: z
+        .number({ error: 'Введіть число' })
+        .min(0, { error: 'Значення не може бути меншим за 0' })
+        .max(100, { error: 'Значення повинно бути менше 100' })
+        .multipleOf(0.01, { message: 'Крок значення — 0.01' })
+        .optional(),
+    description: z
+        .string({ error: 'Введіть опис' })
+        .trim()
+        .max(500, { message: 'Максимальна довжина — 500 символів' })
+        .optional(),
+});
+
+export type UpdateWorkUnitFormData = z.infer<typeof updateWorkUnitSchema>;
 
 export const updateMaterialSchema = z.object({
     name: z.string().nonempty({ error: 'Це поле є обовʼязковим' }),

@@ -1,2 +1,2 @@
 # App Frontend
-FrontEnd part of Zoriia treasury application
+FrontEnd part of Zoria treasury application

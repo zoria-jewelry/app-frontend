@@ -76,15 +76,14 @@ const UpdateBalanceModal = ({ onUpdate, handleClose, isOpen }: UpdateBalanceModa
         StatisticsApiClient.addTransactionInGlobalBalance(filteredData)
             .then(() => {
                 showToast('Баланс компанії був успішно оновлений');
+                clearErrors();
+                onUpdate();
+                handleClose();
             })
             .catch((err) => {
                 showToast('Не вдалось оновити баланс компанії', 'error');
                 console.log(err);
             });
-
-        clearErrors();
-        onUpdate();
-        handleClose();
     };
 
     useEffect(() => {

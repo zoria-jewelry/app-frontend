@@ -1,10 +1,11 @@
 import { AbstractApiClient } from './abstractApiClient.ts';
-import type { WorkUnitsReportDto } from '../dto/work-units.ts';
+import type { WorkUnitDto, WorkUnitsReportDto } from '../dto/work-units.ts';
 import type { WorkUnitsFilterData } from '../components/modal/work-units/WorkUnitsFilterComponent.tsx';
 import type {
     CreateWorkUnitFormData,
     ReturnWorkUnitFormData,
     SaveMaterialFormData,
+    UpdateWorkUnitFormData,
 } from '../validation/schemas.ts';
 import { toUtcString } from '../utils.ts';
 
@@ -45,8 +46,48 @@ export class WorkUnitsApiClient extends AbstractApiClient {
         await this.apiRequest<void>({ url: '/work-units/save-metal/', method: 'POST', data });
     }
 
-    public static async rolloverWorkUnits(): Promise<void> {
+    public static async updateWorkUnit(
+        payload: UpdateWorkUnitFormData,
+        workUnit?: Pick<WorkUnitDto, 'metalReturned'>,
+    ): Promise<void> {
+        const { workUnitId, metalWeight, ...rest } = payload;
+
+        const data: {
+            returned?: number;
+            issued?: number;
+            loss?: number;
+            description?: string;
+        } = {};
+
+        if (workUnit?.metalReturned != null) {
+            data.returned = metalWeight;
+        } else {
+            data.issued = metalWeight;
+        }
+
+        if (rest.loss !== undefined) {
+            data.loss = rest.loss;
+        }
+
+        if (rest.description !== undefined) {
+            data.description = rest.description;
+        }
+
+        console.log(
+            `WorkUnitsApiClient.updateWorkUnit: ${JSON.stringify({ workUnitId, ...data })}`,
+        );
+        await this.apiRequest<void>({
+            url: `/work-units/${workUnitId}/`,
+            method: 'PATCH',
+            data,
+        });
+    }
+
+    public static async rolloverWorkUnits(employeeId: number): Promise<void> {
         console.log(`WorkUnitsApiClient.rolloverWorkUnits`);
-        await this.apiRequest<void>({ url: '/work-units/rollover-open-issues/', method: 'POST' });
+        await this.apiRequest<void>({
+            url: `/employees/${employeeId}/rollover-open-issues/`,
+            method: 'POST',
+        });
     }
 }

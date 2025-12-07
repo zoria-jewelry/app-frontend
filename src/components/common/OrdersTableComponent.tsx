@@ -253,6 +253,7 @@ const OrdersTableComponent = ({ customerId, orders, setPage, onUpdate }: OrdersT
                     isOpen={!!orderToCancel}
                     orderId={orderToCancel.id}
                     handleClose={() => setOrderToCancel(undefined)}
+                    onUpdate={onUpdate}
                 />
             )}
 

@@ -21,7 +21,7 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type CreateOrderFormData, createUpdateOrderSchema } from '../../../validation/schemas.ts';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo, memo } from 'react';
 import type { MaterialDto } from '../../../dto/materials.ts';
 import type { EmployeeDto } from '../../../dto/employees.ts';
 import type { ProductEntryDto } from '../../../dto/products.ts';
@@ -45,6 +45,133 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
         overflowX: 'hidden',
     },
 }));
+
+const ProductAutocompleteField = memo(
+    ({
+        field,
+        index,
+        errors,
+        isOpen,
+        onProductChange,
+    }: {
+        field: any;
+        index: number;
+        errors: any;
+        isOpen: boolean;
+        onProductChange?: (product: ProductEntryDto | null) => void;
+    }) => {
+        const [products, setProducts] = useState<ProductEntryDto[]>([]);
+        const [searchPhrase, setSearchPhrase] = useState('');
+
+        const getOptionLabel = useCallback((option: ProductEntryDto) => {
+            return option.name;
+        }, []);
+
+        const isOptionEqualToValue = useCallback(
+            (option: ProductEntryDto, value: ProductEntryDto) => {
+                return option.id === value.id;
+            },
+            [],
+        );
+
+        const selectedProduct = useMemo(() => {
+            if (!field.value) return null;
+            return products.find((p) => p.id === field.value) || null;
+        }, [products, field.value]);
+
+        useEffect(() => {
+            if (isOpen) {
+                ProductsApiClient.getAll('').then((data) => {
+                    if (data) {
+                        setProducts(data);
+                    }
+                });
+            } else {
+                setSearchPhrase('');
+                setProducts([]);
+            }
+        }, [isOpen]);
+
+        useEffect(() => {
+            if (!isOpen) return;
+
+            const timeout = setTimeout(() => {
+                ProductsApiClient.getAll(searchPhrase).then((data) => {
+                    if (data) {
+                        setProducts(data);
+                    }
+                });
+            }, 300);
+
+            return () => {
+                clearTimeout(timeout);
+            };
+        }, [searchPhrase, isOpen]);
+
+        const handleInputChange = useCallback((_: any, value: string) => {
+            setSearchPhrase(value);
+        }, []);
+
+        const handleChange = useCallback(
+            (_: any, value: ProductEntryDto | null) => {
+                field.onChange(value ? value.id : undefined);
+                if (onProductChange) {
+                    onProductChange(value);
+                }
+            },
+            [field, onProductChange],
+        );
+
+        // Notify parent when selectedProduct changes
+        useEffect(() => {
+            if (onProductChange) {
+                onProductChange(selectedProduct);
+            }
+        }, [selectedProduct, onProductChange]);
+
+        const renderOption = useCallback(
+            (props: any, option: ProductEntryDto) => (
+                <li {...props} key={option.id}>
+                    {option.pictureUrl ? (
+                        <Avatar src={option.pictureUrl} sx={{ width: 50, height: 50, mr: 4 }} />
+                    ) : (
+                        <Avatar src="/unknown-product.png" sx={{ width: 50, height: 50, mr: 4 }} />
+                    )}
+                    {option.name} (Арт. {option.article})
+                </li>
+            ),
+            [],
+        );
+
+        const renderInput = useCallback(
+            (params: any) => (
+                <TextField
+                    {...params}
+                    placeholder="Виберіть виріб"
+                    error={!!errors.products?.[index]?.productId}
+                />
+            ),
+            [errors, index],
+        );
+
+        return (
+            <Autocomplete
+                options={products}
+                noOptionsText="Нічого не знайдено"
+                getOptionLabel={getOptionLabel}
+                isOptionEqualToValue={isOptionEqualToValue}
+                value={selectedProduct}
+                onInputChange={handleInputChange}
+                onChange={handleChange}
+                sx={{ flex: 3, minWidth: '40%' }}
+                renderOption={renderOption}
+                renderInput={renderInput}
+            />
+        );
+    },
+);
+
+ProductAutocompleteField.displayName = 'ProductAutocompleteField';
 
 export interface CreateOrderComponentProps {
     clientId: number;
@@ -81,21 +208,19 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
 
     const [materials, setMaterials] = useState<MaterialDto[]>([]);
     const [employees, setEmployees] = useState<EmployeeDto[]>([]);
-    const [jewelryProducts, setJewelryProducts] = useState<ProductEntryDto[]>([]);
-    const [searchPhrase, setSearchPhrase] = useState('');
+    const [selectedProducts, setSelectedProducts] = useState<
+        Record<number, ProductEntryDto | null>
+    >({});
 
     useEffect(() => {
         MaterialsApiClient.getAll().then((data) => data && setMaterials(data));
         EmployeesApiClient.getAllActive().then((data) => data && setEmployees(data));
     }, []);
 
-    useEffect(() => {
-        ProductsApiClient.getAll(searchPhrase).then((data) => data && setJewelryProducts(data));
-    }, [searchPhrase]);
-
     const handleClose = (): void => {
         clearErrors();
         reset();
+        setSelectedProducts({});
         props.handleClose();
     };
 
@@ -194,92 +319,100 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                 </Typography>
 
                 <Box sx={{ width: '100%', overflowX: 'auto' }}>
-                    {fields.map((field, index) => (
-                        <Box
-                            key={field.id}
-                            sx={{
-                                display: 'flex',
-                                gap: 2,
-                                alignItems: 'flex-start',
-                                width: '100%',
-                                minWidth: 700,
-                                mt: 2,
-                            }}
-                        >
-                            {/* Product */}
-                            <Controller
-                                control={control}
-                                name={`products.${index}.productId`}
-                                render={({ field }) => (
-                                    <Autocomplete
-                                        options={jewelryProducts}
-                                        noOptionsText="Нічого не знайдено"
-                                        getOptionLabel={(option) => option.name}
-                                        onInputChange={(_, value) => setSearchPhrase(value)}
-                                        onChange={(_, value) =>
-                                            field.onChange(value ? value.id : undefined)
-                                        }
-                                        sx={{ flex: 3, minWidth: '40%' }}
-                                        renderOption={(props, option) => (
-                                            <li {...props} key={option.id}>
-                                                {option.pictureUrl ? (
-                                                    <Avatar
-                                                        src={option.pictureUrl}
-                                                        sx={{ width: 50, height: 50, mr: 4 }}
-                                                    />
-                                                ) : (
-                                                    <Avatar
-                                                        src="/unknown-product.png"
-                                                        sx={{ width: 50, height: 50, mr: 4 }}
-                                                    />
-                                                )}
-                                                {option.name}
-                                            </li>
+                    {fields.map((field, index) => {
+                        const selectedProduct = selectedProducts[index] || null;
+                        const handleProductChange = (product: ProductEntryDto | null) => {
+                            setSelectedProducts((prev) => ({ ...prev, [index]: product }));
+                        };
+
+                        return (
+                            <Box
+                                key={field.id}
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 1,
+                                    width: '100%',
+                                    minWidth: 700,
+                                    mt: 2,
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        gap: 2,
+                                        alignItems: 'flex-start',
+                                        width: '100%',
+                                    }}
+                                >
+                                    {/* Product */}
+                                    <Box sx={{ flex: 3, minWidth: '40%' }}>
+                                        <Controller
+                                            control={control}
+                                            name={`products.${index}.productId`}
+                                            render={({ field }) => (
+                                                <ProductAutocompleteField
+                                                    field={field}
+                                                    index={index}
+                                                    errors={errors}
+                                                    isOpen={props.isOpen}
+                                                    onProductChange={handleProductChange}
+                                                />
+                                            )}
+                                        />
+                                        {/* Display article below product field */}
+                                        {selectedProduct && (
+                                            <Typography
+                                                variant="caption"
+                                                sx={{ mt: 0.5, ml: 1, color: 'text.secondary' }}
+                                            >
+                                                Арт. {selectedProduct.article}
+                                            </Typography>
                                         )}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                placeholder="Виберіть виріб"
-                                                error={!!errors.products?.[index]?.productId}
-                                            />
-                                        )}
+                                    </Box>
+
+                                    {/* Size */}
+                                    <TextField
+                                        type="number"
+                                        placeholder="Розмір"
+                                        {...register(`products.${index}.size`, {
+                                            valueAsNumber: true,
+                                        })}
+                                        error={!!errors.products?.[index]?.size}
+                                        sx={{ flex: 0.5, minWidth: 100 }}
                                     />
-                                )}
-                            />
 
-                            {/* Size */}
-                            <TextField
-                                type="number"
-                                placeholder="Розмір"
-                                {...register(`products.${index}.size`, { valueAsNumber: true })}
-                                error={!!errors.products?.[index]?.size}
-                                sx={{ flex: 0.5, minWidth: 100 }}
-                            />
+                                    {/* Quantity */}
+                                    <TextField
+                                        type="number"
+                                        placeholder="К-ть"
+                                        {...register(`products.${index}.count`, {
+                                            valueAsNumber: true,
+                                        })}
+                                        error={!!errors.products?.[index]?.count}
+                                        sx={{ flex: 0.5, minWidth: 100 }}
+                                    />
 
-                            {/* Quantity */}
-                            <TextField
-                                type="number"
-                                placeholder="К-ть"
-                                {...register(`products.${index}.count`, { valueAsNumber: true })}
-                                error={!!errors.products?.[index]?.count}
-                                sx={{ flex: 0.5, minWidth: 100 }}
-                            />
+                                    {/* Notes */}
+                                    <TextField
+                                        placeholder="Примітки"
+                                        {...register(`products.${index}.notes`)}
+                                        error={!!errors.products?.[index]?.notes}
+                                        sx={{ flex: 2 }}
+                                        multiline
+                                        maxRows={4}
+                                    />
 
-                            {/* Notes */}
-                            <TextField
-                                placeholder="Примітки"
-                                {...register(`products.${index}.notes`)}
-                                error={!!errors.products?.[index]?.notes}
-                                sx={{ flex: 2 }}
-                                multiline
-                                maxRows={4}
-                            />
-
-                            <IconButton onClick={() => remove(index)} sx={{ alignSelf: 'center' }}>
-                                <DeleteIcon />
-                            </IconButton>
-                        </Box>
-                    ))}
+                                    <IconButton
+                                        onClick={() => remove(index)}
+                                        sx={{ alignSelf: 'center' }}
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </Box>
+                            </Box>
+                        );
+                    })}
                     <FormHelperText error={!!errors.products}>
                         {errors.products?.root?.message || errors.products?.message}
                     </FormHelperText>

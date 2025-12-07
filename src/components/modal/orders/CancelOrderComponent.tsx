@@ -35,9 +35,15 @@ export interface CancelOrderComponentProps {
     isOpen: boolean;
     orderId: number;
     handleClose: () => void;
+    onUpdate?: () => void;
 }
 
-const CancelOrderComponent = ({ isOpen, orderId, handleClose }: CancelOrderComponentProps) => {
+const CancelOrderComponent = ({
+    isOpen,
+    orderId,
+    handleClose,
+    onUpdate,
+}: CancelOrderComponentProps) => {
     const [reason, setReason] = useState('');
     const [error, setError] = useState('');
 
@@ -50,6 +56,9 @@ const CancelOrderComponent = ({ isOpen, orderId, handleClose }: CancelOrderCompo
             .then(() => {
                 showToast('Замовлення було успішно скасоване');
                 handleClose();
+                if (onUpdate) {
+                    onUpdate();
+                }
             })
             .catch((err) => {
                 showToast('Не вдалось скасувати замовлення', 'error');

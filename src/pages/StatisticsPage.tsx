@@ -34,7 +34,10 @@ const StatisticsPage = () => {
     console.log('User is OWNER, showing statistics page');
     return (
         <>
-            <GlobalStatisticsComponent onUpdate={() => setRefresher((v) => v + 1)} />
+            <GlobalStatisticsComponent
+                onUpdate={() => setRefresher((v) => v + 1)}
+                refresher={refresher}
+            />
             <GlobalAuditRecordsComponent refresher={refresher} />
         </>
     );

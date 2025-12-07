@@ -5,6 +5,7 @@ import {
     AccordionSummary,
     Box,
     Button,
+    CircularProgress,
     FormControl,
     FormHelperText,
     FormLabel,
@@ -36,6 +37,75 @@ import WarningIcon from '@mui/icons-material/Warning';
 import { VchasnoApiClient } from '../api/vchasnoApiClient.ts';
 import { showToast } from '../components/common/Toast.tsx';
 
+const evaluateExpression = (expr: string): number | null => {
+    if (!expr || !expr.toString().trim()) return null;
+    const s = expr.toString().trim();
+
+    // Allow numbers, operators (+, -, *, /), decimal points, and any whitespace
+    // Use \s directly in the regex pattern (not \\s)
+    if (!/^[0-9+\-*/\s.]+$/.test(s)) return null;
+
+    // Remove all whitespace characters (spaces, tabs, etc.)
+    const cleaned = s.replace(/\s+/g, '');
+
+    if (cleaned === '') return null;
+
+    try {
+        // Split by + and - operators (keeping the operators)
+        const parts = cleaned.split(/(?=[+-])/g);
+
+        let acc = 0;
+        for (const part of parts) {
+            if (part === '' || part === '+' || part === '-') continue;
+
+            // Handle the sign - remove both + and - prefixes
+            const isNegative = part.startsWith('-');
+            const partToProcess =
+                part.startsWith('+') || part.startsWith('-') ? part.substring(1) : part;
+
+            if (partToProcess === '') continue;
+
+            // Split by * and / operators
+            const multDivParts = partToProcess.split(/(?=[*/])|(?<=[*/])/g).filter((p) => p !== '');
+
+            if (multDivParts.length === 0) continue;
+
+            let partValue = parseFloat(multDivParts[0]);
+            if (Number.isNaN(partValue)) return null;
+
+            // Process multiplication and division
+            for (let i = 1; i < multDivParts.length; i += 2) {
+                if (i + 1 >= multDivParts.length) return null; // Missing operand
+
+                const operator = multDivParts[i];
+                const operand = parseFloat(multDivParts[i + 1]);
+
+                if (Number.isNaN(operand)) return null;
+
+                if (operator === '*') {
+                    partValue *= operand;
+                } else if (operator === '/') {
+                    if (operand === 0) return null; // Division by zero
+                    partValue /= operand;
+                } else {
+                    return null; // Invalid operator
+                }
+            }
+
+            // Add or subtract based on sign
+            if (isNegative) {
+                acc -= partValue;
+            } else {
+                acc += partValue;
+            }
+        }
+
+        return acc;
+    } catch (error) {
+        return null;
+    }
+};
+
 const CompleteOrderPage = () => {
     const theme = useTheme();
     const navigate = useNavigate();
@@ -56,6 +126,10 @@ const CompleteOrderPage = () => {
     const [isShiftOpen, setIsShiftOpen] = useState<boolean>(false);
 
     const [paymentType, setPaymentType] = useState<number | string>('');
+
+    const [rawPaymentInputs, setRawPaymentInputs] = useState<Record<number, string>>({});
+
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
     const resolver = zodResolver(completeOrderSchema) as Resolver<CompleteOrderFormData>;
 
@@ -82,17 +156,39 @@ const CompleteOrderPage = () => {
     const totalMetalWeight = watch('finalMetalWeight') || 0;
     const stonesPrice = watch('stoneCost') || 0;
 
-    const paidMoney = watch('paymentData.0.amountToPay') || 0;
+    // Calculate amount paid in "Валюта" (currency) only
+    const currencyAmount = orderCalculations
+        ? (() => {
+              const currencyEntry = orderCalculations.entries.find(
+                  (entry) => entry.materialName === 'Валюта',
+              );
+              if (!currencyEntry) return 0;
+
+              const currencyIndex = orderCalculations.entries.findIndex(
+                  (entry) => entry.materialId === currencyEntry.materialId,
+              );
+              if (currencyIndex === -1) return 0;
+
+              const rawValue = rawPaymentInputs[currencyIndex] ?? '0';
+              const evaluated = evaluateExpression(rawValue);
+              return evaluated !== null && evaluated !== undefined ? evaluated : 0;
+          })()
+        : 0;
 
     useEffect(() => {
+        console.log('effect');
         if (loss > 0 && totalMetalWeight > 0) {
+            console.log('entered');
             OrdersApiClient.getCompleteOrderCalculations(orderId, {
-                lossPercentage: loss,
-                finalMetalWeight: totalMetalWeight,
-                discount,
-                stoneCost: stonesPrice,
+                lossPercentage: Number(toFixedNumber(loss, 2)),
+                finalMetalWeight: Number(toFixedNumber(totalMetalWeight, 3)),
+                discount: discount != null ? Number(toFixedNumber(discount, 2)) : 0,
+                stoneCost: stonesPrice != null ? Number(toFixedNumber(stonesPrice, 2)) : 0,
             })
-                .then(setOrderCalculations)
+                .then((data) => {
+                    console.log(data);
+                    setOrderCalculations(data);
+                })
                 .catch((err) => {
                     showToast('Не вдалось обчислити вартість замовлення', 'error');
                     console.log(err);
@@ -103,39 +199,85 @@ const CompleteOrderPage = () => {
     const enableSections =
         !!loss && !!totalMetalWeight && !!Number(loss) && !!Number(totalMetalWeight);
 
+    const handleRawPaymentInputChange = (index: number, value: string) => {
+        setRawPaymentInputs((prev) => ({ ...prev, [index]: value }));
+    };
+
     const onSubmit = (data: CompleteOrderFormData) => {
         if (orderCalculations && orderId > 0) {
-            const sum: number = data.paymentData.map((p) => p.amountToPay).reduce((a, b) => a + b);
+            // Use evaluated values from raw inputs and format to 2 decimal places
+            const paymentDataWithEvaluated = data.paymentData.map((p, idx) => {
+                const raw = rawPaymentInputs[idx];
+                const evaluated = raw !== undefined ? evaluateExpression(raw) : null;
+                const finalNumber =
+                    evaluated !== null && evaluated !== undefined
+                        ? evaluated
+                        : (p.amountToPay ?? 0);
+                // Format to 2 decimal places to avoid floating point precision issues
+                return { ...p, amountToPay: Number(toFixedNumber(finalNumber, 2)) };
+            });
+
+            const sum: number = paymentDataWithEvaluated
+                .map((p) => p.amountToPay)
+                .reduce((a, b) => a + b, 0);
             if (Math.abs(sum - orderCalculations.totalSum) >= 0.01) {
                 setOrderPaymentDifference(orderCalculations.totalSum - sum);
                 setSelectedOrderPaymentEntries(
-                    data.paymentData.map((p) => p.amountToPay).filter((p) => p > 0),
+                    paymentDataWithEvaluated.map((p) => p.amountToPay).filter((p) => p > 0),
                 );
                 return;
             }
 
-            if (paidMoney > 0 && paymentType === '') {
+            // Check if payment type is required (only if "Валюта" amount > 0)
+            if (currencyAmount > 0 && paymentType === '') {
                 console.log('Payment type is not selected');
                 return;
             }
 
-            data.stoneCost = data.stoneCost ?? 0;
+            // Set loading state to prevent double submission
+            setIsSubmitting(true);
 
-            OrdersApiClient.completeOrder(orderId, data)
+            // Format all numeric values before sending to backend
+            const formattedData = {
+                discount: data.discount != null ? Number(toFixedNumber(data.discount, 2)) : 0,
+                lossPercentage: Number(toFixedNumber(data.lossPercentage, 2)),
+                finalMetalWeight: Number(toFixedNumber(data.finalMetalWeight, 3)),
+                stoneCost: data.stoneCost != null ? Number(toFixedNumber(data.stoneCost, 2)) : 0,
+                paymentData: paymentDataWithEvaluated,
+            };
+
+            OrdersApiClient.completeOrder(orderId, formattedData)
                 .then(async () => {
                     showToast('Замовлення було успішно закрите');
-                    if (paidMoney > 0) {
+
+                    // Find the "Валюта" payment entry
+                    const currencyEntry = orderCalculations.entries.find(
+                        (entry) => entry.materialName === 'Валюта',
+                    );
+                    const currencyPayment = currencyEntry
+                        ? paymentDataWithEvaluated.find(
+                              (p) => p.materialId === currencyEntry.materialId,
+                          )
+                        : null;
+                    const currencyAmount = currencyPayment?.amountToPay ?? 0;
+
+                    if (currencyAmount > 0) {
                         try {
+                            // Format currency amount to 2 decimal places before sending to checkout
+                            const formattedCurrencyAmount = Number(
+                                toFixedNumber(currencyAmount, 2),
+                            );
                             const receiptUrl: string = await VchasnoApiClient.checkout(
-                                paidMoney,
+                                formattedCurrencyAmount,
                                 Number(paymentType),
                             );
                             await OrdersApiClient.addReceipt(orderId, receiptUrl);
                         } catch (err) {
                             showToast(
-                                `Не вдалось додати чек до замовлення. Негайно зверніться до адміністратора – ${JSON.stringify(err)}`,
+                                `Не вдалось додати чек до замовлення. Негайно зверніться до адміністратора`,
                                 'error',
                             );
+                            console.log(err);
                         }
                     }
                     clearErrors();
@@ -143,11 +285,11 @@ const CompleteOrderPage = () => {
                     navigate(customerId ? `/customers/${customerId}` : '/orders');
                 })
                 .catch((err) => {
-                    showToast(
-                        `Не вдалось створити чек до замовлення – ${JSON.stringify(err)}`,
-                        'error',
-                    );
+                    showToast(`Не вдалось створити чек до замовлення`, 'error');
                     console.log(err);
+                })
+                .finally(() => {
+                    setIsSubmitting(false);
                 });
         }
     };
@@ -172,6 +314,12 @@ const CompleteOrderPage = () => {
                     amountToPay: 0,
                 })),
             });
+
+            const raw: Record<number, string> = {};
+            (orderCalculations.entries ?? []).forEach((_entry, idx) => {
+                raw[idx] = '0';
+            });
+            setRawPaymentInputs(raw);
         }
     }, [orderCalculations]);
 
@@ -180,7 +328,7 @@ const CompleteOrderPage = () => {
             .then(setIsShiftOpen)
             .catch((err) => {
                 showToast(
-                    `Не вдалось дізнатись, чи була розпочата зміна. Перевірте, чи запущений застосунок Vchasno Kasa на вашому компʼютері – ${JSON.stringify(err)}`,
+                    `Не вдалось дізнатись, чи була розпочата зміна. Перевірте, чи запущений застосунок Vchasno Kasa, або зверніться до адміністратора`,
                     'error',
                 );
                 console.log(err);
@@ -415,7 +563,7 @@ const CompleteOrderPage = () => {
                                                     borderRight: `1px solid ${theme.palette.divider}`,
                                                 }}
                                             >
-                                                Загальна вага виробів без каменів
+                                                Загальна маса металу у виробах
                                             </TableCell>
                                             <TableCell>
                                                 <span style={{ fontWeight: 900 }}>
@@ -470,7 +618,7 @@ const CompleteOrderPage = () => {
                                                 Вартість використаного металу
                                             </TableCell>
                                             <TableCell>
-                                                {`${toFixedNumber(totalMetalWeight, 3)} * ${toFixedNumber(order.materialPrice, 2)} = `}
+                                                {`${toFixedNumber(orderCalculations?.metalMassWithLoss, 3)} * ${toFixedNumber(order.materialPrice, 2)} = `}
                                                 <span style={{ fontWeight: 900 }}>
                                                     {toFixedNumber(
                                                         orderCalculations?.usedMetalCost ?? 0,
@@ -727,6 +875,9 @@ const CompleteOrderPage = () => {
                                             const entry = orderCalculations?.entries.find(
                                                 (e) => e.materialId === field.materialId,
                                             );
+                                            const rawValue = rawPaymentInputs[index] ?? '0';
+                                            const evaluated = evaluateExpression(rawValue);
+
                                             return (
                                                 <TableRow key={entry?.materialId}>
                                                     <TableCell
@@ -737,17 +888,42 @@ const CompleteOrderPage = () => {
                                                                 htmlFor={`material-${field.materialId}`}
                                                             >
                                                                 {entry?.materialName}
+                                                                {entry?.materialName !== 'Валюта' &&
+                                                                    entry?.materialPrice != null &&
+                                                                    typeof entry.materialPrice ===
+                                                                        'number' && (
+                                                                        <span
+                                                                            style={{
+                                                                                marginLeft: '8px',
+                                                                                color: '#666',
+                                                                                fontSize:
+                                                                                    '0.875rem',
+                                                                                fontWeight:
+                                                                                    'normal',
+                                                                            }}
+                                                                        >
+                                                                            (1 г ={' '}
+                                                                            {toFixedNumber(
+                                                                                entry.materialPrice,
+                                                                                2,
+                                                                            )}{' '}
+                                                                            грн)
+                                                                        </span>
+                                                                    )}
                                                             </FormLabel>
                                                             <TextField
                                                                 id={`material-${field.materialId}`}
-                                                                placeholder="999"
+                                                                placeholder="наприклад: 100*2 або 50+10"
                                                                 fullWidth
                                                                 margin="normal"
-                                                                type="number"
-                                                                {...register(
-                                                                    `paymentData.${index}.amountToPay`,
-                                                                    { valueAsNumber: true },
-                                                                )}
+                                                                type="text"
+                                                                value={rawValue}
+                                                                onChange={(e) =>
+                                                                    handleRawPaymentInputChange(
+                                                                        index,
+                                                                        e.target.value,
+                                                                    )
+                                                                }
                                                                 error={
                                                                     !!errors.paymentData?.[index]
                                                                         ?.amountToPay
@@ -758,6 +934,46 @@ const CompleteOrderPage = () => {
                                                                         borderRadius: '6px',
                                                                     },
                                                                 }}
+                                                            />
+                                                            <Typography
+                                                                variant="caption"
+                                                                sx={{
+                                                                    marginLeft: '4px',
+                                                                    minHeight: 20,
+                                                                }}
+                                                            >
+                                                                {rawValue.trim() === '' ? (
+                                                                    <span style={{ color: '#666' }}>
+                                                                        Поточне значення:{' '}
+                                                                        {toFixedNumber(0, 2)}
+                                                                    </span>
+                                                                ) : evaluated === null ? (
+                                                                    <span style={{ color: '#c43' }}>
+                                                                        Невірний вираз
+                                                                    </span>
+                                                                ) : (
+                                                                    <span style={{ color: '#666' }}>
+                                                                        ={' '}
+                                                                        {toFixedNumber(
+                                                                            evaluated,
+                                                                            2,
+                                                                        )}
+                                                                    </span>
+                                                                )}
+                                                            </Typography>
+                                                            <input
+                                                                type="hidden"
+                                                                {...register(
+                                                                    `paymentData.${index}.amountToPay`,
+                                                                    {
+                                                                        valueAsNumber: true,
+                                                                        setValueAs: (v) =>
+                                                                            typeof v === 'string' &&
+                                                                            v !== ''
+                                                                                ? parseFloat(v) || 0
+                                                                                : v,
+                                                                    },
+                                                                )}
                                                             />
                                                             <FormHelperText
                                                                 error={
@@ -793,7 +1009,7 @@ const CompleteOrderPage = () => {
                                 </Table>
                             </TableContainer>
 
-                            {paidMoney > 0 && (
+                            {currencyAmount > 0 && (
                                 <>
                                     <Typography variant="body1" sx={{ mt: 2 }}>
                                         Вкажіть тип оплати
@@ -852,7 +1068,7 @@ const CompleteOrderPage = () => {
                                         грн
                                         <br />
                                         {selectedOrderPaymentEntries.length
-                                            ? `${toFixedNumber(orderCalculations.totalSum, 2)}${selectedOrderPaymentEntries.map((p) => ` – ${p.toFixed(2)}`).join('')} = ${orderPaymentDifference.toFixed(2)} грн`
+                                            ? `${toFixedNumber(orderCalculations.totalSum, 2)}${selectedOrderPaymentEntries.map((p) => ` – ${toFixedNumber(p, 2)}`).join('')} = ${toFixedNumber(orderPaymentDifference, 2)} грн`
                                             : `Жоден матеріал ще не був обраний для оплати`}
                                     </Typography>
                                 </Paper>
@@ -869,15 +1085,23 @@ const CompleteOrderPage = () => {
                                     color="primary"
                                     type="submit"
                                     disabled={
-                                        paidMoney > 0 &&
-                                        (!paymentType || paymentType === '' || !isShiftOpen)
+                                        isSubmitting ||
+                                        (currencyAmount > 0 &&
+                                            (paymentType == null ||
+                                                paymentType === '' ||
+                                                !isShiftOpen))
+                                    }
+                                    startIcon={
+                                        isSubmitting ? (
+                                            <CircularProgress size={18} color="inherit" />
+                                        ) : undefined
                                     }
                                 >
                                     Закрити замовлення
                                 </Button>
                             </Box>
                             <FormHelperText error={true} sx={{ textAlign: 'center' }}>
-                                {paidMoney > 0 &&
+                                {currencyAmount > 0 &&
                                     !isShiftOpen &&
                                     `Відкрийте зміну, щоб закрити замовлення`}
                             </FormHelperText>

@@ -10,9 +10,10 @@ import { showToast } from '../common/Toast.tsx';
 
 export interface GlobalStatisticsProps {
     onUpdate: () => void;
+    refresher?: number;
 }
 
-const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
+const GlobalStatisticsComponent = ({ onUpdate, refresher }: GlobalStatisticsProps) => {
     const theme = useTheme();
 
     const baseDate: Date = new Date();
@@ -22,6 +23,7 @@ const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
     const [statsWithoutCustomerData, setStatsWithoutCustomerData] = useState<MaterialStatsDto[]>(
         [],
     );
+    const [employeesStats, setEmployeesStats] = useState<MaterialStatsDto[]>([]);
 
     const [isUpdateBalanceModalOpen, setIsUpdateBalanceModalOpen] = useState<boolean>(false);
 
@@ -33,13 +35,14 @@ const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
                 } else {
                     setGlobalStats(data.globalStats);
                     setStatsWithoutCustomerData(data.statsWithoutCustomerData);
+                    setEmployeesStats(data.employeesStats || []);
                 }
             })
             .catch((err) => {
                 showToast(`Не вдалось завантажити дані за ${toLocalDate(date)}`, 'error');
                 console.log(err);
             });
-    }, [date]);
+    }, [date, refresher]);
 
     return (
         <Paper
@@ -114,13 +117,35 @@ const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
                         Матеріалів у сховищі (загалом)
                     </Typography>
                     {globalStats.map((stat) => (
-                        <Typography key={stat.materialId} variant="body1">
-                            {stat.materialName}:{' '}
-                            <span style={{ fontWeight: 900 }}>
-                                {toFixedNumber(stat.totalBalance, stat.materialId ? 3 : 2)}{' '}
-                                {stat.materialId ? 'г' : 'грн'}
-                            </span>
-                        </Typography>
+                        <Box
+                            key={stat.materialId}
+                            sx={{ mb: Number(stat.totalDebt) > 0 ? 0.5 : 0 }}
+                        >
+                            <Typography variant="body1">
+                                {stat.materialName}:{' '}
+                                <span style={{ fontWeight: 900 }}>
+                                    {toFixedNumber(stat.totalBalance, stat.materialId ? 3 : 2)}{' '}
+                                    {stat.materialId ? 'г' : 'грн'}
+                                </span>
+                            </Typography>
+                            {Number(stat.totalDebt) > 0 && (
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: '1rem',
+                                        fontWeight: 700,
+                                        color: theme.palette.error.main,
+                                        display: 'block',
+                                        ml: 0,
+                                        mt: 0.25,
+                                    }}
+                                >
+                                    Загальний борг всіх клієнтів:{' '}
+                                    {toFixedNumber(stat.totalDebt, stat.materialId ? 3 : 2)}{' '}
+                                    {stat.materialId ? 'г' : 'грн'}
+                                </Typography>
+                            )}
+                        </Box>
                     ))}
                 </Paper>
 
@@ -147,6 +172,24 @@ const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
                 </Paper>
             </Box>
 
+            <Paper
+                className={paperStyles.paper}
+                sx={{ width: '100%', boxShadow: 4, p: theme.spacing(8) }}
+            >
+                <Typography variant="h5" pb={theme.spacing(2)}>
+                    На руках у ювелірів
+                </Typography>
+                {employeesStats.map((stat) => (
+                    <Typography key={stat.materialId} variant="body1">
+                        {stat.materialName}:{' '}
+                        <span style={{ fontWeight: 900 }}>
+                            {toFixedNumber(stat.totalBalance, stat.materialId ? 3 : 2)}{' '}
+                            {stat.materialId ? 'г' : 'грн'}
+                        </span>
+                    </Typography>
+                ))}
+            </Paper>
+
             <Button
                 variant="contained"
                 onClick={() => setIsUpdateBalanceModalOpen(true)}
@@ -161,7 +204,6 @@ const GlobalStatisticsComponent = ({ onUpdate }: GlobalStatisticsProps) => {
                     isOpen={isUpdateBalanceModalOpen}
                     handleClose={() => {
                         setIsUpdateBalanceModalOpen(false);
-                        onUpdate();
                     }}
                 />
             )}

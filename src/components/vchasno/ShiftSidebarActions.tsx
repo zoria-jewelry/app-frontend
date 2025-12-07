@@ -13,7 +13,7 @@ const ShiftSidebarActions = () => {
             .then(setIsShiftOpen)
             .catch((err) => {
                 showToast(
-                    'Не вдалось визначити, чи зміна активна. Перевірте, чи запущений застосунок Vchasno Kasa на вашому компʼютері',
+                    'Не вдалось визначити, чи зміна активна. Перевірте, чи запущений застосунок Vchasno Kasa, або зверніться до адміністратора',
                     'error',
                 );
                 console.log(err);
@@ -35,7 +35,10 @@ const ShiftSidebarActions = () => {
             handleApiError(response?.errortxt);
             fetchShiftState();
         } catch (e) {
-            showToast(`Не вдалось почати зміну – ${JSON.stringify(e)}`, 'error');
+            showToast(
+                `Не вдалось почати зміну. Перевірте, чи запущений застосунок Vchasno Kasa, або зверніться до адміністратора`,
+                'error',
+            );
             console.error('Failed to open shift:', e);
         } finally {
             setLoading(false);
@@ -50,7 +53,10 @@ const ShiftSidebarActions = () => {
             handleApiError(response?.errortxt);
             fetchShiftState();
         } catch (e) {
-            showToast(`Не вдалось закрити зміну – ${JSON.stringify(e)}`, 'error');
+            showToast(
+                `Не вдалось закрити зміну. Перевірте, чи запущений застосунок Vchasno Kasa, або зверніться до адміністратора`,
+                'error',
+            );
             console.error('Failed to close shift:', e);
         } finally {
             setLoading(false);
