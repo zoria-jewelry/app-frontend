@@ -131,6 +131,9 @@ const CompleteOrderPage = () => {
 
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
+    const [isCalculationsLoading, setIsCalculationsLoading] = useState<boolean>(false);
+    const [expandedAccordions, setExpandedAccordions] = useState<Set<string>>(new Set(['panel1']));
+
     const resolver = zodResolver(completeOrderSchema) as Resolver<CompleteOrderFormData>;
 
     const {
@@ -176,9 +179,18 @@ const CompleteOrderPage = () => {
         : 0;
 
     useEffect(() => {
+        // Collapse steps 2 and 3 when step 1 inputs change
+        setExpandedAccordions((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete('panel2');
+            newSet.delete('panel3');
+            return newSet;
+        });
+
         console.log('effect');
         if (loss > 0 && totalMetalWeight > 0) {
             console.log('entered');
+            setIsCalculationsLoading(true);
             OrdersApiClient.getCompleteOrderCalculations(orderId, {
                 lossPercentage: Number(toFixedNumber(loss, 2)),
                 finalMetalWeight: Number(toFixedNumber(totalMetalWeight, 3)),
@@ -188,10 +200,12 @@ const CompleteOrderPage = () => {
                 .then((data) => {
                     console.log(data);
                     setOrderCalculations(data);
+                    setIsCalculationsLoading(false);
                 })
                 .catch((err) => {
                     showToast('Не вдалось обчислити вартість замовлення', 'error');
                     console.log(err);
+                    setIsCalculationsLoading(false);
                 });
         }
     }, [discount, loss, totalMetalWeight, stonesPrice]);
@@ -388,11 +402,22 @@ const CompleteOrderPage = () => {
             </Paper>
 
             <Accordion
-                defaultExpanded
                 disableGutters
                 square
                 className={paperStyles.paper}
                 sx={{ padding: theme.spacing(4) }}
+                expanded={expandedAccordions.has('panel1')}
+                onChange={(_, isExpanded) => {
+                    setExpandedAccordions((prev) => {
+                        const newSet = new Set(prev);
+                        if (isExpanded) {
+                            newSet.add('panel1');
+                        } else {
+                            newSet.delete('panel1');
+                        }
+                        return newSet;
+                    });
+                }}
             >
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
@@ -513,14 +538,33 @@ const CompleteOrderPage = () => {
                 square
                 className={paperStyles.paper}
                 sx={{ padding: theme.spacing(4) }}
+                expanded={expandedAccordions.has('panel2')}
+                onChange={(_, isExpanded) => {
+                    if (!isCalculationsLoading) {
+                        setExpandedAccordions((prev) => {
+                            const newSet = new Set(prev);
+                            if (isExpanded) {
+                                newSet.add('panel2');
+                            } else {
+                                newSet.delete('panel2');
+                            }
+                            return newSet;
+                        });
+                    }
+                }}
             >
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel2a-content"
                     id="panel2a-header"
-                    disabled={!enableSections}
+                    disabled={!enableSections || isCalculationsLoading}
                 >
-                    <Typography variant="h5">Крок 2. Розрахунок вартості</Typography>
+                    <Box display="flex" alignItems="center" gap={theme.spacing(1)}>
+                        <Typography variant="h5">Крок 2. Розрахунок вартості</Typography>
+                        {isCalculationsLoading && (
+                            <CircularProgress size={32} sx={{ color: '#000000' }} />
+                        )}
+                    </Box>
                 </AccordionSummary>
                 <AccordionDetails>
                     {enableSections && order && (
@@ -681,15 +725,34 @@ const CompleteOrderPage = () => {
                 square
                 className={paperStyles.paper}
                 sx={{ padding: theme.spacing(4) }}
+                expanded={expandedAccordions.has('panel3')}
+                onChange={(_, isExpanded) => {
+                    if (!isCalculationsLoading) {
+                        setExpandedAccordions((prev) => {
+                            const newSet = new Set(prev);
+                            if (isExpanded) {
+                                newSet.add('panel3');
+                            } else {
+                                newSet.delete('panel3');
+                            }
+                            return newSet;
+                        });
+                    }
+                }}
             >
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel3a-content"
                     id="panel3a-header"
-                    disabled={!enableSections}
+                    disabled={!enableSections || isCalculationsLoading}
                     sx={{ backgroundColor: 'white' }}
                 >
-                    <Typography variant="h5">Крок 3. Оплата замовлення</Typography>
+                    <Box display="flex" alignItems="center" gap={theme.spacing(1)}>
+                        <Typography variant="h5">Крок 3. Оплата замовлення</Typography>
+                        {isCalculationsLoading && (
+                            <CircularProgress size={32} sx={{ color: '#000000' }} />
+                        )}
+                    </Box>
                 </AccordionSummary>
                 <AccordionDetails>
                     {orderCalculations && (

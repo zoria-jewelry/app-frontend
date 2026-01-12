@@ -30,9 +30,10 @@ const CustomerInfoPage = () => {
     const [ordersFilterData, setOrdersFilterData] = useState<OrdersFilterData | undefined>();
 
     const [isCreateOrderModalOpen, setIsCreateOrderModalOpen] = useState<boolean>(false);
-    
+
     const [isEditCustomerInfoModalOpen, setIsEditCustomerInfoModalOpen] = useState<boolean>(false);
-    const [isEditCustomerBalancesModalOpen, setIsEditCustomerBalancesModalOpen] = useState<boolean>(false);
+    const [isEditCustomerBalancesModalOpen, setIsEditCustomerBalancesModalOpen] =
+        useState<boolean>(false);
 
     const [customerInfo, setCustomerInfo] = useState<CustomerDto | undefined>();
     const [customerBalances, setCustomerBalances] = useState<CustomerBalanceDto | undefined>();
@@ -160,11 +161,18 @@ const CustomerInfoPage = () => {
                             >
                                 <Typography
                                     variant="body2"
-                                    sx={{ fontWeight: 500, color: theme.palette.text.secondary, minWidth: { xs: '100%', sm: 'auto' } }}
+                                    sx={{
+                                        fontWeight: 500,
+                                        color: theme.palette.text.secondary,
+                                        minWidth: { xs: '100%', sm: 'auto' },
+                                    }}
                                 >
                                     ПІБ
                                 </Typography>
-                                <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '1rem' }}>
+                                <Typography
+                                    variant="body2"
+                                    sx={{ fontWeight: 600, fontSize: '1rem' }}
+                                >
                                     {customerInfo?.fullName || '—'}
                                 </Typography>
                             </Box>
@@ -186,11 +194,18 @@ const CustomerInfoPage = () => {
                             >
                                 <Typography
                                     variant="body2"
-                                    sx={{ fontWeight: 500, color: theme.palette.text.secondary, minWidth: { xs: '100%', sm: 'auto' } }}
+                                    sx={{
+                                        fontWeight: 500,
+                                        color: theme.palette.text.secondary,
+                                        minWidth: { xs: '100%', sm: 'auto' },
+                                    }}
                                 >
                                     Номер телефону
                                 </Typography>
-                                <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '1rem' }}>
+                                <Typography
+                                    variant="body2"
+                                    sx={{ fontWeight: 600, fontSize: '1rem' }}
+                                >
                                     {customerInfo?.phone || '—'}
                                 </Typography>
                             </Box>
@@ -226,7 +241,12 @@ const CustomerInfoPage = () => {
                             Оновити
                         </Button>
                     </Box>
-                    <Box display="flex" flexDirection="column" width="100%" gap={theme.spacing(1.5)}>
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        width="100%"
+                        gap={theme.spacing(1.5)}
+                    >
                         {customerBalances?.entries && customerBalances.entries.length > 0 ? (
                             customerBalances.entries.map((entry) => (
                                 <Box
@@ -243,7 +263,10 @@ const CustomerInfoPage = () => {
                                 >
                                     <Typography
                                         variant="body2"
-                                        sx={{ fontWeight: 500, color: theme.palette.text.secondary }}
+                                        sx={{
+                                            fontWeight: 500,
+                                            color: theme.palette.text.secondary,
+                                        }}
                                     >
                                         {entry.materialName}
                                     </Typography>
@@ -257,12 +280,20 @@ const CustomerInfoPage = () => {
                                             marginLeft: theme.spacing(2),
                                         }}
                                     >
-                                        {toFixedNumber(entry.value, entry.materialId === null ? 2 : 3)} {entry.materialId === null ? '₴' : 'г'}
+                                        {toFixedNumber(
+                                            entry.value,
+                                            entry.materialId === null ? 2 : 3,
+                                        )}{' '}
+                                        {entry.materialId === null ? '₴' : 'г'}
                                     </Typography>
                                 </Box>
                             ))
                         ) : (
-                            <Typography variant="body2" color="textSecondary" sx={{ padding: theme.spacing(2) }}>
+                            <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                sx={{ padding: theme.spacing(2) }}
+                            >
                                 Немає даних
                             </Typography>
                         )}
