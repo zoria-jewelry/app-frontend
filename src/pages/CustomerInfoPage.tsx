@@ -1,20 +1,23 @@
 import { Box, Button, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
 import paperStyles from '../styles/Paper.module.css';
 import commonStyles from '../styles/Common.module.css';
-import UpdateCustomerInfoComponent from '../components/customer/UpdateCustomerInfoComponent.tsx';
-import UpdateCustomerBalancesComponent from '../components/customer/UpdateCustomerBalancesComponent.tsx';
 import CustomerAuditRecordsComponent from '../components/customer/CustomerAuditRecordsComponent.tsx';
 import OrdersTableComponent from '../components/common/OrdersTableComponent.tsx';
 import { useParams } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
 import type { OrdersListDto } from '../dto/orders.ts';
+import type { CustomerDto, CustomerBalanceDto } from '../dto/customers.ts';
 import { OrdersApiClient, type OrdersFilterData } from '../api/ordersApiClient.ts';
+import { CustomersApiClient } from '../api/customersApiClient.ts';
 import SearchBar from '../components/SearchBar.tsx';
 import FilterIcon from '@mui/icons-material/TuneOutlined';
 import IconButton from '@mui/material/IconButton';
 import OrdersFilterModal from '../components/modal/orders/OrdersFilterComponent.tsx';
 import CreateOrderComponent from '../components/modal/orders/CreateOrderComponent.tsx';
+import EditCustomerInfoComponent from '../components/modal/customers/EditCustomerInfoComponent.tsx';
+import EditCustomerBalancesComponent from '../components/modal/customers/EditCustomerBalancesComponent.tsx';
 import { showToast } from '../components/common/Toast.tsx';
+import { toFixedNumber } from '../utils.ts';
 
 const CustomerInfoPage = () => {
     const theme = useTheme();
@@ -27,6 +30,13 @@ const CustomerInfoPage = () => {
     const [ordersFilterData, setOrdersFilterData] = useState<OrdersFilterData | undefined>();
 
     const [isCreateOrderModalOpen, setIsCreateOrderModalOpen] = useState<boolean>(false);
+
+    const [isEditCustomerInfoModalOpen, setIsEditCustomerInfoModalOpen] = useState<boolean>(false);
+    const [isEditCustomerBalancesModalOpen, setIsEditCustomerBalancesModalOpen] =
+        useState<boolean>(false);
+
+    const [customerInfo, setCustomerInfo] = useState<CustomerDto | undefined>();
+    const [customerBalances, setCustomerBalances] = useState<CustomerBalanceDto | undefined>();
 
     const params = useParams();
     const customerId: number | null = params.customerId ? Number(params.customerId) : null;
@@ -71,14 +81,37 @@ const CustomerInfoPage = () => {
         updateOrdersList(0);
     }, [ordersFilterData, updateOrdersList]);
 
+    const fetchCustomerInfo = useCallback(() => {
+        if (!customerId) return;
+        CustomersApiClient.getInfoById(customerId).then((info) => {
+            if (info) {
+                setCustomerInfo(info);
+            }
+        });
+    }, [customerId]);
+
+    const fetchCustomerBalances = useCallback(() => {
+        if (!customerId) return;
+        CustomersApiClient.getCustomerBalanceById(customerId).then((balances) => {
+            if (balances) {
+                setCustomerBalances(balances);
+            }
+        });
+    }, [customerId]);
+
+    useEffect(() => {
+        fetchCustomerInfo();
+        fetchCustomerBalances();
+    }, [fetchCustomerInfo, fetchCustomerBalances, refresher]);
+
     return (
         <Box width="85%">
             <Box
-                height={isMd ? 'fit-content' : '50vh'}
                 display="flex"
                 flexDirection="row"
                 flexWrap="wrap"
                 justifyContent="space-between"
+                gap={theme.spacing(2)}
             >
                 <Paper
                     className={`${paperStyles.halfPaper} ${commonStyles.flexColumn}`}
@@ -86,26 +119,185 @@ const CustomerInfoPage = () => {
                         width: isMd ? '100%' : '49%',
                         marginBottom: isMd ? theme.spacing(4) : 0,
                         borderRadius: '10px',
-                        height: 'inherit',
+                        display: 'flex',
+                        flexDirection: 'column',
                     }}
                 >
-                    <Typography variant="h3" textAlign="left" width="100%">
-                        Особисті дані клієнта
-                    </Typography>
-                    <UpdateCustomerInfoComponent />
+                    <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        width="100%"
+                        marginBottom={theme.spacing(3)}
+                        paddingBottom={theme.spacing(2)}
+                        borderBottom={`2px solid ${theme.palette.divider}`}
+                    >
+                        <Typography variant="h3" textAlign="left">
+                            Особисті дані клієнта
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => setIsEditCustomerInfoModalOpen(true)}
+                        >
+                            Редагувати
+                        </Button>
+                    </Box>
+                    <Box display="flex" flexDirection="column" width="100%" gap={theme.spacing(3)}>
+                        <Box
+                            sx={{
+                                padding: theme.spacing(2),
+                                backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                                borderRadius: '8px',
+                                border: `1px solid ${theme.palette.divider}`,
+                            }}
+                        >
+                            <Box
+                                display="flex"
+                                justifyContent="space-between"
+                                alignItems="center"
+                                flexWrap={{ xs: 'wrap', sm: 'nowrap' }}
+                                gap={theme.spacing(1)}
+                            >
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontWeight: 500,
+                                        color: theme.palette.text.secondary,
+                                        minWidth: { xs: '100%', sm: 'auto' },
+                                    }}
+                                >
+                                    ПІБ
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    sx={{ fontWeight: 600, fontSize: '1rem' }}
+                                >
+                                    {customerInfo?.fullName || '—'}
+                                </Typography>
+                            </Box>
+                        </Box>
+                        <Box
+                            sx={{
+                                padding: theme.spacing(2),
+                                backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                                borderRadius: '8px',
+                                border: `1px solid ${theme.palette.divider}`,
+                            }}
+                        >
+                            <Box
+                                display="flex"
+                                justifyContent="space-between"
+                                alignItems="center"
+                                flexWrap={{ xs: 'wrap', sm: 'nowrap' }}
+                                gap={theme.spacing(1)}
+                            >
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontWeight: 500,
+                                        color: theme.palette.text.secondary,
+                                        minWidth: { xs: '100%', sm: 'auto' },
+                                    }}
+                                >
+                                    Номер телефону
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    sx={{ fontWeight: 600, fontSize: '1rem' }}
+                                >
+                                    {customerInfo?.phone || '—'}
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Box>
                 </Paper>
                 <Paper
                     className={`${paperStyles.halfPaper} ${commonStyles.flexColumn}`}
                     style={{
                         width: isMd ? '100%' : '49%',
                         borderRadius: '10px',
-                        height: 'inherit',
+                        display: 'flex',
+                        flexDirection: 'column',
                     }}
                 >
-                    <Typography variant="h3" textAlign="left" width="100%">
-                        Баланси клієнта
-                    </Typography>
-                    <UpdateCustomerBalancesComponent onUpdate={() => setRefresher((v) => v + 1)} />
+                    <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        width="100%"
+                        marginBottom={theme.spacing(3)}
+                        paddingBottom={theme.spacing(2)}
+                        borderBottom={`2px solid ${theme.palette.divider}`}
+                    >
+                        <Typography variant="h3" textAlign="left">
+                            Баланси клієнта
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => setIsEditCustomerBalancesModalOpen(true)}
+                        >
+                            Оновити
+                        </Button>
+                    </Box>
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        width="100%"
+                        gap={theme.spacing(1.5)}
+                    >
+                        {customerBalances?.entries && customerBalances.entries.length > 0 ? (
+                            customerBalances.entries.map((entry) => (
+                                <Box
+                                    key={entry.materialId}
+                                    display="flex"
+                                    justifyContent="space-between"
+                                    alignItems="center"
+                                    sx={{
+                                        padding: theme.spacing(1.5, 2),
+                                        backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                                        borderRadius: '6px',
+                                        border: `1px solid ${theme.palette.divider}`,
+                                    }}
+                                >
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            fontWeight: 500,
+                                            color: theme.palette.text.secondary,
+                                        }}
+                                    >
+                                        {entry.materialName}
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            fontWeight: 600,
+                                            color: '#000000',
+                                            fontSize: '1rem',
+                                            minWidth: 'fit-content',
+                                            marginLeft: theme.spacing(2),
+                                        }}
+                                    >
+                                        {toFixedNumber(
+                                            entry.value,
+                                            entry.materialId === null ? 2 : 3,
+                                        )}{' '}
+                                        {entry.materialId === null ? '₴' : 'г'}
+                                    </Typography>
+                                </Box>
+                            ))
+                        ) : (
+                            <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                sx={{ padding: theme.spacing(2) }}
+                            >
+                                Немає даних
+                            </Typography>
+                        )}
+                    </Box>
                 </Paper>
             </Box>
             <Paper
@@ -234,6 +426,24 @@ const CustomerInfoPage = () => {
                     handleClose={() => setIsCreateOrderModalOpen(false)}
                     isOpen={isCreateOrderModalOpen}
                     onCreate={updateOrdersList}
+                />
+            )}
+
+            {customerId && (
+                <EditCustomerInfoComponent
+                    isOpen={isEditCustomerInfoModalOpen}
+                    handleClose={() => setIsEditCustomerInfoModalOpen(false)}
+                    customerId={customerId}
+                    onUpdate={() => setRefresher((v) => v + 1)}
+                />
+            )}
+
+            {customerId && (
+                <EditCustomerBalancesComponent
+                    isOpen={isEditCustomerBalancesModalOpen}
+                    handleClose={() => setIsEditCustomerBalancesModalOpen(false)}
+                    customerId={customerId}
+                    onUpdate={() => setRefresher((v) => v + 1)}
                 />
             )}
         </Box>
