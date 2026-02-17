@@ -5,8 +5,10 @@ import {
     AccordionSummary,
     Box,
     Button,
+    Checkbox,
     CircularProgress,
     FormControl,
+    FormControlLabel,
     FormHelperText,
     FormLabel,
     InputLabel,
@@ -126,6 +128,7 @@ const CompleteOrderPage = () => {
     const [isShiftOpen, setIsShiftOpen] = useState<boolean>(false);
 
     const [paymentType, setPaymentType] = useState<number | string>('');
+    const [disableKasa, setDisableKasa] = useState<boolean>(false);
 
     const [rawPaymentInputs, setRawPaymentInputs] = useState<Record<number, string>>({});
 
@@ -242,8 +245,8 @@ const CompleteOrderPage = () => {
                 return;
             }
 
-            // Check if payment type is required (only if "Валюта" amount > 0)
-            if (currencyAmount > 0 && paymentType === '') {
+            // Check if payment type is required (only if "Валюта" amount > 0 and kasa is enabled)
+            if (currencyAmount > 0 && !disableKasa && paymentType === '') {
                 console.log('Payment type is not selected');
                 return;
             }
@@ -275,7 +278,8 @@ const CompleteOrderPage = () => {
                         : null;
                     const currencyAmount = currencyPayment?.amountToPay ?? 0;
 
-                    if (currencyAmount > 0) {
+                    // Create Vchasno Kasa receipt only if kasa is enabled
+                    if (currencyAmount > 0 && !disableKasa) {
                         try {
                             // Format currency amount to 2 decimal places before sending to checkout
                             const formattedCurrencyAmount = Number(
@@ -1074,25 +1078,47 @@ const CompleteOrderPage = () => {
 
                             {currencyAmount > 0 && (
                                 <>
-                                    <Typography variant="body1" sx={{ mt: 2 }}>
-                                        Вкажіть тип оплати
-                                    </Typography>
+                                    <FormControlLabel
+                                        sx={{ mt: 2 }}
+                                        control={
+                                            <Checkbox
+                                                checked={disableKasa}
+                                                onChange={(e) => setDisableKasa(e.target.checked)}
+                                            />
+                                        }
+                                        label="Закрити замовлення без створення фіскального чеку (Vchasno Kasa)"
+                                    />
 
-                                    <FormControl fullWidth sx={{ mt: 3 }}>
-                                        <InputLabel id="payment-type-label">Тип оплати</InputLabel>
-                                        <Select
-                                            labelId="payment-type-label"
-                                            value={paymentType}
-                                            label="Тип оплати"
-                                            onChange={(e) => setPaymentType(Number(e.target.value))}
-                                        >
-                                            {paymentTypes.map((option) => (
-                                                <MenuItem key={option.value} value={option.value}>
-                                                    {option.label}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
+                                    {!disableKasa && (
+                                        <>
+                                            <Typography variant="body1" sx={{ mt: 2 }}>
+                                                Вкажіть тип оплати
+                                            </Typography>
+
+                                            <FormControl fullWidth sx={{ mt: 3 }}>
+                                                <InputLabel id="payment-type-label">
+                                                    Тип оплати
+                                                </InputLabel>
+                                                <Select
+                                                    labelId="payment-type-label"
+                                                    value={paymentType}
+                                                    label="Тип оплати"
+                                                    onChange={(e) =>
+                                                        setPaymentType(Number(e.target.value))
+                                                    }
+                                                >
+                                                    {paymentTypes.map((option) => (
+                                                        <MenuItem
+                                                            key={option.value}
+                                                            value={option.value}
+                                                        >
+                                                            {option.label}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </>
+                                    )}
                                 </>
                             )}
 
@@ -1150,6 +1176,7 @@ const CompleteOrderPage = () => {
                                     disabled={
                                         isSubmitting ||
                                         (currencyAmount > 0 &&
+                                            !disableKasa &&
                                             (paymentType == null ||
                                                 paymentType === '' ||
                                                 !isShiftOpen))
@@ -1165,8 +1192,9 @@ const CompleteOrderPage = () => {
                             </Box>
                             <FormHelperText error={true} sx={{ textAlign: 'center' }}>
                                 {currencyAmount > 0 &&
+                                    !disableKasa &&
                                     !isShiftOpen &&
-                                    `Відкрийте зміну, щоб закрити замовлення`}
+                                    `Відкрийте зміну, щоб закрити замовлення або увімкніть закриття без фіскального чеку`}
                             </FormHelperText>
                         </>
                     )}

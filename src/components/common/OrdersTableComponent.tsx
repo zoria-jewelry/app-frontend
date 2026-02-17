@@ -15,13 +15,12 @@ import IconButton from '@mui/material/IconButton';
 import InfoIcon from '@mui/icons-material/Info';
 import EditIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
 import { orderStatusToHumanText, toLocalDateTime } from '../../utils.ts';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import CancelOrderComponent from '../modal/orders/CancelOrderComponent.tsx';
 import OrderDetailsComponent from '../modal/orders/OrderDetailsComponent.tsx';
 import EditOrderComponent from '../modal/orders/EditOrderComponent.tsx';
 import { useNavigate } from 'react-router-dom';
 import ReceiptIcon from '@mui/icons-material/Receipt';
-import SelectReceiptTypeComponent from '../modal/orders/SelectReceiptTypeComponent.tsx';
 
 export interface OrdersTableProps {
     customerId?: number | null;
@@ -37,23 +36,11 @@ const OrdersTableComponent = ({ customerId, orders, setPage, onUpdate }: OrdersT
     const [orderIdForInfoModal, setOrderIdForInfoModal] = useState<number | undefined>();
     const [orderIdForUpdateModal, setOrderIdForUpdateModal] = useState<number | undefined>();
 
-    const [orderForReceiptRequest, setOrderForReceiptRequest] = useState<
-        OrderBriefInfoDto | undefined
-    >();
-
     const onReceiptRequested = (order: OrderBriefInfoDto) => {
         if (order.receiptUrl) {
             window.open(order.receiptUrl, '_blank');
-            return;
         }
-        setOrderForReceiptRequest(order);
     };
-
-    useEffect(() => {
-        if (orderForReceiptRequest != undefined) {
-            onUpdate();
-        }
-    }, [orderForReceiptRequest]);
 
     return (
         <>
@@ -223,15 +210,14 @@ const OrdersTableComponent = ({ customerId, orders, setPage, onUpdate }: OrdersT
                                             <InfoIcon />
                                         </IconButton>
                                     )}
-                                    {order.status === OrderStatus.COMPLETED &&
-                                        (order.receiptUrl || (order.paidMoney ?? 0) > 0) && (
-                                            <IconButton
-                                                size="large"
-                                                onClick={() => onReceiptRequested(order)}
-                                            >
-                                                <ReceiptIcon />
-                                            </IconButton>
-                                        )}
+                                    {order.status === OrderStatus.COMPLETED && order.receiptUrl && (
+                                        <IconButton
+                                            size="large"
+                                            onClick={() => onReceiptRequested(order)}
+                                        >
+                                            <ReceiptIcon />
+                                        </IconButton>
+                                    )}
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -271,14 +257,6 @@ const OrdersTableComponent = ({ customerId, orders, setPage, onUpdate }: OrdersT
                     handleClose={() => setOrderIdForUpdateModal(undefined)}
                     open={!!orderIdForUpdateModal}
                     onUpdate={onUpdate}
-                />
-            )}
-
-            {!!orderForReceiptRequest && (
-                <SelectReceiptTypeComponent
-                    isOpen={!!orderForReceiptRequest}
-                    handleClose={() => setOrderForReceiptRequest(undefined)}
-                    order={orderForReceiptRequest}
                 />
             )}
         </>
