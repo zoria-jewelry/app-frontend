@@ -10,10 +10,11 @@ const Search = styled('div')(({ theme }) => ({
     '&:hover': {
         backgroundColor: alpha(theme.palette.common.white, 0.25),
     },
-    marginRight: theme.spacing(2),
+    marginRight: 0,
     marginLeft: 0,
     display: 'flex',
     alignItems: 'center',
+    width: '100%',
 }));
 
 const SearchIconWrapper = styled('div')(({ theme }) => ({
@@ -28,10 +29,12 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
+    width: '100%',
     '& .MuiInputBase-input': {
         padding: theme.spacing(1, 1, 1, 0),
         paddingLeft: `calc(1em + ${theme.spacing(4)})`,
         transition: theme.transitions.create('width'),
+        width: '100%',
     },
 }));
 

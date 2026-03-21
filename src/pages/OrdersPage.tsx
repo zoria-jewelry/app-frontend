@@ -50,21 +50,21 @@ const OrdersPage = () => {
     }, [ordersFilterData, updateOrdersList]);
 
     return (
-        <Box width="85%">
+        <Box width="100%">
             <Paper
                 className={`${paperStyles.paper} ${commonStyles.flexColumn}`}
                 sx={{
                     gap: theme.spacing(4),
-                    width: '100%',
                     marginTop: theme.spacing(4),
                 }}
             >
                 <Box
                     display="flex"
-                    flexDirection={{ xs: 'column', md: 'row' }}
+                    flexDirection={{ xs: 'column', sm: 'row' }}
                     justifyContent="space-between"
-                    alignItems={{ xs: 'stretch', md: 'center' }}
+                    alignItems={{ xs: 'stretch', sm: 'center' }}
                     width="100%"
+                    gap={{ xs: 2, sm: 2.5, md: 3 }}
                     sx={{
                         padding: { xs: 2, sm: 3 },
                         backgroundColor: 'rgba(0, 0, 0, 0.02)',
@@ -78,7 +78,7 @@ const OrdersPage = () => {
                         flexDirection="column"
                         flex={1}
                         minWidth={0}
-                        sx={{ textAlign: { xs: 'center', md: 'left' } }}
+                    sx={{ textAlign: { xs: 'center', sm: 'left' } }}
                     >
                         <Typography
                             variant="h3"
@@ -95,11 +95,14 @@ const OrdersPage = () => {
 
                     <Box
                         display="flex"
-                        flexDirection={{ xs: 'column', sm: 'row' }}
-                        alignItems={{ xs: 'stretch', sm: 'center' }}
-                        gap={{ xs: 2, sm: 1.5, md: 2 }}
-                        width={{ xs: '100%', md: 'auto' }}
-                        minWidth={{ xs: 'auto', sm: 'fit-content' }}
+                        flexDirection="row"
+                        flexWrap="nowrap"
+                        alignItems="center"
+                        justifyContent={{ xs: 'center', sm: 'flex-end' }}
+                        gap={{ xs: 1, sm: 1.5, md: 2 }}
+                        width={{ xs: '100%', sm: 'auto' }}
+                        alignSelf={{ xs: 'center', sm: 'auto' }}
+                        ml={{ xs: 0, sm: 'auto' }}
                     >
                         <IconButton
                             size="large"
@@ -108,7 +111,15 @@ const OrdersPage = () => {
                         >
                             <FilterIcon />
                         </IconButton>
-                        <SearchBar consumer={setOrderSearchPhrase} />
+                        <Box
+                            sx={{
+                                width: { xs: 'min(62vw, 260px)', sm: '320px', md: '360px' },
+                                maxWidth: '100%',
+                                minWidth: 0,
+                            }}
+                        >
+                            <SearchBar consumer={setOrderSearchPhrase} />
+                        </Box>
                     </Box>
                 </Box>
 

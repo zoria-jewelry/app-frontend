@@ -16,7 +16,7 @@ const HeaderComponent = (props: HeaderComponentProps) => {
             position="sticky"
             className={headerStyles.headerComponent}
             sx={{
-                marginBottom: theme.spacing(10),
+                marginBottom: 0,
                 padding: theme.spacing(5),
                 flexDirection: 'row',
             }}

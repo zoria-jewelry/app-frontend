@@ -863,7 +863,6 @@ const CompleteOrderPage = () => {
 
                             <Paper
                                 elevation={3}
-                                className={paperStyles.paper}
                                 sx={{
                                     backgroundColor: orderCalculations.clientIsAbleToFullyPay
                                         ? theme.palette.success.main
@@ -915,7 +914,13 @@ const CompleteOrderPage = () => {
                             >
                                 Вибір ресурсів для сплати замовлення
                             </Typography>
-                            <TableContainer>
+                            <TableContainer
+                                sx={{
+                                    '& .MuiTableCell-root': {
+                                        border: 'none',
+                                    },
+                                }}
+                            >
                                 <Table>
                                     <TableHead>
                                         <TableRow>
@@ -1016,7 +1021,7 @@ const CompleteOrderPage = () => {
                                                                     </span>
                                                                 ) : evaluated === null ? (
                                                                     <span style={{ color: '#c43' }}>
-                                                                        Невірний вираз
+                                                                        Невалідний вираз
                                                                     </span>
                                                                 ) : (
                                                                     <span style={{ color: '#666' }}>
@@ -1125,7 +1130,6 @@ const CompleteOrderPage = () => {
                             {orderPaymentDifference && !!orderCalculations && (
                                 <Paper
                                     elevation={3}
-                                    className={paperStyles.paper}
                                     sx={{
                                         backgroundColor: theme.palette.warning.main,
                                         color: theme.palette.warning.contrastText,

@@ -63,14 +63,15 @@ const CustomersPage = () => {
     return (
         <Paper
             className={`${paperStyles.paper} ${commonStyles.flexColumn}`}
-            style={{ gap: theme.spacing(4), borderRadius: '10px', maxHeight: '80vh' }}
+            style={{ gap: theme.spacing(4), borderRadius: '10px' }}
+            sx={{ alignItems: 'stretch' }}
         >
             {/* Page header */}
             <Box
                 display="flex"
-                flexDirection={{ xs: 'column', md: 'row' }}
+                flexDirection={{ xs: 'column', sm: 'row' }}
                 justifyContent="space-between"
-                alignItems={{ xs: 'stretch', md: 'center' }}
+                alignItems={{ xs: 'stretch', sm: 'center' }}
                 width="100%"
                 gap={{ xs: 3, sm: 2, md: 4 }}
                 sx={{
@@ -86,7 +87,7 @@ const CustomersPage = () => {
                     flexDirection="column"
                     flex={1}
                     minWidth={0}
-                    sx={{ textAlign: { xs: 'center', md: 'left' } }}
+                    sx={{ textAlign: { xs: 'center', sm: 'left' } }}
                 >
                     <Typography
                         variant="h3"
@@ -104,9 +105,11 @@ const CustomersPage = () => {
                 <Box
                     display="flex"
                     flexDirection={{ xs: 'column', sm: 'row' }}
+                    flexWrap={{ xs: 'wrap', sm: 'nowrap' }}
                     alignItems={{ xs: 'stretch', sm: 'center' }}
+                    justifyContent={{ xs: 'stretch', sm: 'flex-end' }}
                     gap={{ xs: 2, sm: 1.5, md: 2 }}
-                    width={{ xs: '100%', md: 'auto' }}
+                    width={{ xs: '100%', sm: 'auto' }}
                     minWidth={{ xs: 'auto', sm: 'fit-content' }}
                 >
                     <Box
@@ -126,7 +129,7 @@ const CustomersPage = () => {
                         onClick={() => setIsCreateComponentOpened(true)}
                         size="large"
                         sx={{
-                            minWidth: { xs: '100%', sm: '200px', md: '250px' },
+                            minWidth: { xs: '100%', sm: '170px', md: '200px' },
                             height: { xs: '48px', sm: '40px' },
                             fontWeight: 600,
                             borderRadius: 2,
@@ -141,10 +144,24 @@ const CustomersPage = () => {
             </Box>
 
             {/* Data table */}
+            <Box width="100%" display="flex" justifyContent="flex-end">
+                <TablePagination
+                    count={total}
+                    onPageChange={(_, p) => setPage(p)}
+                    rowsPerPageOptions={[]}
+                    page={page}
+                    rowsPerPage={10}
+                    style={{ border: 0 }}
+                />
+            </Box>
             <TableContainer
                 style={{
                     minWidth: '350px',
-                    overflow: 'auto',
+                    width: '100%',
+                    minHeight: '220px',
+                    maxHeight: '55vh',
+                    overflowX: 'auto',
+                    overflowY: 'auto',
                     boxSizing: 'content-box',
                 }}
             >
@@ -207,7 +224,6 @@ const CustomersPage = () => {
                 page={page}
                 rowsPerPage={10}
                 style={{
-                    marginTop: theme.spacing(4),
                     border: 0,
                     overflow: 'visible',
                 }}

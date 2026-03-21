@@ -86,7 +86,9 @@ const GlobalStatisticsComponent = ({ onUpdate, refresher }: GlobalStatisticsProp
                 <Box
                     display="flex"
                     flexDirection={{ xs: 'column', sm: 'row' }}
+                    flexWrap={{ xs: 'wrap', sm: 'nowrap' }}
                     alignItems={{ xs: 'stretch', sm: 'center' }}
+                    justifyContent={{ xs: 'stretch', sm: 'flex-end' }}
                     gap={{ xs: 2, sm: 1.5, md: 2 }}
                     width={{ xs: '100%', md: 'auto' }}
                     minWidth={{ xs: 'auto', sm: 'fit-content' }}
@@ -108,10 +110,22 @@ const GlobalStatisticsComponent = ({ onUpdate, refresher }: GlobalStatisticsProp
                 </Box>
             </Box>
 
-            <Box width="100%" display="flex" justifyContent="space-between">
+            <Box
+                width="100%"
+                display="grid"
+                gridTemplateColumns={{ xs: '1fr', lg: 'repeat(3, minmax(0, 1fr))' }}
+                gap={theme.spacing(4)}
+            >
                 <Paper
-                    className={paperStyles.paper}
-                    sx={{ width: '49%', boxShadow: 4, p: theme.spacing(8) }}
+                    sx={{
+                        width: '100%',
+                        p: theme.spacing(6),
+                        backgroundColor: '#fff',
+                        boxShadow: 3,
+                        borderRadius: 2,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                    }}
                 >
                     <Typography variant="h5" pb={theme.spacing(2)}>
                         Матеріалів у сховищі (загалом)
@@ -150,11 +164,14 @@ const GlobalStatisticsComponent = ({ onUpdate, refresher }: GlobalStatisticsProp
                 </Paper>
 
                 <Paper
-                    className={paperStyles.paper}
                     sx={{
-                        width: '49%',
-                        boxShadow: 4,
-                        p: theme.spacing(8),
+                        width: '100%',
+                        p: theme.spacing(6),
+                        backgroundColor: '#fff',
+                        boxShadow: 3,
+                        borderRadius: 2,
+                        border: '1px solid',
+                        borderColor: 'divider',
                     }}
                 >
                     <Typography variant="h5" pb={theme.spacing(2)}>
@@ -170,25 +187,32 @@ const GlobalStatisticsComponent = ({ onUpdate, refresher }: GlobalStatisticsProp
                         </Typography>
                     ))}
                 </Paper>
-            </Box>
 
-            <Paper
-                className={paperStyles.paper}
-                sx={{ width: '100%', boxShadow: 4, p: theme.spacing(8) }}
-            >
-                <Typography variant="h5" pb={theme.spacing(2)}>
-                    На руках у ювелірів
-                </Typography>
-                {employeesStats.map((stat) => (
-                    <Typography key={stat.materialId} variant="body1">
-                        {stat.materialName}:{' '}
-                        <span style={{ fontWeight: 900 }}>
-                            {toFixedNumber(stat.totalBalance, stat.materialId ? 3 : 2)}{' '}
-                            {stat.materialId ? 'г' : 'грн'}
-                        </span>
+                <Paper
+                    sx={{
+                        width: '100%',
+                        p: theme.spacing(6),
+                        backgroundColor: '#fff',
+                        boxShadow: 3,
+                        borderRadius: 2,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                    }}
+                >
+                    <Typography variant="h5" pb={theme.spacing(2)}>
+                        На руках у ювелірів
                     </Typography>
-                ))}
-            </Paper>
+                    {employeesStats.map((stat) => (
+                        <Typography key={stat.materialId} variant="body1">
+                            {stat.materialName}:{' '}
+                            <span style={{ fontWeight: 900 }}>
+                                {toFixedNumber(stat.totalBalance, stat.materialId ? 3 : 2)}{' '}
+                                {stat.materialId ? 'г' : 'грн'}
+                            </span>
+                        </Typography>
+                    ))}
+                </Paper>
+            </Box>
 
             <Button
                 variant="contained"

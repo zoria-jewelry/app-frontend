@@ -120,9 +120,9 @@ const WorkUnitsPage = () => {
         >
             <Box
                 display="flex"
-                flexDirection={{ xs: 'column', md: 'row' }}
+                flexDirection={{ xs: 'column', lg: 'row' }}
                 justifyContent="space-between"
-                alignItems={{ xs: 'stretch', md: 'center' }}
+                alignItems={{ xs: 'stretch', lg: 'center' }}
                 width="100%"
                 gap={{ xs: 3, sm: 2, md: 4 }}
                 sx={{
@@ -140,7 +140,7 @@ const WorkUnitsPage = () => {
                         flex={1}
                         minWidth={0}
                         sx={{
-                            textAlign: { xs: 'center', md: 'left' },
+                            textAlign: { xs: 'center', lg: 'left' },
                         }}
                     >
                         <Typography
@@ -169,17 +169,19 @@ const WorkUnitsPage = () => {
 
                 <Box
                     display="flex"
-                    flexDirection={{ xs: 'column', sm: 'row' }}
-                    alignItems="center"
+                    flexDirection={{ xs: 'column', lg: 'row' }}
+                    flexWrap={{ xs: 'wrap', lg: 'nowrap' }}
+                    alignItems={{ xs: 'stretch', lg: 'center' }}
+                    justifyContent={{ xs: 'stretch', lg: 'flex-end' }}
                     gap={{ xs: 2, sm: 1.5, md: 2 }}
-                    width={{ xs: '100%', md: 'auto' }}
-                    minWidth={{ xs: 'auto', sm: 'fit-content' }}
+                    width={{ xs: '100%', lg: 'auto' }}
+                    minWidth={{ xs: 'auto', lg: 'fit-content' }}
                 >
                     <Box
                         display="flex"
                         alignItems="center"
-                        justifyContent={{ xs: 'center', sm: 'flex-start' }}
-                        width={{ xs: '100%', sm: 'auto' }}
+                        justifyContent={{ xs: 'center', lg: 'flex-start' }}
+                        width={{ xs: '100%', lg: 'auto' }}
                     >
                         <IconButton
                             size="large"
@@ -202,7 +204,7 @@ const WorkUnitsPage = () => {
                         onClick={() => setIsSaveMetalOpen(true)}
                         size="large"
                         sx={{
-                            minWidth: { xs: '100%', sm: '200px', md: '250px' },
+                            minWidth: { xs: '100%', sm: '170px', md: '200px' },
                             height: { xs: '48px', sm: '40px' },
                             fontWeight: 600,
                             borderRadius: 2,
@@ -224,7 +226,7 @@ const WorkUnitsPage = () => {
                         onClick={() => setIsCreateOpen(true)}
                         size="large"
                         sx={{
-                            minWidth: { xs: '100%', sm: '200px', md: '250px' },
+                            minWidth: { xs: '100%', sm: '170px', md: '200px' },
                             height: { xs: '48px', sm: '40px' },
                             fontWeight: 600,
                             borderRadius: 2,

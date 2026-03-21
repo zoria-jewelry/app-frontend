@@ -190,7 +190,7 @@ export const saveMaterialSchema = z.object({
 export type SaveMaterialFormData = z.infer<typeof saveMaterialSchema>;
 
 export const updateWorkUnitSchema = z.object({
-    workUnitId: z.number({ error: 'Невірний ідентифікатор наряду' }).positive(),
+    workUnitId: z.number({ error: 'Невалідний ідентифікатор наряду' }).positive(),
     metalWeight: z
         .number({ error: 'Введіть число' })
         .nonnegative({ error: 'Значення не може бути меншим за 0' })

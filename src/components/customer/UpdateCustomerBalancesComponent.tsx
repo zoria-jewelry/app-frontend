@@ -184,7 +184,7 @@ const UpdateCustomerBalancesComponent = ({ onUpdate }: UpdateCustomerBalancesCom
                                     Поточне значення: {entry.value}
                                 </span>
                             ) : evaluated === null ? (
-                                <span style={{ color: '#c43' }}>Невірний вираз</span>
+                                <span style={{ color: '#c43' }}>Неправильний вираз</span>
                             ) : (
                                 <span style={{ color: '#666' }}>= {evaluated}</span>
                             )}
