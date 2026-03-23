@@ -6,7 +6,6 @@ import {
     DialogTitle,
     Paper,
     Typography,
-    useMediaQuery,
     useTheme,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -51,8 +50,6 @@ const CustomerInfoPage = () => {
 
     const params = useParams();
     const customerId: number | null = params.customerId ? Number(params.customerId) : null;
-
-    const isMd = useMediaQuery(theme.breakpoints.down('md')); // < 900px
 
     const [refresher, setRefresher] = useState<number>(0);
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false);
@@ -118,11 +115,7 @@ const CustomerInfoPage = () => {
 
     return (
         <Box width="100%">
-            <Box
-                display="flex"
-                flexDirection="column"
-                gap={theme.spacing(4)}
-            >
+            <Box display="flex" flexDirection="column" gap={theme.spacing(4)}>
                 <Paper
                     className={`${paperStyles.halfPaper} ${commonStyles.flexColumn}`}
                     style={{

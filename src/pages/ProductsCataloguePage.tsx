@@ -188,10 +188,12 @@ const ProductsCataloguePage = () => {
                 justifyContent="flex-start"
                 minHeight="240px"
                 maxHeight="60vh"
-                overflowX="auto"
-                overflowY="auto"
                 padding={theme.spacing(1)}
                 width="100%"
+                sx={{
+                    overflowX: 'auto',
+                    overflowY: 'auto',
+                }}
             >
                 {entries.map((p) => (
                     <Box

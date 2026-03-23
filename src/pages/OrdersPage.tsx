@@ -78,7 +78,7 @@ const OrdersPage = () => {
                         flexDirection="column"
                         flex={1}
                         minWidth={0}
-                    sx={{ textAlign: { xs: 'center', sm: 'left' } }}
+                        sx={{ textAlign: { xs: 'center', sm: 'left' } }}
                     >
                         <Typography
                             variant="h3"
