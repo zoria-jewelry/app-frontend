@@ -1,4 +1,14 @@
-import { Box, Button, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    Paper,
+    Typography,
+    useTheme,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import paperStyles from '../styles/Paper.module.css';
 import commonStyles from '../styles/Common.module.css';
 import CustomerAuditRecordsComponent from '../components/customer/CustomerAuditRecordsComponent.tsx';
@@ -41,9 +51,8 @@ const CustomerInfoPage = () => {
     const params = useParams();
     const customerId: number | null = params.customerId ? Number(params.customerId) : null;
 
-    const isMd = useMediaQuery(theme.breakpoints.down('md')); // < 900px
-
     const [refresher, setRefresher] = useState<number>(0);
+    const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false);
 
     const updateOrdersList = useCallback(
         (page: number = ordersPage) => {
@@ -105,19 +114,12 @@ const CustomerInfoPage = () => {
     }, [fetchCustomerInfo, fetchCustomerBalances, refresher]);
 
     return (
-        <Box width="85%">
-            <Box
-                display="flex"
-                flexDirection="row"
-                flexWrap="wrap"
-                justifyContent="space-between"
-                gap={theme.spacing(2)}
-            >
+        <Box width="100%">
+            <Box display="flex" flexDirection="column" gap={theme.spacing(4)}>
                 <Paper
                     className={`${paperStyles.halfPaper} ${commonStyles.flexColumn}`}
                     style={{
-                        width: isMd ? '100%' : '49%',
-                        marginBottom: isMd ? theme.spacing(4) : 0,
+                        width: '100%',
                         borderRadius: '10px',
                         display: 'flex',
                         flexDirection: 'column',
@@ -128,7 +130,7 @@ const CustomerInfoPage = () => {
                         justifyContent="space-between"
                         alignItems="center"
                         width="100%"
-                        marginBottom={theme.spacing(3)}
+                        marginBottom={theme.spacing(4)}
                         paddingBottom={theme.spacing(2)}
                         borderBottom={`2px solid ${theme.palette.divider}`}
                     >
@@ -215,7 +217,7 @@ const CustomerInfoPage = () => {
                 <Paper
                     className={`${paperStyles.halfPaper} ${commonStyles.flexColumn}`}
                     style={{
-                        width: isMd ? '100%' : '49%',
+                        width: '100%',
                         borderRadius: '10px',
                         display: 'flex',
                         flexDirection: 'column',
@@ -226,20 +228,29 @@ const CustomerInfoPage = () => {
                         justifyContent="space-between"
                         alignItems="center"
                         width="100%"
-                        marginBottom={theme.spacing(3)}
+                        marginBottom={theme.spacing(4)}
                         paddingBottom={theme.spacing(2)}
                         borderBottom={`2px solid ${theme.palette.divider}`}
                     >
                         <Typography variant="h3" textAlign="left">
                             Баланси клієнта
                         </Typography>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => setIsEditCustomerBalancesModalOpen(true)}
-                        >
-                            Оновити
-                        </Button>
+                        <Box display="flex" gap={1}>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={() => setIsHistoryModalOpen(true)}
+                            >
+                                Історія змін
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => setIsEditCustomerBalancesModalOpen(true)}
+                            >
+                                Оновити
+                            </Button>
+                        </Box>
                     </Box>
                     <Box
                         display="flex"
@@ -306,28 +317,6 @@ const CustomerInfoPage = () => {
                     gap: theme.spacing(4),
                     width: '100%',
                     marginTop: theme.spacing(4),
-                    maxHeight: '40vh',
-                    borderRadius: '10px',
-                    alignItems: 'stretch',
-                    paddingBottom: theme.spacing(4),
-                }}
-            >
-                <Typography
-                    variant="h3"
-                    textAlign="left"
-                    width="100%"
-                    marginLeft={theme.spacing(2)}
-                >
-                    Історія змін
-                </Typography>
-                <CustomerAuditRecordsComponent refresher={refresher} />
-            </Paper>
-            <Paper
-                className={`${paperStyles.paper} ${commonStyles.flexColumn}`}
-                sx={{
-                    gap: theme.spacing(4),
-                    width: '100%',
-                    marginTop: theme.spacing(4),
                     minHeight: '40vh',
                 }}
             >
@@ -361,7 +350,9 @@ const CustomerInfoPage = () => {
                     <Box
                         display="flex"
                         flexDirection={{ xs: 'column', sm: 'row' }}
+                        flexWrap={{ xs: 'wrap', sm: 'nowrap' }}
                         alignItems={{ xs: 'stretch', sm: 'center' }}
+                        justifyContent={{ xs: 'stretch', sm: 'flex-end' }}
                         gap={{ xs: 2, sm: 1.5, md: 2 }}
                         width={{ xs: '100%', md: 'auto' }}
                         minWidth={{ xs: 'auto', sm: 'fit-content' }}
@@ -370,9 +361,10 @@ const CustomerInfoPage = () => {
                             display="flex"
                             flexDirection="row"
                             alignItems="center"
-                            width="100%"
+                            width={{ xs: '100%', sm: 'auto' }}
                             gap={1}
                             flex={1}
+                            justifyContent={{ xs: 'center', sm: 'flex-start' }}
                         >
                             <IconButton
                                 size="large"
@@ -381,7 +373,15 @@ const CustomerInfoPage = () => {
                             >
                                 <FilterIcon />
                             </IconButton>
-                            <SearchBar consumer={setOrderSearchPhrase} />
+                            <Box
+                                sx={{
+                                    width: { xs: 'min(62vw, 260px)', sm: '320px', md: '360px' },
+                                    maxWidth: '100%',
+                                    minWidth: 0,
+                                }}
+                            >
+                                <SearchBar consumer={setOrderSearchPhrase} />
+                            </Box>
                         </Box>
 
                         <Button
@@ -390,7 +390,7 @@ const CustomerInfoPage = () => {
                             onClick={() => setIsCreateOrderModalOpen(true)}
                             size="large"
                             sx={{
-                                minWidth: { xs: '100%', sm: '200px', md: '250px' },
+                                minWidth: { xs: '100%', sm: '170px', md: '200px' },
                                 height: { xs: '48px', sm: '40px' },
                                 fontWeight: 600,
                                 borderRadius: 2,
@@ -446,6 +446,32 @@ const CustomerInfoPage = () => {
                     onUpdate={() => setRefresher((v) => v + 1)}
                 />
             )}
+
+            <Dialog
+                open={isHistoryModalOpen}
+                onClose={() => setIsHistoryModalOpen(false)}
+                fullWidth
+                maxWidth="lg"
+            >
+                <DialogTitle sx={{ pr: 6 }}>
+                    Історія змін
+                    <IconButton
+                        aria-label="close"
+                        onClick={() => setIsHistoryModalOpen(false)}
+                        sx={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 8,
+                            color: 'text.secondary',
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent dividers>
+                    <CustomerAuditRecordsComponent refresher={refresher} />
+                </DialogContent>
+            </Dialog>
         </Box>
     );
 };

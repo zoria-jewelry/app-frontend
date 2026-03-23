@@ -1,6 +1,7 @@
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import {
+    Box,
     Table,
     TableBody,
     TableCell,
@@ -118,6 +119,19 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
             <Typography variant="h3">Архів працівників</Typography>
 
             {/* Archived employees' list */}
+            <Box width="100%" display="flex" justifyContent="flex-end">
+                <TablePagination
+                    count={total}
+                    onPageChange={(_, p) => {
+                        console.log(`SETTING PAGE ${p}`);
+                        setPage(p);
+                    }}
+                    rowsPerPageOptions={[]}
+                    page={page}
+                    rowsPerPage={10}
+                    style={{ border: 0, overflow: 'visible' }}
+                />
+            </Box>
             <TableContainer
                 style={{
                     minWidth: '350px',
@@ -183,9 +197,7 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
                 page={page}
                 rowsPerPage={10}
                 style={{
-                    marginTop: theme.spacing(4),
                     border: 0,
-                    alignSelf: 'center',
                     overflow: 'visible',
                 }}
             />

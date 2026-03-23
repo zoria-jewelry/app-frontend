@@ -99,7 +99,8 @@ const CurrentPriceListComponent = ({ onPriceListCreated }: CurrentPriceListCompo
                     color="primary"
                     size="large"
                     sx={{
-                        minWidth: { xs: '100%', sm: '200px', md: '250px' },
+                        alignSelf: { xs: 'stretch', md: 'flex-start' },
+                        minWidth: { xs: '100%', sm: '170px', md: '200px' },
                         height: { xs: '48px', sm: '40px' },
                         fontWeight: 600,
                         borderRadius: 2,

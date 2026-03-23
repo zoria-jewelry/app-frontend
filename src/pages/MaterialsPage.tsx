@@ -11,6 +11,7 @@ import {
     TablePagination,
     TableRow,
     Typography,
+    useMediaQuery,
     useTheme,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -26,6 +27,7 @@ import { showToast } from '../components/common/Toast.tsx';
 
 const MaterialsPage = () => {
     const theme = useTheme();
+    const isCompactHeader = useMediaQuery(theme.breakpoints.down('sm'));
     const [page, setPage] = useState<number>(0);
     const [total, setTotal] = useState<number>(0);
     const [entries, setEntries] = useState<MaterialDto[]>([]);
@@ -56,14 +58,15 @@ const MaterialsPage = () => {
     return (
         <Paper
             className={`${paperStyles.paper} ${commonStyles.flexColumn}`}
-            style={{ gap: theme.spacing(4), borderRadius: '10px', maxHeight: '80vh' }}
+            style={{ gap: theme.spacing(4), borderRadius: '10px' }}
+            sx={{ alignItems: 'stretch' }}
         >
             {/* Page header */}
             <Box
                 display="flex"
-                flexDirection={{ xs: 'column', md: 'row' }}
+                flexDirection={isCompactHeader ? 'column' : 'row'}
                 justifyContent="space-between"
-                alignItems={{ xs: 'stretch', md: 'center' }}
+                alignItems={isCompactHeader ? 'stretch' : 'center'}
                 width="100%"
                 gap={{ xs: 3, sm: 2, md: 4 }}
                 sx={{
@@ -79,7 +82,7 @@ const MaterialsPage = () => {
                     flexDirection="column"
                     flex={1}
                     minWidth={0}
-                    sx={{ textAlign: { xs: 'center', md: 'left' } }}
+                    sx={{ textAlign: isCompactHeader ? 'center' : 'left' }}
                 >
                     <Typography
                         variant="h3"
@@ -96,10 +99,12 @@ const MaterialsPage = () => {
 
                 <Box
                     display="flex"
-                    flexDirection={{ xs: 'column', sm: 'row' }}
-                    alignItems={{ xs: 'stretch', sm: 'center' }}
+                    flexDirection={isCompactHeader ? 'column' : 'row'}
+                    flexWrap={isCompactHeader ? 'wrap' : 'nowrap'}
+                    alignItems={isCompactHeader ? 'stretch' : 'center'}
+                    justifyContent={isCompactHeader ? 'stretch' : 'flex-end'}
                     gap={{ xs: 2, sm: 1.5, md: 2 }}
-                    width={{ xs: '100%', md: 'auto' }}
+                    width={isCompactHeader ? '100%' : 'auto'}
                     minWidth={{ xs: 'auto', sm: 'fit-content' }}
                 >
                     <Button
@@ -108,7 +113,7 @@ const MaterialsPage = () => {
                         color="primary"
                         size="large"
                         sx={{
-                            minWidth: { xs: '100%', sm: '200px', md: '250px' },
+                            minWidth: { xs: '100%', sm: '170px', md: '200px' },
                             height: { xs: '48px', sm: '40px' },
                             fontWeight: 600,
                             borderRadius: 2,
@@ -123,6 +128,16 @@ const MaterialsPage = () => {
             </Box>
 
             {/* Data table */}
+            <Box width="100%" display="flex" justifyContent="flex-end">
+                <TablePagination
+                    count={total}
+                    onPageChange={(_, p) => setPage(p)}
+                    rowsPerPageOptions={[]}
+                    page={page}
+                    rowsPerPage={10}
+                    style={{ border: 0 }}
+                />
+            </Box>
             <TableContainer
                 style={{
                     minWidth: '350px',
@@ -199,7 +214,6 @@ const MaterialsPage = () => {
                 page={page}
                 rowsPerPage={10}
                 style={{
-                    marginTop: theme.spacing(4),
                     border: 0,
                     overflow: 'visible',
                 }}

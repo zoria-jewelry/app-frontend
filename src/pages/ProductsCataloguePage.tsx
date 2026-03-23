@@ -88,15 +88,15 @@ const ProductsCataloguePage = () => {
                 gap: theme.spacing(4),
                 borderRadius: '10px',
                 padding: '2rem',
-                maxHeight: '85vh',
             }}
+            sx={{ alignItems: 'stretch' }}
         >
             {/* Header */}
             <Box
                 display="flex"
-                flexDirection={{ xs: 'column', md: 'row' }}
+                flexDirection={{ xs: 'column', lg: 'row' }}
                 justifyContent="space-between"
-                alignItems={{ xs: 'stretch', md: 'center' }}
+                alignItems={{ xs: 'stretch', lg: 'center' }}
                 width="100%"
                 gap={{ xs: 3, sm: 2, md: 4 }}
                 sx={{
@@ -112,7 +112,7 @@ const ProductsCataloguePage = () => {
                     flexDirection="column"
                     flex={1}
                     minWidth={0}
-                    sx={{ textAlign: { xs: 'center', md: 'left' } }}
+                    sx={{ textAlign: { xs: 'center', lg: 'left' } }}
                 >
                     <Typography
                         variant="h3"
@@ -129,11 +129,13 @@ const ProductsCataloguePage = () => {
 
                 <Box
                     display="flex"
-                    flexDirection={{ xs: 'column', sm: 'row' }}
-                    alignItems={{ xs: 'stretch', sm: 'center' }}
+                    flexDirection={{ xs: 'column', lg: 'row' }}
+                    flexWrap={{ xs: 'wrap', lg: 'nowrap' }}
+                    alignItems={{ xs: 'stretch', lg: 'center' }}
+                    justifyContent={{ xs: 'stretch', lg: 'flex-end' }}
                     gap={{ xs: 2, sm: 1.5, md: 2 }}
-                    width={{ xs: '100%', md: 'auto' }}
-                    minWidth={{ xs: 'auto', sm: 'fit-content' }}
+                    width={{ xs: '100%', lg: 'auto' }}
+                    minWidth={{ xs: 'auto', lg: 'fit-content' }}
                 >
                     <Button
                         variant="contained"
@@ -164,7 +166,7 @@ const ProductsCataloguePage = () => {
                         onClick={() => setIsCreateProductModalOpen(true)}
                         size="large"
                         sx={{
-                            minWidth: { xs: '100%', sm: '200px', md: '250px' },
+                            minWidth: { xs: '100%', sm: '170px', md: '200px' },
                             height: { xs: '48px', sm: '40px' },
                             fontWeight: 600,
                             borderRadius: 2,
@@ -184,15 +186,19 @@ const ProductsCataloguePage = () => {
                 flexWrap="wrap"
                 gap={theme.spacing(5)}
                 justifyContent="flex-start"
-                overflow="scroll"
+                minHeight="240px"
+                maxHeight="60vh"
                 padding={theme.spacing(1)}
                 width="100%"
+                sx={{
+                    overflowX: 'auto',
+                    overflowY: 'auto',
+                }}
             >
                 {entries.map((p) => (
                     <Box
                         key={p.id}
                         sx={{
-                            // width: cardPercentWidth,
                             flexBasis: cardPercentWidth,
                             display: 'flex',
                         }}

@@ -44,6 +44,16 @@ const OrdersTableComponent = ({ customerId, orders, setPage, onUpdate }: OrdersT
 
     return (
         <>
+            <Box width="100%" display="flex" justifyContent="flex-end">
+                <TablePagination
+                    count={orders.total}
+                    onPageChange={(_, p) => setPage(p)}
+                    rowsPerPageOptions={[]}
+                    page={orders.page - 1}
+                    rowsPerPage={10}
+                    sx={{ border: 0 }}
+                />
+            </Box>
             <TableContainer
                 sx={{
                     minWidth: 350,
@@ -231,7 +241,7 @@ const OrdersTableComponent = ({ customerId, orders, setPage, onUpdate }: OrdersT
                 rowsPerPageOptions={[]}
                 page={orders.page - 1}
                 rowsPerPage={10}
-                sx={{ mt: 2, border: 0 }}
+                sx={{ border: 0 }}
             />
 
             {orderToCancel && (

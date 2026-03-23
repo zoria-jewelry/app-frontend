@@ -83,6 +83,16 @@ const ExpiredPriceListsComponent = ({ refreshTrigger }: ExpiredPriceListsCompone
                     Завершені прайс-листи
                 </Typography>
             </Box>
+            <Box width="100%" display="flex" justifyContent="flex-end">
+                <TablePagination
+                    count={total}
+                    onPageChange={(_, p) => setPage(p)}
+                    rowsPerPageOptions={[]}
+                    page={page}
+                    rowsPerPage={10}
+                    style={{ border: 0 }}
+                />
+            </Box>
             <TableContainer
                 style={{
                     minWidth: '350px',
@@ -141,7 +151,6 @@ const ExpiredPriceListsComponent = ({ refreshTrigger }: ExpiredPriceListsCompone
                 page={page}
                 rowsPerPage={10}
                 style={{
-                    marginTop: theme.spacing(4),
                     border: 0,
                 }}
             />

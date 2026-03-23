@@ -53,9 +53,12 @@ const GlobalAuditRecordsComponent = ({ refresher }: GlobalAuditRecordsComponentP
         <Paper
             className={`${paperStyles.paper} ${commonStyles.flexColumn}`}
             sx={{
+                width: '100%',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
+                overflowX: 'visible',
                 gap: theme.spacing(4),
                 borderRadius: '10px',
-                maxHeight: '80vh',
                 my: theme.spacing(4),
             }}
         >
@@ -96,10 +99,12 @@ const GlobalAuditRecordsComponent = ({ refresher }: GlobalAuditRecordsComponentP
                 <Box
                     display="flex"
                     flexDirection={{ xs: 'column', sm: 'row' }}
+                    flexWrap={{ xs: 'wrap', sm: 'nowrap' }}
                     alignItems={{ xs: 'stretch', sm: 'center' }}
+                    justifyContent={{ xs: 'stretch', sm: 'flex-end' }}
                     gap={{ xs: 2, sm: 1.5, md: 2 }}
-                    width={{ xs: '100%', md: 'auto' }}
-                    minWidth={{ xs: 'auto', sm: 'fit-content' }}
+                    width={{ xs: '100%', md: 'min(100%, 420px)' }}
+                    minWidth={0}
                 >
                     <TextField
                         type="date"
@@ -112,7 +117,8 @@ const GlobalAuditRecordsComponent = ({ refresher }: GlobalAuditRecordsComponentP
                             '& .MuiOutlinedInput-root': {
                                 borderRadius: '6px',
                             },
-                            mb: theme.spacing(2),
+                            minWidth: 0,
+                            mb: 0,
                         }}
                         label="Від"
                     />
@@ -128,14 +134,15 @@ const GlobalAuditRecordsComponent = ({ refresher }: GlobalAuditRecordsComponentP
                             '& .MuiOutlinedInput-root': {
                                 borderRadius: '6px',
                             },
-                            mb: theme.spacing(2),
+                            minWidth: 0,
+                            mb: 0,
                         }}
                         label="До"
                     />
                 </Box>
             </Box>
 
-            <Box sx={{ overflowY: 'auto', width: '100%' }} padding={theme.spacing(2)}>
+            <Box sx={{ width: '100%' }} padding={theme.spacing(2)}>
                 {records.map((record) => (
                     <Paper
                         key={record.id}
