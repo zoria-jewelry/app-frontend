@@ -68,7 +68,8 @@ const LoginPage = () => {
                 sx={{
                     maxWidth: '500px',
                     height: 'fit-content',
-                    borderRadius: '25px',
+                    borderRadius: '25px !important',
+                    backgroundColor: 'white !important'
                 }}
             >
                 <Typography variant="h3" sx={{ textAlign: 'center', marginTop: theme.spacing(8) }}>
@@ -88,7 +89,7 @@ const LoginPage = () => {
                         }}
                     >
                         <FormLabel htmlFor="email" sx={{ marginBottom: theme.spacing(2) }}>
-                            Електронна адреса
+                            Логін
                         </FormLabel>
                         <TextField
                             id="email"
