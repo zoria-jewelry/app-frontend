@@ -2,7 +2,11 @@ import { Box, Button, IconButton, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
-import { returnWorkUnitSchema, type ReturnWorkUnitFormData } from '../../../validation/schemas.ts';
+import {
+    returnWorkUnitSchema,
+    type ReturnWorkUnitFormData,
+    type ReturnWorkUnitFormInput,
+} from '../../../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
@@ -55,7 +59,7 @@ const ReturnWorkUnitComponent = ({ workUnit, open, onClose, onSave }: ReturnWork
         reset,
         control,
         formState: { errors },
-    } = useForm<ReturnWorkUnitFormData>({
+    } = useForm<ReturnWorkUnitFormInput, unknown, ReturnWorkUnitFormData>({
         resolver: zodResolver(returnWorkUnitSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
@@ -124,7 +128,7 @@ const ReturnWorkUnitComponent = ({ workUnit, open, onClose, onSave }: ReturnWork
                     <RhfNumberTextField
                         name="metalWeight"
                         control={control}
-                        emptyBlurFallback={0}
+                        preserveZero
                         fullWidth
                         slotProps={{ htmlInput: { step: 0.001 } }}
                     />
@@ -135,7 +139,7 @@ const ReturnWorkUnitComponent = ({ workUnit, open, onClose, onSave }: ReturnWork
                     <RhfNumberTextField
                         name="loss"
                         control={control}
-                        emptyBlurFallback={0}
+                        preserveZero
                         fullWidth
                         slotProps={{ htmlInput: { step: 0.01 } }}
                     />

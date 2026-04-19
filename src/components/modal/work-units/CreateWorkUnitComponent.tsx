@@ -16,7 +16,11 @@ import Dialog from '@mui/material/Dialog';
 import type { MaterialDto } from '../../../dto/materials.ts';
 import { MaterialsApiClient } from '../../../api/materialsApiClient.ts';
 import { OrdersApiClient } from '../../../api/ordersApiClient.ts';
-import { createWorkUnitSchema, type CreateWorkUnitFormData } from '../../../validation/schemas.ts';
+import {
+    createWorkUnitSchema,
+    type CreateWorkUnitFormData,
+    type CreateWorkUnitFormInput,
+} from '../../../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import {
@@ -74,14 +78,14 @@ const CreateWorkUnitComponent = ({
         getValues,
         control,
         formState: { errors },
-    } = useForm<CreateWorkUnitFormData>({
+    } = useForm<CreateWorkUnitFormInput, unknown, CreateWorkUnitFormData>({
         resolver: zodResolver(createWorkUnitSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
             employeeId,
             orderId: undefined,
             materialId: 0,
-            weight: 0,
+            weight: undefined,
         },
     });
 
@@ -116,7 +120,7 @@ const CreateWorkUnitComponent = ({
             employeeId,
             orderId: undefined,
             materialId: 0,
-            weight: 0,
+            weight: undefined,
         });
         onClose();
     };
@@ -212,7 +216,7 @@ const CreateWorkUnitComponent = ({
                     <RhfNumberTextField
                         name="weight"
                         control={control}
-                        emptyBlurFallback={0}
+                        preserveZero
                         fullWidth
                         slotProps={{ htmlInput: { step: 0.001 } }}
                     />

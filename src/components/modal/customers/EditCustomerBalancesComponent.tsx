@@ -106,7 +106,7 @@ const EditCustomerBalancesComponent = (props: EditCustomerBalancesComponentProps
 
                 const raw: Record<number, string> = {};
                 balancesResp.entries.forEach((e, idx) => {
-                    raw[idx] = String(e.value ?? '');
+                    raw[idx] = e.value === 0 ? '' : String(e.value ?? '');
                 });
                 setRawInputs(raw);
 
@@ -211,7 +211,8 @@ const EditCustomerBalancesComponent = (props: EditCustomerBalancesComponentProps
                 {/* Each customer balance entry, fetched from the backend */}
                 {balances.map((entry, index) => {
                     const key = String(entry.materialId);
-                    const rawValue = rawInputs[index] ?? String(entry.value ?? '');
+                    const rawValue =
+                        rawInputs[index] ?? (entry.value === 0 ? '' : String(entry.value ?? ''));
 
                     const evaluated = evaluateExpression(rawValue);
 

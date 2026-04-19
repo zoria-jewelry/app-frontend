@@ -11,9 +11,13 @@ export type RhfNumberTextFieldProps<T extends FieldValues> = Omit<
     control: Control<T>;
     /**
      * Value applied when the field is left empty on blur.
-     * Omit for `undefined`; use `null` for nullable fields; pass `0` when the form expects zero.
+     * Omit to keep the field blank (`''` in RHF so defaults are not re-applied); use `null` for nullable fields; pass `0` when the form expects zero.
      */
     emptyBlurFallback?: number | null;
+    /**
+     * When true, `0` is shown and kept on focus (default hides empty-looking zero and clears on focus for order-style flows).
+     */
+    preserveZero?: boolean;
 };
 
 /** Normalize RHF values (number, string from API, empty) for display and comparisons. */
@@ -43,6 +47,7 @@ export function RhfNumberTextField<T extends FieldValues>({
     name,
     control,
     emptyBlurFallback,
+    preserveZero = false,
     onBlur: onBlurProp,
     onFocus: onFocusProp,
     helperText,
@@ -51,11 +56,13 @@ export function RhfNumberTextField<T extends FieldValues>({
     ...textFieldProps
 }: RhfNumberTextFieldProps<T>) {
     const { field, fieldState } = useController({ name, control });
+    /** RHF types are often `number`; we also store `''` while empty so defaults are not restored. */
+    const setFieldValue = field.onChange as (v: unknown) => void;
 
     const n = coerceNumber(field.value);
 
     /** Hide literal zero until the field has been touched — `isDirty` alone is unreliable after `reset()` in dialogs. */
-    const showEmptyInsteadOfZero = n === 0 && !fieldState.isTouched;
+    const showEmptyInsteadOfZero = !preserveZero && n === 0 && !fieldState.isTouched;
 
     const display = useMemo(() => {
         if (n === undefined) {
@@ -99,21 +106,26 @@ export function RhfNumberTextField<T extends FieldValues>({
             onChange={(e) => {
                 const raw = e.target.value;
                 if (raw === '' || raw === '-') {
-                    field.onChange(undefined);
+                    // Use '' so RHF does not treat the field as unset and re-fill from defaultValues.
+                    setFieldValue('');
                     return;
                 }
                 const parsed = Number(raw);
-                field.onChange(Number.isNaN(parsed) ? undefined : parsed);
+                setFieldValue(Number.isNaN(parsed) ? '' : parsed);
             }}
             onFocus={(e) => {
-                if (coerceNumber(field.value) === 0) {
-                    field.onChange(undefined);
+                if (!preserveZero && coerceNumber(field.value) === 0) {
+                    setFieldValue('');
                 }
                 onFocusProp?.(e);
             }}
             onBlur={(e) => {
                 if (e.target.value === '') {
-                    field.onChange(emptyBlurFallback as number | null | undefined);
+                    if (emptyBlurFallback !== undefined) {
+                        setFieldValue(emptyBlurFallback);
+                    } else {
+                        setFieldValue('');
+                    }
                 }
                 field.onBlur();
                 onBlurProp?.(e);

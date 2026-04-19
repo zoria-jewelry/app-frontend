@@ -19,6 +19,7 @@ import type { PriceListEntryDto } from '../../dto/price-lists.ts';
 import { toLocalDate } from '../../utils.ts';
 import CreatePriceListComponent from '../modal/pricelists/CreatePriceListComponent.tsx';
 import { showToast } from '../common/Toast.tsx';
+import { priceListTableCellSx } from './priceListTableCellSx.ts';
 
 export interface CurrentPriceListComponentProps {
     onPriceListCreated: () => void;
@@ -127,13 +128,14 @@ const CurrentPriceListComponent = ({ onPriceListCreated }: CurrentPriceListCompo
                             <TableCell
                                 style={{ backgroundColor: '#b7cfd2', borderTopLeftRadius: 10 }}
                                 width="80%"
+                                sx={priceListTableCellSx}
                             >
                                 Назва матеріалу
                             </TableCell>
                             <TableCell
                                 style={{ backgroundColor: '#b7cfd2', borderTopRightRadius: 10 }}
                                 width="20%"
-                                sx={{ textAlign: 'right' }}
+                                sx={{ ...priceListTableCellSx, textAlign: 'right' }}
                             >
                                 Вартість (грн за г)
                             </TableCell>
@@ -143,8 +145,10 @@ const CurrentPriceListComponent = ({ onPriceListCreated }: CurrentPriceListCompo
                         {entries &&
                             entries.map((entry) => (
                                 <TableRow key={`current-pricing-entry-${entry.materialName}`}>
-                                    <TableCell>{entry.materialName}</TableCell>
-                                    <TableCell sx={{ textAlign: 'right' }}>
+                                    <TableCell sx={priceListTableCellSx}>{entry.materialName}</TableCell>
+                                    <TableCell
+                                        sx={{ ...priceListTableCellSx, textAlign: 'right' }}
+                                    >
                                         {entry.materialPrice}
                                     </TableCell>
                                 </TableRow>

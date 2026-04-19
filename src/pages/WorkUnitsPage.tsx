@@ -154,7 +154,7 @@ const WorkUnitsPage = () => {
                     alignItems: 'stretch',
                     gap: { xs: 1.5, sm: 3 },
                     width: '100%',
-                    minWidth: 'min-content',
+                    minWidth: '600px',
                     minHeight: `calc(100vh - ${APP_HEADER_BAR_HEIGHT})`,
                 }}
             >

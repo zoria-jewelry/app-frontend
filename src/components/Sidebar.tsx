@@ -18,7 +18,6 @@ import StoreIcon from '@mui/icons-material/Store';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import type { SvgIconComponent } from '@mui/icons-material';
 import ShiftSidebarActions from './vchasno/ShiftSidebarActions.tsx';
-import { useAuth, UserRole } from '../auth/AuthContext.tsx';
 import { APP_HEADER_BAR_HEIGHT, SIDEBAR_ICON_FONT_PX } from '../constants/appShell.ts';
 
 export const SIDEBAR_WIDTH_EXPANDED = 260;
@@ -35,7 +34,7 @@ type NavItem = {
     Icon: SvgIconComponent;
 };
 
-const baseNavItems: NavItem[] = [
+const navItems: NavItem[] = [
     { path: '/orders', label: 'Замовлення', Icon: StoreIcon },
     { path: '/customers', label: 'Клієнти', Icon: CustomerIcon },
     { path: '/work-units', label: 'Наряди', Icon: PercentIcon },
@@ -43,17 +42,12 @@ const baseNavItems: NavItem[] = [
     { path: '/materials', label: 'Каталог матеріалів', Icon: DiamondIcon },
     { path: '/employees', label: 'Працівники', Icon: EmployeesIcon },
     { path: '/products', label: 'Каталог виробів', Icon: ListAltIcon },
+    { path: '/stats', label: 'Статистика', Icon: QueryStatsIcon },
 ];
 
 const Sidebar = ({ expanded, setExpanded }: SidebarProps) => {
-    const { user } = useAuth();
     const navigate = useNavigate();
     const { pathname } = useLocation();
-
-    const navItems: NavItem[] =
-        user?.role === UserRole.OWNER
-            ? [...baseNavItems, { path: '/stats', label: 'Статистика', Icon: QueryStatsIcon }]
-            : baseNavItems;
 
     const width = expanded ? SIDEBAR_WIDTH_EXPANDED : SIDEBAR_WIDTH_COLLAPSED;
 

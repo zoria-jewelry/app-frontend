@@ -14,6 +14,8 @@ export interface OrderBriefInfoEntryDto {
 
 export interface OrderBriefInfoDto {
     id: number;
+    /** Present when the API returns the owning client (e.g. global orders list). */
+    customerId?: number | null;
     openedAt: Date;
     closedAt: Date | null;
     status: OrderStatus;
@@ -37,6 +39,8 @@ export interface OrderEntryDto {
 
 export interface OrderDto {
     id: number;
+    /** Owning client; used when `customerId` is not in the URL (e.g. opened from /orders). */
+    customerId?: number | null;
     openedAt: Date;
     closedAt?: Date | null;
     status: OrderStatus;

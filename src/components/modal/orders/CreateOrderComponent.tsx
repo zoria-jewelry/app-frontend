@@ -21,7 +21,7 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type CreateOrderFormData, createUpdateOrderSchema } from '../../../validation/schemas.ts';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useEffect, useState, useCallback, useMemo, memo } from 'react';
+import { useEffect, useLayoutEffect, useState, useCallback, useMemo, memo } from 'react';
 import type { MaterialDto } from '../../../dto/materials.ts';
 import type { EmployeeDto } from '../../../dto/employees.ts';
 import type { ProductEntryDto } from '../../../dto/products.ts';
@@ -204,6 +204,8 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
         clearErrors,
         reset,
         control,
+        getValues,
+        setValue,
         formState: { errors },
     } = useForm<CreateOrderFormData>({
         resolver: zodResolver(createUpdateOrderSchema),
@@ -231,6 +233,16 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
         MaterialsApiClient.getAll().then((data) => data && setMaterials(data));
         EmployeesApiClient.getAllActive().then((data) => data && setEmployees(data));
     }, []);
+
+    useLayoutEffect(() => {
+        if (!props.isOpen || materials.length === 0) {
+            return;
+        }
+        const id = getValues('materialId');
+        if (!id || !materials.some((m) => m.id === id)) {
+            setValue('materialId', materials[0].id);
+        }
+    }, [props.isOpen, materials, getValues, setValue]);
 
     const handleClose = (): void => {
         clearErrors();

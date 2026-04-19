@@ -112,7 +112,11 @@ const OrdersTableComponent = ({ customerId, orders, setPage, onUpdate }: OrdersT
     };
 
     const navigateToCompleteOrder = (order: OrderBriefInfoDto) => {
-        const query = customerId ? `?customerId=${customerId}` : '';
+        const resolved = customerId ?? order.customerId;
+        const query =
+            resolved != null && Number.isFinite(Number(resolved))
+                ? `?customerId=${Number(resolved)}`
+                : '';
         navigate(`/complete-order/${order.id}${query}`);
     };
 

@@ -15,7 +15,11 @@ import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import type { MaterialDto } from '../../../dto/materials.ts';
 import { MaterialsApiClient } from '../../../api/materialsApiClient.ts';
-import { saveMaterialSchema, type SaveMaterialFormData } from '../../../validation/schemas.ts';
+import {
+    saveMaterialSchema,
+    type SaveMaterialFormData,
+    type SaveMaterialFormInput,
+} from '../../../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import {
@@ -72,13 +76,13 @@ const SaveMaterialComponent = ({
         getValues,
         control,
         formState: { errors },
-    } = useForm<SaveMaterialFormData>({
+    } = useForm<SaveMaterialFormInput, unknown, SaveMaterialFormData>({
         resolver: zodResolver(saveMaterialSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
             employeeId,
             materialId: 0,
-            metalWeight: 0,
+            metalWeight: undefined,
         },
     });
 
@@ -111,7 +115,7 @@ const SaveMaterialComponent = ({
         reset({
             employeeId,
             materialId: 0,
-            metalWeight: 0,
+            metalWeight: undefined,
         });
         onClose();
     };
@@ -177,7 +181,7 @@ const SaveMaterialComponent = ({
                     <RhfNumberTextField
                         name="metalWeight"
                         control={control}
-                        emptyBlurFallback={0}
+                        preserveZero
                         fullWidth
                         slotProps={{ htmlInput: { step: 0.001 } }}
                     />
