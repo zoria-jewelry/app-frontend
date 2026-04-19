@@ -38,6 +38,7 @@ import SuccessIcon from '@mui/icons-material/CheckCircle';
 import WarningIcon from '@mui/icons-material/Warning';
 import { VchasnoApiClient } from '../api/vchasnoApiClient.ts';
 import { showToast } from '../components/common/Toast.tsx';
+import { RhfNumberTextField } from '../components/common/RhfNumberTextField.tsx';
 
 const evaluateExpression = (expr: string): number | null => {
     if (!expr || !expr.toString().trim()) return null;
@@ -175,7 +176,7 @@ const CompleteOrderPage = () => {
               );
               if (currencyIndex === -1) return 0;
 
-              const rawValue = rawPaymentInputs[currencyIndex] ?? '0';
+              const rawValue = rawPaymentInputs[currencyIndex] ?? '';
               const evaluated = evaluateExpression(rawValue);
               return evaluated !== null && evaluated !== undefined ? evaluated : 0;
           })()
@@ -335,7 +336,7 @@ const CompleteOrderPage = () => {
 
             const raw: Record<number, string> = {};
             (orderCalculations.entries ?? []).forEach((_entry, idx) => {
-                raw[idx] = '0';
+                raw[idx] = '';
             });
             setRawPaymentInputs(raw);
         }
@@ -433,14 +434,14 @@ const CompleteOrderPage = () => {
                 <AccordionDetails>
                     <FormControl fullWidth>
                         <FormLabel htmlFor="discount">Знижка (грн)</FormLabel>
-                        <TextField
+                        <RhfNumberTextField
+                            name="discount"
+                            control={control}
                             id="discount"
                             placeholder="999"
                             fullWidth
-                            margin="normal"
-                            type="number"
-                            {...register('discount', { valueAsNumber: true })}
-                            error={!!errors.discount}
+                            margin="dense"
+                            slotProps={{ htmlInput: { step: 0.01 } }}
                             sx={{
                                 margin: 0,
                                 '& .MuiOutlinedInput-root': {
@@ -450,7 +451,6 @@ const CompleteOrderPage = () => {
                         />
                         <FormHelperText
                             error={!!errors.discount}
-                            sx={{ margin: 0, minHeight: '30px' }}
                         >
                             {errors?.discount?.message}
                         </FormHelperText>
@@ -458,14 +458,15 @@ const CompleteOrderPage = () => {
 
                     <FormControl fullWidth>
                         <FormLabel htmlFor="loss">Угар (%)</FormLabel>
-                        <TextField
+                        <RhfNumberTextField
+                            name="lossPercentage"
+                            control={control}
+                            emptyBlurFallback={0}
                             id="loss"
                             placeholder="7.5"
                             fullWidth
-                            margin="normal"
-                            type="number"
-                            {...register('lossPercentage', { valueAsNumber: true })}
-                            error={!!errors.lossPercentage}
+                            margin="dense"
+                            slotProps={{ htmlInput: { step: 0.01 } }}
                             sx={{
                                 margin: 0,
                                 '& .MuiOutlinedInput-root': {
@@ -475,7 +476,6 @@ const CompleteOrderPage = () => {
                         />
                         <FormHelperText
                             error={!!errors.lossPercentage}
-                            sx={{ margin: 0, minHeight: '30px' }}
                         >
                             {errors?.lossPercentage?.message}
                         </FormHelperText>
@@ -485,14 +485,15 @@ const CompleteOrderPage = () => {
                         <FormLabel htmlFor="total-metal-weight">
                             Кінцева вага металу у виробах (г)
                         </FormLabel>
-                        <TextField
+                        <RhfNumberTextField
+                            name="finalMetalWeight"
+                            control={control}
+                            emptyBlurFallback={0}
                             id="total-metal-weight"
                             placeholder="42.140"
                             fullWidth
-                            margin="normal"
-                            type="number"
-                            {...register('finalMetalWeight', { valueAsNumber: true })}
-                            error={!!errors.finalMetalWeight}
+                            margin="dense"
+                            slotProps={{ htmlInput: { step: 0.001 } }}
                             sx={{
                                 margin: 0,
                                 '& .MuiOutlinedInput-root': {
@@ -502,7 +503,6 @@ const CompleteOrderPage = () => {
                         />
                         <FormHelperText
                             error={!!errors.finalMetalWeight}
-                            sx={{ margin: 0, minHeight: '30px' }}
                         >
                             {errors?.finalMetalWeight?.message}
                         </FormHelperText>
@@ -512,14 +512,14 @@ const CompleteOrderPage = () => {
                         <FormLabel htmlFor="total-stones-price">
                             Загальна вартість камінців у виробах (грн)
                         </FormLabel>
-                        <TextField
+                        <RhfNumberTextField
+                            name="stoneCost"
+                            control={control}
                             id="total-stones-price"
                             placeholder="5400.00"
                             fullWidth
-                            margin="normal"
-                            type="number"
-                            {...register('stoneCost', { valueAsNumber: true })}
-                            error={!!errors.stoneCost}
+                            margin="dense"
+                            slotProps={{ htmlInput: { step: 0.01 } }}
                             sx={{
                                 margin: 0,
                                 '& .MuiOutlinedInput-root': {
@@ -529,7 +529,6 @@ const CompleteOrderPage = () => {
                         />
                         <FormHelperText
                             error={!!errors.stoneCost}
-                            sx={{ margin: 0, minHeight: '30px' }}
                         >
                             {errors?.stoneCost?.message}
                         </FormHelperText>
@@ -825,22 +824,22 @@ const CompleteOrderPage = () => {
                                     <TableBody>
                                         {(orderCalculations.entries ?? []).map((entry) => (
                                             <TableRow key={entry.materialId}>
-                                                <TableCell sx={{ padding: theme.spacing(2) }}>
+                                                <TableCell sx={{ padding: theme.spacing(1) }}>
                                                     <Typography variant="body2">
                                                         {entry.materialName}
                                                     </Typography>
                                                 </TableCell>
-                                                <TableCell sx={{ padding: theme.spacing(2) }}>
+                                                <TableCell sx={{ padding: theme.spacing(1) }}>
                                                     <Typography variant="body2">
                                                         {entry.materialCountOwnedByCustomer}
                                                     </Typography>
                                                 </TableCell>
-                                                <TableCell sx={{ padding: theme.spacing(2) }}>
+                                                <TableCell sx={{ padding: theme.spacing(1) }}>
                                                     <Typography variant="body2">
                                                         {entry.materialPrice}
                                                     </Typography>
                                                 </TableCell>
-                                                <TableCell sx={{ padding: theme.spacing(2) }}>
+                                                <TableCell sx={{ padding: theme.spacing(1) }}>
                                                     <Typography variant="body2" textAlign="right">
                                                         {toFixedNumber(entry.totalMaterialCost, 2)}
                                                     </Typography>
@@ -947,7 +946,7 @@ const CompleteOrderPage = () => {
                                             const entry = orderCalculations?.entries.find(
                                                 (e) => e.materialId === field.materialId,
                                             );
-                                            const rawValue = rawPaymentInputs[index] ?? '0';
+                                            const rawValue = rawPaymentInputs[index] ?? '';
                                             const evaluated = evaluateExpression(rawValue);
 
                                             return (
@@ -987,7 +986,7 @@ const CompleteOrderPage = () => {
                                                                 id={`material-${field.materialId}`}
                                                                 placeholder="наприклад: 100*2 або 50+10"
                                                                 fullWidth
-                                                                margin="normal"
+                                                                margin="dense"
                                                                 type="text"
                                                                 value={rawValue}
                                                                 onChange={(e) =>
@@ -1054,7 +1053,6 @@ const CompleteOrderPage = () => {
                                                                 }
                                                                 sx={{
                                                                     margin: 0,
-                                                                    minHeight: '30px',
                                                                 }}
                                                             >
                                                                 {

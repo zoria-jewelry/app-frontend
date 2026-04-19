@@ -1,10 +1,18 @@
 import Box from '@mui/material/Box';
-import { Button, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, IconButton, Tooltip } from '@mui/material';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import StopIcon from '@mui/icons-material/Stop';
 import { useCallback, useEffect, useState } from 'react';
 import { VchasnoApiClient } from '../../api/vchasnoApiClient.ts';
 import { showToast } from '../common/Toast.tsx';
+import { SIDEBAR_ICON_FONT_PX } from '../../constants/appShell.ts';
 
-const ShiftSidebarActions = () => {
+export interface ShiftSidebarActionsProps {
+    /** Icon-only compact controls (narrow sidebar rail) */
+    collapsed?: boolean;
+}
+
+const ShiftSidebarActions = ({ collapsed = false }: ShiftSidebarActionsProps) => {
     const [isShiftOpen, setIsShiftOpen] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -18,7 +26,7 @@ const ShiftSidebarActions = () => {
                 );
                 console.log(err);
             });
-    }, [isShiftOpen]);
+    }, []);
 
     const handleApiError = (errorText?: string) => {
         if (errorText && errorText.trim() !== '') {
@@ -65,7 +73,75 @@ const ShiftSidebarActions = () => {
 
     useEffect(() => {
         fetchShiftState();
-    }, [isShiftOpen]);
+    }, [fetchShiftState]);
+
+    if (collapsed) {
+        return (
+            <Box
+                sx={{
+                    py: 1,
+                    px: 0.5,
+                    borderTop: '1px solid',
+                    borderColor: 'divider',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 0.5,
+                }}
+            >
+                {!isShiftOpen && (
+                    <Tooltip title="Відкрити зміну" placement="right" arrow>
+                        <span>
+                            <IconButton
+                                color="primary"
+                                size="medium"
+                                onClick={onStartShift}
+                                disabled={loading}
+                                aria-label="Відкрити зміну"
+                                sx={{
+                                    '& .MuiSvgIcon-root': { fontSize: SIDEBAR_ICON_FONT_PX },
+                                }}
+                            >
+                                {loading ? (
+                                    <CircularProgress
+                                        size={SIDEBAR_ICON_FONT_PX}
+                                        color="inherit"
+                                    />
+                                ) : (
+                                    <PlayArrowIcon />
+                                )}
+                            </IconButton>
+                        </span>
+                    </Tooltip>
+                )}
+                {isShiftOpen && (
+                    <Tooltip title="Закрити зміну" placement="right" arrow>
+                        <span>
+                            <IconButton
+                                color="error"
+                                size="medium"
+                                onClick={onEndShift}
+                                disabled={loading}
+                                aria-label="Закрити зміну"
+                                sx={{
+                                    '& .MuiSvgIcon-root': { fontSize: SIDEBAR_ICON_FONT_PX },
+                                }}
+                            >
+                                {loading ? (
+                                    <CircularProgress
+                                        size={SIDEBAR_ICON_FONT_PX}
+                                        color="inherit"
+                                    />
+                                ) : (
+                                    <StopIcon />
+                                )}
+                            </IconButton>
+                        </span>
+                    </Tooltip>
+                )}
+            </Box>
+        );
+    }
 
     return (
         <Box

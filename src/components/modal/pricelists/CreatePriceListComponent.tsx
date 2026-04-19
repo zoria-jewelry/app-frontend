@@ -19,6 +19,7 @@ import type { PriceListEntryDto } from '../../../dto/price-lists.ts';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { showToast } from '../../common/Toast.tsx';
+import { CREATE_MODAL_PAPER_MAX } from '../../../constants/createModalLayout.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -27,7 +28,9 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        minWidth: '60%',
+        width: CREATE_MODAL_PAPER_MAX,
+        maxWidth: CREATE_MODAL_PAPER_MAX,
+        boxSizing: 'border-box',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -141,14 +144,22 @@ const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
                 <CloseIcon />
             </IconButton>
 
-            <Typography variant="h3" textAlign="center">
-                {`Новий прайс-лист (від ${toLocalDate(new Date())})`}
+            <Typography variant="h3" textAlign="center" component="h1">
+                Новий прайс-лист
+            </Typography>
+            <Typography
+                component="p"
+                variant="body1"
+                textAlign="center"
+                sx={{ mt: 1, mb: 0, color: 'text.secondary' }}
+            >
+                {`Від ${toLocalDate(new Date())}`}
             </Typography>
 
             {/* Price list creation form body */}
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                style={{ marginTop: theme.spacing(8) }}
+                style={{ marginTop: theme.spacing(4) }}
                 noValidate
             >
                 {/* Each price list entry, fetched from the backend */}
@@ -163,7 +174,7 @@ const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
                                 id={`material-${key}`}
                                 fullWidth
                                 type="number"
-                                margin="normal"
+                                margin="dense"
                                 slotProps={{
                                     htmlInput: {
                                         step: 0.01,
@@ -182,8 +193,7 @@ const CreatePriceListComponent = (props: CreatePriceListComponentProps) => {
                                 error={!!errors[key]}
                                 sx={{
                                     margin: 0,
-                                    marginBottom: theme.spacing(2),
-                                    minHeight: '30px',
+                                    marginBottom: theme.spacing(1),
                                 }}
                             >
                                 {errors?.[key]?.message}

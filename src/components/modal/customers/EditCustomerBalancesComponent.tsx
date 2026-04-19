@@ -21,6 +21,7 @@ import type { CustomerBalanceEntryDto } from '../../../dto/customers.ts';
 import { CustomersApiClient } from '../../../api/customersApiClient.ts';
 import { showToast } from '../../common/Toast.tsx';
 import { useCallback, useEffect, useState } from 'react';
+import { EDIT_MODAL_PAPER_MAX } from '../../../constants/createModalLayout.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -29,7 +30,9 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        minWidth: '40%',
+        width: EDIT_MODAL_PAPER_MAX,
+        maxWidth: EDIT_MODAL_PAPER_MAX,
+        boxSizing: 'border-box',
         maxHeight: '80vh',
         padding: theme.spacing(12),
         display: 'flex',
@@ -202,7 +205,7 @@ const EditCustomerBalancesComponent = (props: EditCustomerBalancesComponentProps
             {/* The form */}
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                style={{ marginTop: theme.spacing(8) }}
+                style={{ marginTop: theme.spacing(4) }}
                 noValidate
             >
                 {/* Each customer balance entry, fetched from the backend */}
@@ -222,7 +225,7 @@ const EditCustomerBalancesComponent = (props: EditCustomerBalancesComponentProps
                                 id={`material-${key}`}
                                 fullWidth
                                 type="text"
-                                margin="normal"
+                                margin="dense"
                                 placeholder="e.g. 100+10 or 50-5"
                                 value={rawValue}
                                 onChange={(e) => handleRawInputChange(index, e.target.value)}
@@ -259,8 +262,7 @@ const EditCustomerBalancesComponent = (props: EditCustomerBalancesComponentProps
                                 error={!!errors.entries?.[index]?.newValue}
                                 sx={{
                                     margin: 0,
-                                    marginBottom: theme.spacing(2),
-                                    minHeight: '30px',
+                                    marginBottom: theme.spacing(1),
                                 }}
                             >
                                 {errors?.entries?.[index]?.newValue?.message}
@@ -278,7 +280,7 @@ const EditCustomerBalancesComponent = (props: EditCustomerBalancesComponentProps
                         type="textarea"
                         multiline
                         minRows={4}
-                        margin="normal"
+                        margin="dense"
                         {...register('description')}
                         error={!!errors.description}
                         sx={{
@@ -292,8 +294,7 @@ const EditCustomerBalancesComponent = (props: EditCustomerBalancesComponentProps
                         error={!!errors.description}
                         sx={{
                             margin: 0,
-                            marginBottom: theme.spacing(2),
-                            minHeight: '30px',
+                            marginBottom: theme.spacing(1),
                         }}
                     >
                         {errors?.description?.message}

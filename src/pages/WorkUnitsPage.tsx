@@ -3,6 +3,11 @@ import commonStyles from '../styles/Common.module.css';
 import {
     Box,
     Button,
+    IconButton,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
     Paper,
     Table,
     TableBody,
@@ -15,17 +20,14 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import TooltipMui, { tooltipClasses, type TooltipProps } from '@mui/material/Tooltip';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { WorkUnitDto, WorkUnitsReportDto } from '../dto/work-units.ts';
+import { useCallback, useEffect, useMemo, useState, type MouseEvent } from 'react';
+import type { WorkUnitDto, WorkUnitsFilterData, WorkUnitsReportDto } from '../dto/work-units.ts';
 import { WorkUnitsApiClient } from '../api/workUnitsApiClient.ts';
-import { getCurrentMonthRange, toFixedNumber, toLocalDateTime } from '../utils.ts';
-import IconButton from '@mui/material/IconButton';
+import { getCurrentMonthRange, toFixedNumber, toTableDate } from '../utils.ts';
 import EditIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
-import FilterIcon from '@mui/icons-material/TuneOutlined';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/AddCircleOutline';
-import WorkUnitsFilterComponent, {
-    type WorkUnitsFilterData,
-} from '../components/modal/work-units/WorkUnitsFilterComponent.tsx';
+import WorkUnitsFilterSidebar from '../components/work-units/WorkUnitsFilterSidebar.tsx';
 import CreateWorkUnitComponent from '../components/modal/work-units/CreateWorkUnitComponent.tsx';
 import {
     type CreateWorkUnitFormData,
@@ -38,47 +40,65 @@ import SaveMaterialComponent from '../components/modal/work-units/SaveMaterialCo
 import EditWorkUnitComponent from '../components/modal/work-units/EditWorkUnitComponent.tsx';
 import DialogComponent from '../components/modal/DialogComponent.tsx';
 import { showToast } from '../components/common/Toast.tsx';
+import {
+    APP_HEADER_BAR_HEIGHT,
+    WORK_UNITS_MAIN_CONTENT_MIN_WIDTH_PX,
+} from '../constants/appShell.ts';
+
+const DescriptionTooltip = styled(({ className, ...props }: TooltipProps) => (
+    <TooltipMui {...props} arrow classes={{ popper: className }} />
+))(({ theme }) => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+        backgroundColor: '#1f2a37',
+        color: '#f9fafb',
+        fontSize: '1rem',
+        padding: theme.spacing(2),
+        borderRadius: theme.spacing(2),
+        boxShadow: theme.shadows[6],
+        maxWidth: 360,
+        whiteSpace: 'pre-wrap',
+    },
+    [`& .${tooltipClasses.arrow}`]: {
+        color: '#1f2a37',
+    },
+}));
 
 const WorkUnitsPage = () => {
     const theme = useTheme();
     const DEFAULT_DESCRIPTION = '–';
 
-    const DescriptionTooltip = styled(({ className, ...props }: TooltipProps) => (
-        <TooltipMui {...props} arrow classes={{ popper: className }} />
-    ))(({ theme }) => ({
-        [`& .${tooltipClasses.tooltip}`]: {
-            backgroundColor: '#1f2a37',
-            color: '#f9fafb',
-            fontSize: '1rem',
-            padding: theme.spacing(2),
-            borderRadius: theme.spacing(2),
-            boxShadow: theme.shadows[6],
-            maxWidth: 360,
-            whiteSpace: 'pre-wrap',
-        },
-        [`& .${tooltipClasses.arrow}`]: {
-            color: '#1f2a37',
-        },
-    }));
-
     const currentMonth = getCurrentMonthRange();
     const [filterData, setFilterData] = useState<WorkUnitsFilterData>({
         periodStart: currentMonth.start,
         periodEnd: currentMonth.end,
-        employeeId: 1,
-        materialId: 1,
+        employeeId: undefined,
+        materialId: undefined,
+        orderId: undefined,
     });
 
     const [isStartNewMonthModalOpen, setIsStartNewMonthModalOpen] = useState<boolean>(false);
 
     const [report, setReport] = useState<WorkUnitsReportDto | undefined>();
-    const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
     const [isCreateOpen, setIsCreateOpen] = useState<boolean>(false);
 
     const [isSaveMetalOpen, setIsSaveMetalOpen] = useState<boolean>(false);
 
     const [workUnitToReturn, setWorkUnitToReturn] = useState<WorkUnitDto | undefined>();
     const [workUnitToEdit, setWorkUnitToEdit] = useState<WorkUnitDto | undefined>();
+
+    const [actionsMenuAnchor, setActionsMenuAnchor] = useState<null | HTMLElement>(null);
+    const [actionsMenuEntry, setActionsMenuEntry] = useState<WorkUnitDto | null>(null);
+    const actionsMenuOpen = Boolean(actionsMenuAnchor && actionsMenuEntry);
+
+    const openActionsMenu = (event: MouseEvent<HTMLElement>, entry: WorkUnitDto) => {
+        setActionsMenuAnchor(event.currentTarget);
+        setActionsMenuEntry(entry);
+    };
+
+    const closeActionsMenu = () => {
+        setActionsMenuAnchor(null);
+        setActionsMenuEntry(null);
+    };
 
     const entriesToDisplay = useMemo(() => {
         if (!report?.entries) {
@@ -97,27 +117,62 @@ const WorkUnitsPage = () => {
     }, [report]);
 
     const fetchReport = useCallback(async () => {
-        if (filterData) {
+        if (
+            filterData?.employeeId &&
+            filterData.employeeId > 0 &&
+            filterData?.materialId &&
+            filterData.materialId > 0
+        ) {
             WorkUnitsApiClient.getReportForPeriod(filterData)
                 .then(setReport)
                 .catch((error) => console.log(error));
+        } else {
+            setReport(undefined);
         }
     }, [filterData]);
 
     useEffect(() => {
-        fetchReport();
-    }, [filterData]);
+        void fetchReport();
+    }, [fetchReport]);
 
     return (
-        <Paper
-            className={`${paperStyles.paper} ${commonStyles.flexColumn}`}
-            style={{
-                gap: theme.spacing(4),
-                borderRadius: '10px',
-                paddingBottom: theme.spacing(4),
-                marginBottom: theme.spacing(8),
+        <Box
+            sx={{
+                width: '100%',
+                minWidth: 0,
+                minHeight: `calc(100vh - ${APP_HEADER_BAR_HEIGHT})`,
+                marginBottom: 0,
+                overflowX: 'auto',
+                WebkitOverflowScrolling: 'touch',
             }}
         >
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    flexWrap: 'nowrap',
+                    alignItems: 'stretch',
+                    gap: { xs: 1.5, sm: 3 },
+                    width: '100%',
+                    minWidth: 'min-content',
+                    minHeight: `calc(100vh - ${APP_HEADER_BAR_HEIGHT})`,
+                }}
+            >
+            <WorkUnitsFilterSidebar onApply={setFilterData} />
+
+            <Paper
+                className={`${paperStyles.paper} ${commonStyles.flexColumn}`}
+                style={{
+                    gap: theme.spacing(4),
+                    borderRadius: '10px',
+                    paddingBottom: theme.spacing(2),
+                }}
+                sx={{
+                    flex: '1 1 auto',
+                    minWidth: WORK_UNITS_MAIN_CONTENT_MIN_WIDTH_PX,
+                    alignItems: 'stretch',
+                }}
+            >
             <Box
                 display="flex"
                 flexDirection={{ xs: 'column', lg: 'row' }}
@@ -161,8 +216,7 @@ const WorkUnitsPage = () => {
                                 fontWeight: 400,
                             }}
                         >
-                            {toLocalDateTime(report.periodStart)} –{' '}
-                            {toLocalDateTime(report.periodEnd)}
+                            {toTableDate(report.periodStart)} – {toTableDate(report.periodEnd)}
                         </Typography>
                     </Box>
                 )}
@@ -177,28 +231,6 @@ const WorkUnitsPage = () => {
                     width={{ xs: '100%', lg: 'auto' }}
                     minWidth={{ xs: 'auto', lg: 'fit-content' }}
                 >
-                    <Box
-                        display="flex"
-                        alignItems="center"
-                        justifyContent={{ xs: 'center', lg: 'flex-start' }}
-                        width={{ xs: '100%', lg: 'auto' }}
-                    >
-                        <IconButton
-                            size="large"
-                            onClick={() => setIsFilterOpen(true)}
-                            aria-label="Filter"
-                            sx={{
-                                backgroundColor: 'action.hover',
-                                '&:hover': {
-                                    backgroundColor: 'action.selected',
-                                },
-                                transition: 'all 0.2s ease-in-out',
-                            }}
-                        >
-                            <FilterIcon />
-                        </IconButton>
-                    </Box>
-
                     <Button
                         variant="contained"
                         onClick={() => setIsSaveMetalOpen(true)}
@@ -243,14 +275,10 @@ const WorkUnitsPage = () => {
                 </Box>
             </Box>
 
-            <WorkUnitsFilterComponent
-                open={isFilterOpen}
-                onClose={() => setIsFilterOpen(false)}
-                onApply={setFilterData}
-            />
-
             <CreateWorkUnitComponent
                 open={isCreateOpen}
+                employeeId={filterData.employeeId ?? 0}
+                employeeName={filterData.employeeFullName ?? ''}
                 onClose={() => setIsCreateOpen(false)}
                 onSave={(data: CreateWorkUnitFormData) => {
                     console.log('Create work unit', data);
@@ -380,11 +408,9 @@ const WorkUnitsPage = () => {
                                     }}
                                 >
                                     <TableCell>{entry.materialName}</TableCell>
-                                    <TableCell>{toLocalDateTime(entry.issuedDate)}</TableCell>
+                                    <TableCell>{toTableDate(entry.issuedDate)}</TableCell>
                                     <TableCell>
-                                        {entry.returnedDate
-                                            ? toLocalDateTime(entry.returnedDate)
-                                            : '–'}
+                                        {entry.returnedDate ? toTableDate(entry.returnedDate) : '–'}
                                     </TableCell>
                                     <TableCell>{entry.orderId ? entry.orderId : '–'}</TableCell>
                                     <TableCell sx={{ width: '140px' }}>
@@ -435,25 +461,26 @@ const WorkUnitsPage = () => {
                                             </Typography>
                                         </DescriptionTooltip>
                                     </TableCell>
-                                    <TableCell width="70px">
-                                        <Box display="flex" gap={0.5}>
-                                            {!entry.returnedDate && (
-                                                <IconButton
-                                                    size="small"
-                                                    style={{ padding: 0 }}
-                                                    onClick={() => setWorkUnitToReturn(entry)}
-                                                >
-                                                    <AddIcon fontSize="small" />
-                                                </IconButton>
-                                            )}
-                                            <IconButton
-                                                size="small"
-                                                style={{ padding: 0 }}
-                                                onClick={() => setWorkUnitToEdit(entry)}
-                                            >
-                                                <EditIcon fontSize="small" />
-                                            </IconButton>
-                                        </Box>
+                                    <TableCell
+                                        width="70px"
+                                        align="center"
+                                        sx={{ verticalAlign: 'middle' }}
+                                    >
+                                        <IconButton
+                                            id={`work-unit-actions-trigger-${entry.id}`}
+                                            size="medium"
+                                            aria-label="Дії з нарядом"
+                                            aria-haspopup="true"
+                                            aria-controls={actionsMenuOpen ? 'work-unit-actions-menu' : undefined}
+                                            aria-expanded={
+                                                actionsMenuOpen && actionsMenuEntry?.id === entry.id
+                                                    ? true
+                                                    : false
+                                            }
+                                            onClick={(e) => openActionsMenu(e, entry)}
+                                        >
+                                            <MoreVertIcon />
+                                        </IconButton>
                                     </TableCell>
                                 </TableRow>
                             );
@@ -461,6 +488,52 @@ const WorkUnitsPage = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            <Menu
+                id="work-unit-actions-menu"
+                anchorEl={actionsMenuAnchor}
+                open={actionsMenuOpen}
+                onClose={closeActionsMenu}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{
+                    list: {
+                        dense: true,
+                        'aria-labelledby': actionsMenuEntry
+                            ? `work-unit-actions-trigger-${actionsMenuEntry.id}`
+                            : undefined,
+                    },
+                }}
+            >
+                {actionsMenuEntry && (
+                    <>
+                        {!actionsMenuEntry.returnedDate && (
+                            <MenuItem
+                                onClick={() => {
+                                    setWorkUnitToReturn(actionsMenuEntry);
+                                    closeActionsMenu();
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <AddIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText primary="Повернути" />
+                            </MenuItem>
+                        )}
+                        <MenuItem
+                            onClick={() => {
+                                setWorkUnitToEdit(actionsMenuEntry);
+                                closeActionsMenu();
+                            }}
+                        >
+                            <ListItemIcon>
+                                <EditIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText primary="Редагувати" />
+                        </MenuItem>
+                    </>
+                )}
+            </Menu>
 
             {report && (
                 <Box
@@ -652,8 +725,8 @@ const WorkUnitsPage = () => {
                 width="100%"
                 display="flex"
                 justifyContent="flex-end"
-                mt={theme.spacing(8)}
-                mb={theme.spacing(4)}
+                mt={theme.spacing(3)}
+                mb={theme.spacing(2)}
             >
                 <Button
                     variant="outlined"
@@ -691,7 +764,9 @@ const WorkUnitsPage = () => {
                 actionButtonText="Так, почати"
                 actionButtonVariant="error"
             />
-        </Paper>
+            </Paper>
+            </Box>
+        </Box>
     );
 };
 

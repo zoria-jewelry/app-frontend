@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import {
     Box,
     Button,
@@ -7,7 +7,6 @@ import {
     IconButton,
     MenuItem,
     Select,
-    TextField,
     Typography,
     useTheme,
 } from '@mui/material';
@@ -19,6 +18,11 @@ import { MaterialsApiClient } from '../../../api/materialsApiClient.ts';
 import { saveMaterialSchema, type SaveMaterialFormData } from '../../../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import {
+    EDIT_MODAL_PAPER_MAX,
+    FORM_HELPER_TEXT_ALIGNED_SX,
+} from '../../../constants/createModalLayout.ts';
+import { RhfNumberTextField } from '../../common/RhfNumberTextField.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -27,8 +31,9 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        minWidth: '40%',
-        minHeight: '40%',
+        width: EDIT_MODAL_PAPER_MAX,
+        maxWidth: EDIT_MODAL_PAPER_MAX,
+        boxSizing: 'border-box',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -60,11 +65,12 @@ const SaveMaterialComponent = ({
     const [metals, setMetals] = useState<MaterialDto[]>([]);
 
     const {
-        register,
         handleSubmit,
         reset,
         setValue,
         watch,
+        getValues,
+        control,
         formState: { errors },
     } = useForm<SaveMaterialFormData>({
         resolver: zodResolver(saveMaterialSchema),
@@ -79,11 +85,18 @@ const SaveMaterialComponent = ({
     useEffect(() => {
         MaterialsApiClient.getAll().then((ms) => {
             setMetals(ms ?? []);
-            if (ms && ms.length > 0) {
-                setValue('materialId', ms[0].id);
-            }
         });
-    }, [setValue]);
+    }, []);
+
+    useLayoutEffect(() => {
+        if (!open || metals.length === 0) {
+            return;
+        }
+        const id = getValues('materialId');
+        if (!id || !metals.some((m) => m.id === id)) {
+            setValue('materialId', metals[0].id);
+        }
+    }, [open, metals, getValues, setValue]);
 
     useEffect(() => {
         setValue('employeeId', employeeId);
@@ -102,6 +115,14 @@ const SaveMaterialComponent = ({
         });
         onClose();
     };
+
+    const materialIdWatched = watch('materialId');
+    const metalSelectValue =
+        metals.length === 0
+            ? ''
+            : metals.some((m) => m.id === materialIdWatched)
+              ? materialIdWatched
+              : metals[0].id;
 
     return (
         <BootstrapDialog onClose={handleClose} aria-labelledby="create-work-unit" open={open}>
@@ -132,11 +153,10 @@ const SaveMaterialComponent = ({
                     <FormControl fullWidth error={!!errors.materialId}>
                         <Select
                             fullWidth
-                            value={watch('materialId') || ''}
+                            disabled={metals.length === 0}
+                            value={metalSelectValue}
                             onChange={(e) => setValue('materialId', Number(e.target.value))}
-                            displayEmpty
                         >
-                            <MenuItem value="">Оберіть матеріал</MenuItem>
                             {metals.map((m) => (
                                 <MenuItem key={m.id} value={m.id}>
                                     {m.name}
@@ -145,11 +165,7 @@ const SaveMaterialComponent = ({
                         </Select>
                         <FormHelperText
                             error={true}
-                            sx={{
-                                margin: 0,
-                                marginBottom: theme.spacing(2),
-                                minHeight: '30px',
-                            }}
+                            sx={{ ...FORM_HELPER_TEXT_ALIGNED_SX, marginBottom: theme.spacing(1) }}
                         >
                             {errors.materialId ? errors.materialId.message : ''}
                         </FormHelperText>
@@ -158,22 +174,13 @@ const SaveMaterialComponent = ({
 
                 <Box mt={4}>
                     <Typography>Вага (г)</Typography>
-                    <TextField
-                        type="number"
+                    <RhfNumberTextField
+                        name="metalWeight"
+                        control={control}
+                        emptyBlurFallback={0}
                         fullWidth
-                        {...register('metalWeight', { valueAsNumber: true })}
-                        error={!!errors.metalWeight}
+                        slotProps={{ htmlInput: { step: 0.001 } }}
                     />
-                    <FormHelperText
-                        error={true}
-                        sx={{
-                            margin: 0,
-                            marginBottom: theme.spacing(2),
-                            minHeight: '30px',
-                        }}
-                    >
-                        {errors.metalWeight ? errors.metalWeight.message : ''}
-                    </FormHelperText>
                 </Box>
 
                 <Box mt={8} display="flex" justifyContent="center">

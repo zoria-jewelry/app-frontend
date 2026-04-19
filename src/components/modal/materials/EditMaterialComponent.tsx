@@ -2,15 +2,7 @@ import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import {
-    Button,
-    FormControl,
-    FormHelperText,
-    FormLabel,
-    TextField,
-    Typography,
-    useTheme,
-} from '@mui/material';
+import { Button, FormControl, FormLabel, TextField, Typography, useTheme } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type UpdateMaterialFormData, updateMaterialSchema } from '../../../validation/schemas.ts';
@@ -18,6 +10,7 @@ import { MaterialsApiClient } from '../../../api/materialsApiClient.ts';
 import { showToast } from '../../common/Toast.tsx';
 import { useEffect, useState } from 'react';
 import type { MaterialDto } from '../../../dto/materials.ts';
+import { EDIT_MODAL_PAPER_MAX, FORM_HELPER_TEXT_ALIGNED_SX } from '../../../constants/createModalLayout.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -26,7 +19,9 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        width: '1000px',
+        width: EDIT_MODAL_PAPER_MAX,
+        maxWidth: EDIT_MODAL_PAPER_MAX,
+        boxSizing: 'border-box',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -134,7 +129,7 @@ const EditMaterialComponent = (props: EditMaterialComponentProps) => {
             {/* The form */}
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                style={{ marginTop: theme.spacing(8) }}
+                style={{ marginTop: theme.spacing(4) }}
                 noValidate
             >
                 <FormControl fullWidth>
@@ -143,10 +138,14 @@ const EditMaterialComponent = (props: EditMaterialComponentProps) => {
                         id="name"
                         placeholder="Золото 585"
                         fullWidth
-                        margin="normal"
+                        margin="dense"
                         defaultValue=""
                         {...register('name')}
                         error={!!errors.name}
+                        helperText={errors.name?.message}
+                        slotProps={{
+                            formHelperText: { sx: FORM_HELPER_TEXT_ALIGNED_SX },
+                        }}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -154,12 +153,6 @@ const EditMaterialComponent = (props: EditMaterialComponentProps) => {
                             },
                         }}
                     />
-                    <FormHelperText
-                        error={!!errors.name}
-                        sx={{ margin: 0, marginBottom: theme.spacing(2), minHeight: '30px' }}
-                    >
-                        {errors?.name?.message}
-                    </FormHelperText>
                 </FormControl>
                 <FormControl
                     fullWidth

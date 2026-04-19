@@ -11,6 +11,17 @@ export interface WorkUnitDto {
     description?: string;
 }
 
+/** Query params for work-units report (sidebar filters on «Наряди»). */
+export interface WorkUnitsFilterData {
+    employeeId?: number;
+    /** Display name for the selected employee (from filter UI). */
+    employeeFullName?: string;
+    periodStart?: Date;
+    periodEnd?: Date;
+    materialId?: number;
+    orderId?: number;
+}
+
 export interface WorkUnitsReportDto {
     employeeFullName: string;
     periodStart: Date;

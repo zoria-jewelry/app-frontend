@@ -1,12 +1,4 @@
-import {
-    Box,
-    Button,
-    FormHelperText,
-    IconButton,
-    TextField,
-    Typography,
-    useTheme,
-} from '@mui/material';
+import { Box, Button, IconButton, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
@@ -15,6 +7,8 @@ import { useForm } from 'react-hook-form';
 import type { WorkUnitDto } from '../../../dto/work-units.ts';
 import { updateWorkUnitSchema, type UpdateWorkUnitFormData } from '../../../validation/schemas.ts';
 import { useEffect } from 'react';
+import { EDIT_MODAL_PAPER_MAX, FORM_HELPER_TEXT_ALIGNED_SX } from '../../../constants/createModalLayout.ts';
+import { RhfNumberTextField } from '../../common/RhfNumberTextField.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -23,8 +17,9 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        minWidth: '40%',
-        minHeight: '40%',
+        width: EDIT_MODAL_PAPER_MAX,
+        maxWidth: EDIT_MODAL_PAPER_MAX,
+        boxSizing: 'border-box',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -58,7 +53,6 @@ const getWeightValue = (workUnit?: WorkUnitDto): number => {
 const DEFAULT_DESCRIPTION = 'Немає опису наряду';
 
 const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnitComponentProps) => {
-    const theme = useTheme();
     const hasReturn = !!workUnit?.returnedDate;
     const hasOrder = !!workUnit?.orderId;
     const canEditLoss = hasReturn && hasOrder;
@@ -71,6 +65,7 @@ const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnit
         register,
         handleSubmit,
         reset,
+        control,
         formState: { errors },
     } = useForm<UpdateWorkUnitFormData>({
         resolver: zodResolver(updateWorkUnitSchema),
@@ -157,38 +152,23 @@ const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnit
                         fullWidth
                         {...register('metalWeight', { valueAsNumber: true })}
                         error={!!errors.metalWeight}
-                    />
-                    <FormHelperText
-                        error={true}
-                        sx={{
-                            margin: 0,
-                            marginBottom: theme.spacing(2),
-                            minHeight: '30px',
+                        helperText={errors.metalWeight?.message}
+                        slotProps={{
+                            formHelperText: { sx: FORM_HELPER_TEXT_ALIGNED_SX },
                         }}
-                    >
-                        {errors.metalWeight ? errors.metalWeight.message : ''}
-                    </FormHelperText>
+                    />
                 </Box>
 
                 {canEditLoss && (
                     <Box mt={4}>
                         <Typography>ПН, %</Typography>
-                        <TextField
-                            type="number"
+                        <RhfNumberTextField
+                            name="loss"
+                            control={control}
+                            emptyBlurFallback={0}
                             fullWidth
-                            {...register('loss', { valueAsNumber: true })}
-                            error={!!errors.loss}
+                            slotProps={{ htmlInput: { step: 0.01 } }}
                         />
-                        <FormHelperText
-                            error={true}
-                            sx={{
-                                margin: 0,
-                                marginBottom: theme.spacing(2),
-                                minHeight: '30px',
-                            }}
-                        >
-                            {errors.loss ? errors.loss.message : ''}
-                        </FormHelperText>
                     </Box>
                 )}
 
@@ -201,17 +181,11 @@ const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnit
                             minRows={3}
                             {...register('description')}
                             error={!!errors.description}
-                        />
-                        <FormHelperText
-                            error={true}
-                            sx={{
-                                margin: 0,
-                                marginBottom: theme.spacing(2),
-                                minHeight: '30px',
+                            helperText={errors.description?.message}
+                            slotProps={{
+                                formHelperText: { sx: FORM_HELPER_TEXT_ALIGNED_SX },
                             }}
-                        >
-                            {errors.description ? errors.description.message : ''}
-                        </FormHelperText>
+                        />
                     </Box>
                 )}
 

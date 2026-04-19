@@ -6,7 +6,7 @@ import {
     getCurrentMonthRange,
     toFixedNumber,
     toLocalDate,
-    toLocalDateTime,
+    toTableDate,
 } from '../../utils.ts';
 import { useEffect, useState } from 'react';
 import type { AuditRecord } from '../../dto/audit.ts';
@@ -162,7 +162,7 @@ const GlobalAuditRecordsComponent = ({ refresher }: GlobalAuditRecordsComponentP
                             gap={theme.spacing(4)}
                         >
                             <Typography variant="body1" color="textPrimary" fontWeight={900}>
-                                {toLocalDateTime(record.date)}
+                                {toTableDate(record.date)}
                             </Typography>
                             <Typography variant="body1" color="textPrimary">
                                 Виконавець дії: {record.actorFullName}

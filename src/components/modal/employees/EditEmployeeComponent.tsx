@@ -2,15 +2,7 @@ import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import {
-    Button,
-    FormControl,
-    FormHelperText,
-    FormLabel,
-    TextField,
-    Typography,
-    useTheme,
-} from '@mui/material';
+import { Button, FormControl, FormLabel, TextField, Typography, useTheme } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type UpdateEmployeeFormData, updateEmployeeSchema } from '../../../validation/schemas.ts';
@@ -18,6 +10,10 @@ import { EmployeesApiClient } from '../../../api/employeesApiClient.ts';
 import { showToast } from '../../common/Toast.tsx';
 import { useEffect, useState } from 'react';
 import type { EmployeeDto } from '../../../dto/employees.ts';
+import {
+    EDIT_MODAL_PAPER_MAX,
+    FORM_HELPER_TEXT_ALIGNED_SX,
+} from '../../../constants/createModalLayout.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -26,7 +22,9 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        width: '800px',
+        width: EDIT_MODAL_PAPER_MAX,
+        maxWidth: EDIT_MODAL_PAPER_MAX,
+        boxSizing: 'border-box',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -137,7 +135,7 @@ const EditEmployeeComponent = (props: EditEmployeeComponentProps) => {
             {/* The form */}
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                style={{ marginTop: theme.spacing(8) }}
+                style={{ marginTop: theme.spacing(4) }}
                 noValidate
             >
                 <FormControl fullWidth>
@@ -146,10 +144,14 @@ const EditEmployeeComponent = (props: EditEmployeeComponentProps) => {
                         id="full-name"
                         placeholder="Шевченко Тарас Григорович"
                         fullWidth
-                        margin="normal"
+                        margin="dense"
                         defaultValue=""
                         {...register('name')}
                         error={!!errors.name}
+                        helperText={errors.name?.message}
+                        slotProps={{
+                            formHelperText: { sx: FORM_HELPER_TEXT_ALIGNED_SX },
+                        }}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -157,12 +159,6 @@ const EditEmployeeComponent = (props: EditEmployeeComponentProps) => {
                             },
                         }}
                     />
-                    <FormHelperText
-                        error={!!errors.name}
-                        sx={{ margin: 0, marginBottom: theme.spacing(2), minHeight: '30px' }}
-                    >
-                        {errors?.name?.message}
-                    </FormHelperText>
                 </FormControl>
                 <FormControl fullWidth>
                     <FormLabel htmlFor="phone-number">Номер телефону</FormLabel>
@@ -170,10 +166,14 @@ const EditEmployeeComponent = (props: EditEmployeeComponentProps) => {
                         id="phone-number"
                         placeholder="+380961234567"
                         fullWidth
-                        margin="normal"
+                        margin="dense"
                         defaultValue=""
                         {...register('phone')}
                         error={!!errors.phone}
+                        helperText={errors.phone?.message}
+                        slotProps={{
+                            formHelperText: { sx: FORM_HELPER_TEXT_ALIGNED_SX },
+                        }}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -181,9 +181,6 @@ const EditEmployeeComponent = (props: EditEmployeeComponentProps) => {
                             },
                         }}
                     />
-                    <FormHelperText error={!!errors.phone} sx={{ margin: 0, minHeight: '30px' }}>
-                        {errors?.phone?.message}
-                    </FormHelperText>
                 </FormControl>
                 <FormControl
                     fullWidth

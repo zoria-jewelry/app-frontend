@@ -3,6 +3,10 @@ import commonStyles from '../../styles/Common.module.css';
 import {
     Box,
     IconButton,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
     Paper,
     Table,
     TableBody,
@@ -14,10 +18,11 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type MouseEvent } from 'react';
 import { PriceListsApiClient } from '../../api/priceListsApiClient';
 import type { PriceListBundleEntryDto } from '../../dto/price-lists.ts';
-import { toLocalDate } from '../../utils.ts';
+import { toTableDate } from '../../utils.ts';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import ExpiredPriceListDetailsComponent from '../modal/pricelists/ExpiredPriceListDetailsComponent.tsx';
 import { showToast } from '../common/Toast.tsx';
@@ -34,6 +39,20 @@ const ExpiredPriceListsComponent = ({ refreshTrigger }: ExpiredPriceListsCompone
     const [total, setTotal] = useState<number>(0);
 
     const [openedList, setOpenedList] = useState<PriceListBundleEntryDto | null>(null);
+
+    const [actionsMenuAnchor, setActionsMenuAnchor] = useState<null | HTMLElement>(null);
+    const [actionsMenuEntry, setActionsMenuEntry] = useState<PriceListBundleEntryDto | null>(null);
+    const actionsMenuOpen = Boolean(actionsMenuAnchor && actionsMenuEntry);
+
+    const openActionsMenu = (event: MouseEvent<HTMLElement>, entry: PriceListBundleEntryDto) => {
+        setActionsMenuAnchor(event.currentTarget);
+        setActionsMenuEntry(entry);
+    };
+
+    const closeActionsMenu = () => {
+        setActionsMenuAnchor(null);
+        setActionsMenuEntry(null);
+    };
 
     useEffect(() => {
         PriceListsApiClient.getClosed(page).then((closedLists) => {
@@ -83,16 +102,6 @@ const ExpiredPriceListsComponent = ({ refreshTrigger }: ExpiredPriceListsCompone
                     Завершені прайс-листи
                 </Typography>
             </Box>
-            <Box width="100%" display="flex" justifyContent="flex-end">
-                <TablePagination
-                    count={total}
-                    onPageChange={(_, p) => setPage(p)}
-                    rowsPerPageOptions={[]}
-                    page={page}
-                    rowsPerPage={10}
-                    style={{ border: 0 }}
-                />
-            </Box>
             <TableContainer
                 style={{
                     minWidth: '350px',
@@ -127,15 +136,25 @@ const ExpiredPriceListsComponent = ({ refreshTrigger }: ExpiredPriceListsCompone
                             entries.map((entry) => (
                                 <TableRow key={`closed-pricing-${entry.id}`}>
                                     <TableCell>{entry.id}</TableCell>
-                                    <TableCell>{toLocalDate(entry.startDate)}</TableCell>
-                                    <TableCell>{toLocalDate(entry.endDate)}</TableCell>
-                                    <TableCell>
+                                    <TableCell>{toTableDate(entry.startDate)}</TableCell>
+                                    <TableCell>{toTableDate(entry.endDate)}</TableCell>
+                                    <TableCell align="center" sx={{ width: '1%', verticalAlign: 'middle' }}>
                                         <IconButton
-                                            onClick={() => setOpenedList(entry)}
-                                            size="small"
-                                            style={{ padding: 0 }}
+                                            id={`expired-pricelist-actions-trigger-${entry.id}`}
+                                            size="medium"
+                                            aria-label="Дії з прайс-листом"
+                                            aria-haspopup="true"
+                                            aria-controls={
+                                                actionsMenuOpen ? 'expired-pricelist-actions-menu' : undefined
+                                            }
+                                            aria-expanded={
+                                                actionsMenuOpen && actionsMenuEntry?.id === entry.id
+                                                    ? true
+                                                    : false
+                                            }
+                                            onClick={(e) => openActionsMenu(e, entry)}
                                         >
-                                            <RemoveRedEyeIcon />
+                                            <MoreVertIcon />
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>
@@ -143,6 +162,37 @@ const ExpiredPriceListsComponent = ({ refreshTrigger }: ExpiredPriceListsCompone
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            <Menu
+                id="expired-pricelist-actions-menu"
+                anchorEl={actionsMenuAnchor}
+                open={actionsMenuOpen}
+                onClose={closeActionsMenu}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{
+                    list: {
+                        dense: true,
+                        'aria-labelledby': actionsMenuEntry
+                            ? `expired-pricelist-actions-trigger-${actionsMenuEntry.id}`
+                            : undefined,
+                    },
+                }}
+            >
+                {actionsMenuEntry && (
+                    <MenuItem
+                        onClick={() => {
+                            setOpenedList(actionsMenuEntry);
+                            closeActionsMenu();
+                        }}
+                    >
+                        <ListItemIcon>
+                            <RemoveRedEyeIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary="Переглянути" />
+                    </MenuItem>
+                )}
+            </Menu>
 
             <TablePagination
                 count={total}

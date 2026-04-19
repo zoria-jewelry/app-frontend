@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import {
     Box,
     Button,
@@ -7,21 +7,23 @@ import {
     IconButton,
     MenuItem,
     Select,
-    TextField,
     Typography,
     useTheme,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
-import type { EmployeeDto } from '../../../dto/employees.ts';
-import { EmployeesApiClient } from '../../../api/employeesApiClient.ts';
 import type { MaterialDto } from '../../../dto/materials.ts';
 import { MaterialsApiClient } from '../../../api/materialsApiClient.ts';
 import { OrdersApiClient } from '../../../api/ordersApiClient.ts';
 import { createWorkUnitSchema, type CreateWorkUnitFormData } from '../../../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import {
+    CREATE_MODAL_PAPER_MAX,
+    FORM_HELPER_TEXT_ALIGNED_SX,
+} from '../../../constants/createModalLayout.ts';
+import { RhfNumberTextField } from '../../common/RhfNumberTextField.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -30,8 +32,9 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        minWidth: '40%',
-        minHeight: '40%',
+        width: CREATE_MODAL_PAPER_MAX,
+        maxWidth: CREATE_MODAL_PAPER_MAX,
+        boxSizing: 'border-box',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -45,29 +48,37 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 export interface CreateWorkUnitModalProps {
     open: boolean;
+    employeeId: number;
+    employeeName: string;
     onClose: () => void;
     onSave: (data: CreateWorkUnitFormData) => void;
 }
 
-const CreateWorkUnitComponent = ({ open, onClose, onSave }: CreateWorkUnitModalProps) => {
+const CreateWorkUnitComponent = ({
+    open,
+    employeeId,
+    employeeName,
+    onClose,
+    onSave,
+}: CreateWorkUnitModalProps) => {
     const theme = useTheme();
 
-    const [employees, setEmployees] = useState<EmployeeDto[]>([]);
     const [metals, setMetals] = useState<MaterialDto[]>([]);
     const [activeOrderIds, setActiveOrderIds] = useState<number[]>([]);
 
     const {
-        register,
         handleSubmit,
         reset,
         setValue,
         watch,
+        getValues,
+        control,
         formState: { errors },
     } = useForm<CreateWorkUnitFormData>({
         resolver: zodResolver(createWorkUnitSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
-            employeeId: 0,
+            employeeId,
             orderId: undefined,
             materialId: 0,
             weight: 0,
@@ -75,20 +86,25 @@ const CreateWorkUnitComponent = ({ open, onClose, onSave }: CreateWorkUnitModalP
     });
 
     useEffect(() => {
-        EmployeesApiClient.getAllActive().then((es) => {
-            setEmployees(es ?? []);
-            if (es && es.length > 0) {
-                setValue('employeeId', es[0].id);
-            }
-        });
+        setValue('employeeId', employeeId);
+    }, [employeeId, setValue]);
+
+    useEffect(() => {
         MaterialsApiClient.getAll().then((ms) => {
             setMetals(ms ?? []);
-            if (ms && ms.length > 0) {
-                setValue('materialId', ms[0].id);
-            }
         });
         OrdersApiClient.getAllActiveIds().then((ids) => setActiveOrderIds(ids ?? []));
-    }, [setValue]);
+    }, []);
+
+    useLayoutEffect(() => {
+        if (!open || metals.length === 0) {
+            return;
+        }
+        const id = getValues('materialId');
+        if (!id || !metals.some((m) => m.id === id)) {
+            setValue('materialId', metals[0].id);
+        }
+    }, [open, metals, getValues, setValue]);
 
     const onSubmit = (data: CreateWorkUnitFormData) => {
         onSave(data);
@@ -97,13 +113,21 @@ const CreateWorkUnitComponent = ({ open, onClose, onSave }: CreateWorkUnitModalP
 
     const handleClose = () => {
         reset({
-            employeeId: 0,
+            employeeId,
             orderId: undefined,
             materialId: 0,
             weight: 0,
         });
         onClose();
     };
+
+    const materialIdWatched = watch('materialId');
+    const metalSelectValue =
+        metals.length === 0
+            ? ''
+            : metals.some((m) => m.id === materialIdWatched)
+              ? materialIdWatched
+              : metals[0].id;
 
     return (
         <BootstrapDialog onClose={handleClose} aria-labelledby="create-work-unit" open={open}>
@@ -125,34 +149,9 @@ const CreateWorkUnitComponent = ({ open, onClose, onSave }: CreateWorkUnitModalP
                     Нова видача
                 </Typography>
 
-                <Box mt={4}>
-                    <Typography>Працівник</Typography>
-                    <FormControl fullWidth error={!!errors.employeeId}>
-                        <Select
-                            fullWidth
-                            value={watch('employeeId') || ''}
-                            onChange={(e) => setValue('employeeId', Number(e.target.value))}
-                            displayEmpty
-                        >
-                            <MenuItem value="">Оберіть працівника</MenuItem>
-                            {employees.map((emp) => (
-                                <MenuItem key={emp.id} value={emp.id}>
-                                    {emp.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                        <FormHelperText
-                            error={true}
-                            sx={{
-                                margin: 0,
-                                marginBottom: theme.spacing(2),
-                                minHeight: '30px',
-                            }}
-                        >
-                            {errors.employeeId ? errors.employeeId.message : ''}
-                        </FormHelperText>
-                    </FormControl>
-                </Box>
+                <Typography variant="body1" textAlign="center">
+                    Працівник – {employeeName}
+                </Typography>
 
                 <Box mt={4}>
                     <Typography>Замовлення (№)</Typography>
@@ -177,11 +176,7 @@ const CreateWorkUnitComponent = ({ open, onClose, onSave }: CreateWorkUnitModalP
                         </Select>
                         <FormHelperText
                             error={true}
-                            sx={{
-                                margin: 0,
-                                marginBottom: theme.spacing(2),
-                                minHeight: '30px',
-                            }}
+                            sx={{ ...FORM_HELPER_TEXT_ALIGNED_SX, marginBottom: theme.spacing(1) }}
                         >
                             {errors.orderId ? errors.orderId.message : ''}
                         </FormHelperText>
@@ -193,11 +188,10 @@ const CreateWorkUnitComponent = ({ open, onClose, onSave }: CreateWorkUnitModalP
                     <FormControl fullWidth error={!!errors.materialId}>
                         <Select
                             fullWidth
-                            value={watch('materialId') || ''}
+                            disabled={metals.length === 0}
+                            value={metalSelectValue}
                             onChange={(e) => setValue('materialId', Number(e.target.value))}
-                            displayEmpty
                         >
-                            <MenuItem value="">Оберіть метал</MenuItem>
                             {metals.map((m) => (
                                 <MenuItem key={m.id} value={m.id}>
                                     {m.name}
@@ -206,11 +200,7 @@ const CreateWorkUnitComponent = ({ open, onClose, onSave }: CreateWorkUnitModalP
                         </Select>
                         <FormHelperText
                             error={true}
-                            sx={{
-                                margin: 0,
-                                marginBottom: theme.spacing(2),
-                                minHeight: '30px',
-                            }}
+                            sx={{ ...FORM_HELPER_TEXT_ALIGNED_SX, marginBottom: theme.spacing(1) }}
                         >
                             {errors.materialId ? errors.materialId.message : ''}
                         </FormHelperText>
@@ -219,22 +209,13 @@ const CreateWorkUnitComponent = ({ open, onClose, onSave }: CreateWorkUnitModalP
 
                 <Box mt={4}>
                     <Typography>Вага (г)</Typography>
-                    <TextField
-                        type="number"
+                    <RhfNumberTextField
+                        name="weight"
+                        control={control}
+                        emptyBlurFallback={0}
                         fullWidth
-                        {...register('weight', { valueAsNumber: true })}
-                        error={!!errors.weight}
+                        slotProps={{ htmlInput: { step: 0.001 } }}
                     />
-                    <FormHelperText
-                        error={true}
-                        sx={{
-                            margin: 0,
-                            marginBottom: theme.spacing(2),
-                            minHeight: '30px',
-                        }}
-                    >
-                        {errors.weight ? errors.weight.message : ''}
-                    </FormHelperText>
                 </Box>
 
                 <Box mt={8} display="flex" justifyContent="center">

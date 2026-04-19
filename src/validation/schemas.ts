@@ -58,17 +58,19 @@ export const orderProductsSchema = z.object({
     productId: z
         .number({ error: 'Оберіть виріб' })
         .nullish()
-        .refine((val) => val !== null),
+        .refine((val) => val !== null, { message: 'Оберіть виріб' }),
     size: z
         .number({ error: 'Введіть число' })
         .multipleOf(0.01, { error: 'Крок значення — 0.01' })
+        .nonnegative({ error: 'Розмір не може бути відʼємним' })
         .nullish()
-        .refine((val) => val !== null),
+        .refine((val) => val !== null, { message: 'Введіть розмір' }),
     count: z
         .number({ error: 'Введіть кількість виробів' })
         .int({ error: 'Введіть ціле число' })
+        .nonnegative({ error: 'Кількість не може бути відʼємною' })
         .nullish()
-        .refine((val) => val !== null),
+        .refine((val) => val !== null, { message: 'Введіть кількість виробів' }),
     notes: z.string().optional(),
 });
 

@@ -103,7 +103,7 @@ const GlobalStatisticsComponent = ({ onUpdate, refresher }: GlobalStatisticsProp
                             '& .MuiOutlinedInput-root': {
                                 borderRadius: '6px',
                             },
-                            mb: theme.spacing(2),
+                            mb: 0,
                         }}
                         label="Станом на"
                     />

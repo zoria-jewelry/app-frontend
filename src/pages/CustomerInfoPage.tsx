@@ -28,6 +28,7 @@ import EditCustomerInfoComponent from '../components/modal/customers/EditCustome
 import EditCustomerBalancesComponent from '../components/modal/customers/EditCustomerBalancesComponent.tsx';
 import { showToast } from '../components/common/Toast.tsx';
 import { toFixedNumber } from '../utils.ts';
+import { CUSTOMER_BALANCE_HISTORY_DIALOG_MAX } from '../constants/createModalLayout.ts';
 
 const CustomerInfoPage = () => {
     const theme = useTheme();
@@ -36,7 +37,7 @@ const CustomerInfoPage = () => {
     const [orders, setOrders] = useState<OrdersListDto | undefined>();
     const [orderSearchPhrase, setOrderSearchPhrase] = useState<string>('');
 
-    const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
+    const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
     const [ordersFilterData, setOrdersFilterData] = useState<OrdersFilterData | undefined>();
 
     const [isCreateOrderModalOpen, setIsCreateOrderModalOpen] = useState<boolean>(false);
@@ -368,8 +369,10 @@ const CustomerInfoPage = () => {
                         >
                             <IconButton
                                 size="large"
-                                onClick={() => setIsFilterModalOpen(true)}
+                                onClick={(e) => setFilterAnchorEl(e.currentTarget)}
                                 aria-label="Filter"
+                                aria-haspopup="true"
+                                aria-expanded={Boolean(filterAnchorEl)}
                             >
                                 <FilterIcon />
                             </IconButton>
@@ -415,8 +418,8 @@ const CustomerInfoPage = () => {
             </Paper>
 
             <OrdersFilterModal
-                open={isFilterModalOpen}
-                onClose={() => setIsFilterModalOpen(false)}
+                anchorEl={filterAnchorEl}
+                onClose={() => setFilterAnchorEl(null)}
                 onApply={setOrdersFilterData}
             />
 
@@ -451,7 +454,15 @@ const CustomerInfoPage = () => {
                 open={isHistoryModalOpen}
                 onClose={() => setIsHistoryModalOpen(false)}
                 fullWidth
-                maxWidth="lg"
+                maxWidth={false}
+                slotProps={{
+                    paper: {
+                        sx: {
+                            width: CUSTOMER_BALANCE_HISTORY_DIALOG_MAX,
+                            maxWidth: CUSTOMER_BALANCE_HISTORY_DIALOG_MAX,
+                        },
+                    },
+                }}
             >
                 <DialogTitle sx={{ pr: 6 }}>
                     Історія змін

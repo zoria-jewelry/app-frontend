@@ -1,24 +1,28 @@
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import {
-    Box,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TablePagination,
     TableRow,
     Typography,
     useTheme,
 } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
 import type { EmployeeDto } from '../../../dto/employees.ts';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type MouseEvent } from 'react';
 import { EmployeesApiClient } from '../../../api/employeesApiClient.ts';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import DialogComponent from '../DialogComponent.tsx';
+import { ARCHIVE_TABLE_MODAL_PAPER_MAX } from '../../../constants/createModalLayout.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -27,12 +31,16 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        minWidth: '70%',
-        height: '90vh',
+        width: ARCHIVE_TABLE_MODAL_PAPER_MAX,
+        maxWidth: ARCHIVE_TABLE_MODAL_PAPER_MAX,
+        boxSizing: 'border-box',
+        height: 'auto',
+        maxHeight: '90vh',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
         overflowX: 'hidden',
+        overflowY: 'auto',
     },
     '& .MuiDialogActions-root': {
         padding: theme.spacing(10),
@@ -48,22 +56,33 @@ export interface EmployeesArchiveComponentProps {
 
 const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
     const [entries, setEntries] = useState<EmployeeDto[]>([]);
-    const [total, setTotal] = useState<number>(0);
-    const [page, setPage] = useState<number>(0);
 
     const [isUnarchiveDialogOpened, setIsUnarchiveDialogOpened] = useState<boolean>(false);
     const [employeeToUnarchive, setEmployeeToUnarchive] = useState<EmployeeDto | null>(null);
 
+    const [actionsMenuAnchor, setActionsMenuAnchor] = useState<null | HTMLElement>(null);
+    const [actionsMenuEmployee, setActionsMenuEmployee] = useState<EmployeeDto | null>(null);
+    const actionsMenuOpen = Boolean(actionsMenuAnchor && actionsMenuEmployee);
+
+    const openActionsMenu = (event: MouseEvent<HTMLElement>, employee: EmployeeDto) => {
+        setActionsMenuAnchor(event.currentTarget);
+        setActionsMenuEmployee(employee);
+    };
+
+    const closeActionsMenu = () => {
+        setActionsMenuAnchor(null);
+        setActionsMenuEmployee(null);
+    };
+
     const theme = useTheme();
 
     const loadArchivedEmployees = useCallback(() => {
-        EmployeesApiClient.getArchived(page).then((employeesList) => {
-            if (employeesList) {
-                setEntries(employeesList.entries);
-                setTotal(employeesList.total);
+        EmployeesApiClient.getAllArchived().then((list) => {
+            if (list) {
+                setEntries(list);
             }
         });
-    }, [page]);
+    }, []);
 
     const handleUnarchiveClick = (employee: EmployeeDto | null) => {
         setEmployeeToUnarchive(employee);
@@ -75,11 +94,7 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
         console.log(`Unarchive employee ${id}`);
         if (id) {
             EmployeesApiClient.removeFromArchive(id).then(() => {
-                if (page === 0) {
-                    loadArchivedEmployees();
-                } else {
-                    setPage(0);
-                }
+                loadArchivedEmployees();
                 props.onArchive();
             });
         }
@@ -87,14 +102,13 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
 
     const handleClose = () => {
         props.handleClose();
-        setPage(0);
     };
 
     useEffect(() => {
         if (props.isOpen) {
             loadArchivedEmployees();
         }
-    }, [page, props.isOpen, loadArchivedEmployees]);
+    }, [props.isOpen, loadArchivedEmployees]);
 
     return (
         <BootstrapDialog
@@ -119,19 +133,6 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
             <Typography variant="h3">Архів працівників</Typography>
 
             {/* Archived employees' list */}
-            <Box width="100%" display="flex" justifyContent="flex-end">
-                <TablePagination
-                    count={total}
-                    onPageChange={(_, p) => {
-                        console.log(`SETTING PAGE ${p}`);
-                        setPage(p);
-                    }}
-                    rowsPerPageOptions={[]}
-                    page={page}
-                    rowsPerPage={10}
-                    style={{ border: 0, overflow: 'visible' }}
-                />
-            </Box>
             <TableContainer
                 style={{
                     minWidth: '350px',
@@ -173,13 +174,27 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
                                 <TableCell>
                                     <Typography variant="body2">{employee.phone}</Typography>
                                 </TableCell>
-                                <TableCell width="50px">
+                                <TableCell
+                                    width="50px"
+                                    align="center"
+                                    sx={{ verticalAlign: 'middle' }}
+                                >
                                     <IconButton
-                                        size="small"
-                                        style={{ padding: 0 }}
-                                        onClick={() => handleUnarchiveClick(employee)}
+                                        id={`archived-employee-actions-trigger-${employee.id}`}
+                                        size="medium"
+                                        aria-label="Дії з працівником"
+                                        aria-haspopup="true"
+                                        aria-controls={
+                                            actionsMenuOpen ? 'archived-employee-actions-menu' : undefined
+                                        }
+                                        aria-expanded={
+                                            actionsMenuOpen && actionsMenuEmployee?.id === employee.id
+                                                ? true
+                                                : false
+                                        }
+                                        onClick={(e) => openActionsMenu(e, employee)}
                                     >
-                                        <UnarchiveIcon />
+                                        <MoreVertIcon />
                                     </IconButton>
                                 </TableCell>
                             </TableRow>
@@ -187,20 +202,37 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <TablePagination
-                count={total}
-                onPageChange={(_, p) => {
-                    console.log(`SETTING PAGE ${p}`);
-                    setPage(p);
+
+            <Menu
+                id="archived-employee-actions-menu"
+                anchorEl={actionsMenuAnchor}
+                open={actionsMenuOpen}
+                onClose={closeActionsMenu}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{
+                    list: {
+                        dense: true,
+                        'aria-labelledby': actionsMenuEmployee
+                            ? `archived-employee-actions-trigger-${actionsMenuEmployee.id}`
+                            : undefined,
+                    },
                 }}
-                rowsPerPageOptions={[]}
-                page={page}
-                rowsPerPage={10}
-                style={{
-                    border: 0,
-                    overflow: 'visible',
-                }}
-            />
+            >
+                {actionsMenuEmployee && (
+                    <MenuItem
+                        onClick={() => {
+                            handleUnarchiveClick(actionsMenuEmployee);
+                            closeActionsMenu();
+                        }}
+                    >
+                        <ListItemIcon>
+                            <UnarchiveIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary="Розархівувати" />
+                    </MenuItem>
+                )}
+            </Menu>
 
             {/* Unarchive employee modal window */}
             <DialogComponent

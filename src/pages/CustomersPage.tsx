@@ -2,6 +2,10 @@ import {
     Box,
     Button,
     IconButton,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
     Paper,
     Table,
     TableBody,
@@ -13,12 +17,13 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type MouseEvent } from 'react';
 import type { CustomerDto } from '../dto/customers.ts';
 import { CustomersApiClient } from '../api/customersApiClient.ts';
 import paperStyles from '../styles/Paper.module.css';
 import commonStyles from '../styles/Common.module.css';
 import InfoIcon from '@mui/icons-material/InfoOutline';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 import CreateCustomerComponent from '../components/modal/customers/CreateCustomerComponent.tsx';
 import SearchBar from '../components/SearchBar.tsx';
@@ -35,6 +40,20 @@ const CustomersPage = () => {
     const [searchPhrase, setSearchPhrase] = useState<string>('');
 
     const [isCreateComponentOpened, setIsCreateComponentOpened] = useState<boolean>(false);
+
+    const [actionsMenuAnchor, setActionsMenuAnchor] = useState<null | HTMLElement>(null);
+    const [actionsMenuCustomer, setActionsMenuCustomer] = useState<CustomerDto | null>(null);
+    const actionsMenuOpen = Boolean(actionsMenuAnchor && actionsMenuCustomer);
+
+    const openActionsMenu = (event: MouseEvent<HTMLElement>, customer: CustomerDto) => {
+        setActionsMenuAnchor(event.currentTarget);
+        setActionsMenuCustomer(customer);
+    };
+
+    const closeActionsMenu = () => {
+        setActionsMenuAnchor(null);
+        setActionsMenuCustomer(null);
+    };
 
     const fetchCustomers = useCallback(async () => {
         CustomersApiClient.get(page, searchPhrase)
@@ -143,91 +162,158 @@ const CustomersPage = () => {
                 </Box>
             </Box>
 
-            {/* Data table */}
-            <Box width="100%" display="flex" justifyContent="flex-end">
+            {/* Table + pagination share tight vertical spacing (Paper gap would sit between them otherwise) */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 0.5 }}>
+                <TableContainer
+                    style={{
+                        minWidth: '350px',
+                        width: '100%',
+                        maxHeight: '55vh',
+                        overflowX: 'auto',
+                        overflowY: 'auto',
+                        boxSizing: 'content-box',
+                    }}
+                >
+                    <Table stickyHeader sx={{ tableLayout: 'fixed', width: '100%' }}>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell
+                                    style={{ backgroundColor: '#b7cfd2', borderTopLeftRadius: 10 }}
+                                    width="72px"
+                                >
+                                    ID
+                                </TableCell>
+                                <TableCell style={{ backgroundColor: '#b7cfd2' }}>
+                                    ПІБ
+                                </TableCell>
+                                <TableCell style={{ backgroundColor: '#b7cfd2' }} width="160px">
+                                    Номер телефону
+                                </TableCell>
+                                <TableCell
+                                    sx={{
+                                        backgroundColor: '#b7cfd2',
+                                        textAlign: 'center',
+                                        width: 120,
+                                        maxWidth: 120,
+                                        whiteSpace: 'normal',
+                                        lineHeight: 1.25,
+                                        py: 0.75,
+                                    }}
+                                >
+                                    К-ть невиконаних замовлень
+                                </TableCell>
+                                <TableCell
+                                    sx={{
+                                        backgroundColor: '#b7cfd2',
+                                        borderTopRightRadius: 10,
+                                        width: 52,
+                                        maxWidth: 52,
+                                        minWidth: 52,
+                                        px: 0.5,
+                                    }}
+                                />
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {entries?.map((customer) => (
+                                <TableRow key={customer.id}>
+                                    <TableCell>
+                                        <Typography variant="body2">{customer.id}</Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="body2">{customer.fullName}</Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="body2">{customer.phone}</Typography>
+                                    </TableCell>
+                                    <TableCell
+                                        sx={{
+                                            textAlign: 'center',
+                                            width: 120,
+                                            maxWidth: 120,
+                                        }}
+                                    >
+                                        <Typography variant="body2">{customer.activeOrders}</Typography>
+                                    </TableCell>
+                                    <TableCell
+                                        align="center"
+                                        sx={{
+                                            width: 52,
+                                            maxWidth: 52,
+                                            minWidth: 52,
+                                            px: 0.5,
+                                            verticalAlign: 'middle',
+                                        }}
+                                    >
+                                        <IconButton
+                                            id={`customer-actions-trigger-${customer.id}`}
+                                            size="medium"
+                                            aria-label="Дії з клієнтом"
+                                            aria-haspopup="true"
+                                            aria-controls={
+                                                actionsMenuOpen ? 'customer-actions-menu' : undefined
+                                            }
+                                            aria-expanded={
+                                                actionsMenuOpen && actionsMenuCustomer?.id === customer.id
+                                                    ? true
+                                                    : false
+                                            }
+                                            onClick={(e) => openActionsMenu(e, customer)}
+                                        >
+                                            <MoreVertIcon />
+                                        </IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+
                 <TablePagination
                     count={total}
                     onPageChange={(_, p) => setPage(p)}
                     rowsPerPageOptions={[]}
                     page={page}
                     rowsPerPage={10}
-                    style={{ border: 0 }}
+                    sx={{
+                        border: 0,
+                        overflow: 'visible',
+                        mt: 0,
+                        pt: 0,
+                    }}
                 />
             </Box>
-            <TableContainer
-                style={{
-                    minWidth: '350px',
-                    width: '100%',
-                    minHeight: '220px',
-                    maxHeight: '55vh',
-                    overflowX: 'auto',
-                    overflowY: 'auto',
-                    boxSizing: 'content-box',
+
+            <Menu
+                id="customer-actions-menu"
+                anchorEl={actionsMenuAnchor}
+                open={actionsMenuOpen}
+                onClose={closeActionsMenu}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{
+                    list: {
+                        dense: true,
+                        'aria-labelledby': actionsMenuCustomer
+                            ? `customer-actions-trigger-${actionsMenuCustomer.id}`
+                            : undefined,
+                    },
                 }}
             >
-                <Table stickyHeader>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell
-                                style={{ backgroundColor: '#b7cfd2', borderTopLeftRadius: 10 }}
-                                width="80px"
-                            >
-                                ID
-                            </TableCell>
-                            <TableCell style={{ backgroundColor: '#b7cfd2' }} width="400px">
-                                ПІБ
-                            </TableCell>
-                            <TableCell style={{ backgroundColor: '#b7cfd2' }} width="200px">
-                                Номер телефону
-                            </TableCell>
-                            <TableCell style={{ backgroundColor: '#b7cfd2', textAlign: 'center' }}>
-                                К-ть невиконаних замовлень
-                            </TableCell>
-                            <TableCell
-                                style={{ backgroundColor: '#b7cfd2', borderTopRightRadius: 10 }}
-                            ></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {entries?.map((customer) => (
-                            <TableRow key={customer.id}>
-                                <TableCell>
-                                    <Typography variant="body2">{customer.id}</Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant="body2">{customer.fullName}</Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant="body2">{customer.phone}</Typography>
-                                </TableCell>
-                                <TableCell sx={{ textAlign: 'center' }}>
-                                    <Typography variant="body2">{customer.activeOrders}</Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <IconButton
-                                        onClick={() => navigate(`/customers/${customer.id}`)}
-                                        size="small"
-                                        style={{ padding: 0 }}
-                                    >
-                                        <InfoIcon />
-                                    </IconButton>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <TablePagination
-                count={total}
-                onPageChange={(_, p) => setPage(p)}
-                rowsPerPageOptions={[]}
-                page={page}
-                rowsPerPage={10}
-                style={{
-                    border: 0,
-                    overflow: 'visible',
-                }}
-            />
+                {actionsMenuCustomer && (
+                    <MenuItem
+                        onClick={() => {
+                            navigate(`/customers/${actionsMenuCustomer.id}`);
+                            closeActionsMenu();
+                        }}
+                    >
+                        <ListItemIcon>
+                            <InfoIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary="Картка клієнта" />
+                    </MenuItem>
+                )}
+            </Menu>
 
             {/* Add new customer modal window */}
             <CreateCustomerComponent

@@ -2,6 +2,10 @@ import {
     Box,
     Button,
     IconButton,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
     Paper,
     Table,
     TableBody,
@@ -15,9 +19,10 @@ import {
     useTheme,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import paperStyles from '../styles/Paper.module.css';
 import commonStyles from '../styles/Common.module.css';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type MouseEvent } from 'react';
 import type { MaterialDto } from '../dto/materials.ts';
 import { MaterialsApiClient } from '../api/materialsApiClient.ts';
 import CreateMaterialComponent from '../components/modal/materials/CreateMaterialComponent.tsx';
@@ -34,6 +39,20 @@ const MaterialsPage = () => {
 
     const [isCreateMaterialModalOpen, setIsCreateMaterialModalOpen] = useState<boolean>(false);
     const [materialIdToEdit, setMaterialIdToEdit] = useState<number | null>(null);
+
+    const [actionsMenuAnchor, setActionsMenuAnchor] = useState<null | HTMLElement>(null);
+    const [actionsMenuMaterial, setActionsMenuMaterial] = useState<MaterialDto | null>(null);
+    const actionsMenuOpen = Boolean(actionsMenuAnchor && actionsMenuMaterial);
+
+    const openActionsMenu = (event: MouseEvent<HTMLElement>, material: MaterialDto) => {
+        setActionsMenuAnchor(event.currentTarget);
+        setActionsMenuMaterial(material);
+    };
+
+    const closeActionsMenu = () => {
+        setActionsMenuAnchor(null);
+        setActionsMenuMaterial(null);
+    };
 
     const fetchMaterials = useCallback(() => {
         MaterialsApiClient.get(page)
@@ -128,16 +147,6 @@ const MaterialsPage = () => {
             </Box>
 
             {/* Data table */}
-            <Box width="100%" display="flex" justifyContent="flex-end">
-                <TablePagination
-                    count={total}
-                    onPageChange={(_, p) => setPage(p)}
-                    rowsPerPageOptions={[]}
-                    page={page}
-                    rowsPerPage={10}
-                    style={{ border: 0 }}
-                />
-            </Box>
             <TableContainer
                 style={{
                     minWidth: '350px',
@@ -187,19 +196,21 @@ const MaterialsPage = () => {
                                         {toFixedNumber(material.price, 2)}
                                     </Typography>
                                 </TableCell>
-                                <TableCell
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        justifyContent: 'flex-end',
-                                    }}
-                                >
+                                <TableCell align="center" sx={{ width: '1%', verticalAlign: 'middle' }}>
                                     <IconButton
-                                        onClick={() => setMaterialIdToEdit(material.id)}
-                                        size="small"
-                                        style={{ padding: 0 }}
+                                        id={`material-actions-trigger-${material.id}`}
+                                        size="medium"
+                                        aria-label="Дії з матеріалом"
+                                        aria-haspopup="true"
+                                        aria-controls={actionsMenuOpen ? 'material-actions-menu' : undefined}
+                                        aria-expanded={
+                                            actionsMenuOpen && actionsMenuMaterial?.id === material.id
+                                                ? true
+                                                : false
+                                        }
+                                        onClick={(e) => openActionsMenu(e, material)}
                                     >
-                                        <EditIcon />
+                                        <MoreVertIcon />
                                     </IconButton>
                                 </TableCell>
                             </TableRow>
@@ -207,6 +218,38 @@ const MaterialsPage = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            <Menu
+                id="material-actions-menu"
+                anchorEl={actionsMenuAnchor}
+                open={actionsMenuOpen}
+                onClose={closeActionsMenu}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{
+                    list: {
+                        dense: true,
+                        'aria-labelledby': actionsMenuMaterial
+                            ? `material-actions-trigger-${actionsMenuMaterial.id}`
+                            : undefined,
+                    },
+                }}
+            >
+                {actionsMenuMaterial && (
+                    <MenuItem
+                        onClick={() => {
+                            setMaterialIdToEdit(actionsMenuMaterial.id);
+                            closeActionsMenu();
+                        }}
+                    >
+                        <ListItemIcon>
+                            <EditIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary="Редагувати" />
+                    </MenuItem>
+                )}
+            </Menu>
+
             <TablePagination
                 count={total}
                 onPageChange={(_, p) => setPage(p)}

@@ -1,6 +1,10 @@
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import {
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
     Table,
     TableBody,
     TableCell,
@@ -10,14 +14,16 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type MouseEvent } from 'react';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import DialogComponent from '../DialogComponent.tsx';
 import type { ProductEntryDto } from '../../../dto/products.ts';
 import { ProductsApiClient } from '../../../api/productsApiClient.ts';
 import { showToast } from '../../common/Toast.tsx';
+import { ARCHIVE_TABLE_MODAL_PAPER_MAX } from '../../../constants/createModalLayout.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -26,12 +32,16 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        minWidth: '80%',
-        minHeight: '80%',
+        width: ARCHIVE_TABLE_MODAL_PAPER_MAX,
+        maxWidth: ARCHIVE_TABLE_MODAL_PAPER_MAX,
+        boxSizing: 'border-box',
+        height: 'auto',
+        maxHeight: '90vh',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
         overflowX: 'hidden',
+        overflowY: 'auto',
     },
     '& .MuiDialogActions-root': {
         padding: theme.spacing(10),
@@ -50,6 +60,20 @@ const ProductsArchiveComponent = (props: ProductsArchiveComponentProps) => {
 
     const [isUnarchiveDialogOpened, setIsUnarchiveDialogOpened] = useState<boolean>(false);
     const [productToUnarchive, setProductToUnarchive] = useState<ProductEntryDto | null>(null);
+
+    const [actionsMenuAnchor, setActionsMenuAnchor] = useState<null | HTMLElement>(null);
+    const [actionsMenuProduct, setActionsMenuProduct] = useState<ProductEntryDto | null>(null);
+    const actionsMenuOpen = Boolean(actionsMenuAnchor && actionsMenuProduct);
+
+    const openActionsMenu = (event: MouseEvent<HTMLElement>, product: ProductEntryDto) => {
+        setActionsMenuAnchor(event.currentTarget);
+        setActionsMenuProduct(product);
+    };
+
+    const closeActionsMenu = () => {
+        setActionsMenuAnchor(null);
+        setActionsMenuProduct(null);
+    };
 
     const theme = useTheme();
 
@@ -168,18 +192,23 @@ const ProductsArchiveComponent = (props: ProductsArchiveComponentProps) => {
                                 <TableCell>
                                     <Typography variant="body2">{product.article}</Typography>
                                 </TableCell>
-                                <TableCell
-                                    style={{
-                                        alignItems: 'center',
-                                        height: '100%',
-                                    }}
-                                >
+                                <TableCell align="center" sx={{ verticalAlign: 'middle' }}>
                                     <IconButton
-                                        size="small"
-                                        style={{ padding: 0 }}
-                                        onClick={() => handleUnarchiveClick(product)}
+                                        id={`archived-product-actions-trigger-${product.id}`}
+                                        size="medium"
+                                        aria-label="Дії з виробом"
+                                        aria-haspopup="true"
+                                        aria-controls={
+                                            actionsMenuOpen ? 'archived-product-actions-menu' : undefined
+                                        }
+                                        aria-expanded={
+                                            actionsMenuOpen && actionsMenuProduct?.id === product.id
+                                                ? true
+                                                : false
+                                        }
+                                        onClick={(e) => openActionsMenu(e, product)}
                                     >
-                                        <UnarchiveIcon />
+                                        <MoreVertIcon />
                                     </IconButton>
                                 </TableCell>
                             </TableRow>
@@ -187,6 +216,37 @@ const ProductsArchiveComponent = (props: ProductsArchiveComponentProps) => {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            <Menu
+                id="archived-product-actions-menu"
+                anchorEl={actionsMenuAnchor}
+                open={actionsMenuOpen}
+                onClose={closeActionsMenu}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{
+                    list: {
+                        dense: true,
+                        'aria-labelledby': actionsMenuProduct
+                            ? `archived-product-actions-trigger-${actionsMenuProduct.id}`
+                            : undefined,
+                    },
+                }}
+            >
+                {actionsMenuProduct && (
+                    <MenuItem
+                        onClick={() => {
+                            handleUnarchiveClick(actionsMenuProduct);
+                            closeActionsMenu();
+                        }}
+                    >
+                        <ListItemIcon>
+                            <UnarchiveIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary="Розархівувати" />
+                    </MenuItem>
+                )}
+            </Menu>
 
             {/* Unarchive product modal window */}
             <DialogComponent

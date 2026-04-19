@@ -147,16 +147,16 @@ export const applicationTheme: Theme = createTheme({
                     },
                 },
                 paper: {
-                    width: 'min(900px, calc(100vw - 6rem))',
+                    width: 'min(640px, calc(100vw - 6rem))',
                     maxWidth: 'none',
-                    maxHeight: 'calc(100vh - 6rem)',
+                    maxHeight: 'calc(100vh - 2rem)',
                     '@media (max-width:900px)': {
                         width: 'calc(100vw - 1rem)',
                         maxHeight: 'calc(100vh - 1rem)',
                     },
                 },
                 paperScrollPaper: {
-                    margin: '3rem',
+                    margin: '1rem',
                     '@media (max-width:900px)': {
                         margin: '0.5rem',
                     },
@@ -175,7 +175,7 @@ export const applicationTheme: Theme = createTheme({
             styleOverrides: {
                 root: {
                     color: '#1d1d1d',
-                    fontSize: 'clamp(0.875rem, 1vw, 1.125rem)',
+                    fontSize: 'clamp(0.98rem, 1.12vw, 1.25rem)',
                     width: '100%',
                     display: 'flex',
                     justifyContent: 'flex-end',
@@ -206,6 +206,11 @@ export const applicationTheme: Theme = createTheme({
             styleOverrides: {
                 root: {
                     border: '1px solid rgba(224, 224, 224, 1)',
+                    padding: '2px 6px',
+                    fontSize: 'clamp(1rem, 1.1vw, 1.125rem)',
+                },
+                head: {
+                    padding: '4px 6px',
                 },
             },
         },
@@ -221,9 +226,24 @@ export const applicationTheme: Theme = createTheme({
             },
         },
         MuiFormHelperText: {
+            defaultProps: {
+                margin: 'dense',
+            },
             styleOverrides: {
                 root: {
-                    fontSize: 'clamp(0.8rem, 0.95vw, 1.125rem)',
+                    fontSize: 'clamp(0.75rem, 0.9vw, 1rem)',
+                    marginTop: 0,
+                    marginBottom: 0,
+                    minHeight: 0,
+                    lineHeight: 1.35,
+                    // No reserved space when there is no validation message
+                    '&:empty': {
+                        display: 'none',
+                        margin: 0,
+                        padding: 0,
+                        height: 0,
+                        minHeight: 0,
+                    },
                 },
             },
         },
@@ -232,6 +252,45 @@ export const applicationTheme: Theme = createTheme({
                 root: {
                     fontSize: 'clamp(0.875rem, 1vw, 1.125rem)',
                 },
+            },
+        },
+        MuiTextField: {
+            defaultProps: {
+                size: 'small',
+                margin: 'dense',
+                variant: 'outlined',
+            },
+        },
+        MuiFormControl: {
+            defaultProps: {
+                margin: 'dense',
+                size: 'small',
+            },
+        },
+        MuiOutlinedInput: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 6,
+                    '&.MuiInputBase-sizeSmall': {
+                        minHeight: '2rem',
+                    },
+                },
+                input: {
+                    '&.MuiInputBase-inputSizeSmall': {
+                        paddingTop: '0.375rem',
+                        paddingBottom: '0.375rem',
+                    },
+                },
+            },
+        },
+        MuiInputLabel: {
+            defaultProps: {
+                size: 'small',
+            },
+        },
+        MuiSelect: {
+            defaultProps: {
+                size: 'small',
             },
         },
     },

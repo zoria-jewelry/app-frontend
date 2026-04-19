@@ -1,9 +1,9 @@
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import type { MaterialDto } from '../../../dto/materials.ts';
 import { useEffect, useState } from 'react';
 import { MaterialsApiClient } from '../../../api/materialsApiClient.ts';
-import { Box, Button, FormHelperText, IconButton, TextField, Typography } from '@mui/material';
+import { Box, Button, IconButton, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useForm } from 'react-hook-form';
 import {
@@ -12,7 +12,12 @@ import {
 } from '../../../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { showToast } from '../../common/Toast.tsx';
+import { RhfNumberTextField } from '../../common/RhfNumberTextField.tsx';
 import { StatisticsApiClient } from '../../../api/statsApiClient.ts';
+import {
+    EDIT_MODAL_PAPER_MAX,
+    FORM_HELPER_TEXT_ALIGNED_SX,
+} from '../../../constants/createModalLayout.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -21,8 +26,9 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        minWidth: '40%',
-        minHeight: '40%',
+        width: EDIT_MODAL_PAPER_MAX,
+        maxWidth: EDIT_MODAL_PAPER_MAX,
+        boxSizing: 'border-box',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -41,7 +47,6 @@ export interface UpdateBalanceModalProps {
 }
 
 const UpdateBalanceModal = ({ onUpdate, handleClose, isOpen }: UpdateBalanceModalProps) => {
-    const theme = useTheme();
 
     const [materials, setMaterials] = useState<MaterialDto[]>([]);
 
@@ -50,6 +55,7 @@ const UpdateBalanceModal = ({ onUpdate, handleClose, isOpen }: UpdateBalanceModa
         handleSubmit,
         clearErrors,
         reset,
+        control,
         formState: { errors },
     } = useForm<UpdateGlobalBalancesFormData>({
         resolver: zodResolver(updateGlobalBalancesSchema),
@@ -133,30 +139,17 @@ const UpdateBalanceModal = ({ onUpdate, handleClose, isOpen }: UpdateBalanceModa
 
                 <Box mt={4}>
                     <Typography>Валюта (грн)</Typography>
-                    <TextField
-                        type="number"
+                    <RhfNumberTextField
+                        name="entries.0.delta"
+                        control={control}
+                        emptyBlurFallback={0}
                         fullWidth
                         slotProps={{
                             htmlInput: {
                                 step: 0.001,
                             },
                         }}
-                        {...register('entries.0.delta', {
-                            valueAsNumber: true,
-                            setValueAs: (value) => parseFloat(value) || 0,
-                        })}
-                        error={!!errors.entries?.[0]?.delta}
                     />
-                    <FormHelperText
-                        error={!!errors.entries?.[0]?.delta}
-                        sx={{
-                            margin: 0,
-                            marginBottom: theme.spacing(2),
-                            minHeight: '30px',
-                        }}
-                    >
-                        {errors.entries?.[0]?.delta?.message || ''}
-                    </FormHelperText>
                 </Box>
 
                 {materials.map((material, index) => {
@@ -165,30 +158,17 @@ const UpdateBalanceModal = ({ onUpdate, handleClose, isOpen }: UpdateBalanceModa
                     return (
                         <Box mt={4} key={material.id}>
                             <Typography>{material.name} (г)</Typography>
-                            <TextField
-                                type="number"
+                            <RhfNumberTextField
+                                name={`entries.${displayIndex}.delta`}
+                                control={control}
+                                emptyBlurFallback={0}
                                 fullWidth
                                 slotProps={{
                                     htmlInput: {
                                         step: 0.001,
                                     },
                                 }}
-                                {...register(`entries.${displayIndex}.delta`, {
-                                    valueAsNumber: true,
-                                    setValueAs: (value) => parseFloat(value) || 0,
-                                })}
-                                error={!!errors.entries?.[displayIndex]?.delta}
                             />
-                            <FormHelperText
-                                error={!!errors.entries?.[displayIndex]?.delta}
-                                sx={{
-                                    margin: 0,
-                                    marginBottom: theme.spacing(2),
-                                    minHeight: '30px',
-                                }}
-                            >
-                                {errors.entries?.[displayIndex]?.delta?.message || ''}
-                            </FormHelperText>
                         </Box>
                     );
                 })}
@@ -202,17 +182,11 @@ const UpdateBalanceModal = ({ onUpdate, handleClose, isOpen }: UpdateBalanceModa
                         minRows={4}
                         {...register('description')}
                         error={!!errors.description}
-                    />
-                    <FormHelperText
-                        error={true}
-                        sx={{
-                            margin: 0,
-                            marginBottom: theme.spacing(2),
-                            minHeight: '30px',
+                        helperText={errors.description?.message}
+                        slotProps={{
+                            formHelperText: { sx: FORM_HELPER_TEXT_ALIGNED_SX },
                         }}
-                    >
-                        {errors.description ? errors.description.message : ''}
-                    </FormHelperText>
+                    />
                 </Box>
 
                 <Box mt={8} display="flex" justifyContent="center">

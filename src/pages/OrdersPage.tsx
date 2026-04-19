@@ -13,7 +13,7 @@ import { showToast } from '../components/common/Toast.tsx';
 const OrdersPage = () => {
     const theme = useTheme();
 
-    const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+    const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
     const [orderSearchPhrase, setOrderSearchPhrase] = useState('');
     const [ordersFilterData, setOrdersFilterData] = useState<OrdersFilterData | undefined>();
 
@@ -106,8 +106,10 @@ const OrdersPage = () => {
                     >
                         <IconButton
                             size="large"
-                            onClick={() => setIsFilterModalOpen(true)}
+                            onClick={(e) => setFilterAnchorEl(e.currentTarget)}
                             aria-label="Filter"
+                            aria-haspopup="true"
+                            aria-expanded={Boolean(filterAnchorEl)}
                         >
                             <FilterIcon />
                         </IconButton>
@@ -133,8 +135,8 @@ const OrdersPage = () => {
             </Paper>
 
             <OrdersFilterModal
-                open={isFilterModalOpen}
-                onClose={() => setIsFilterModalOpen(false)}
+                anchorEl={filterAnchorEl}
+                onClose={() => setFilterAnchorEl(null)}
                 onApply={setOrdersFilterData}
             />
         </Box>
