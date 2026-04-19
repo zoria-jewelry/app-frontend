@@ -184,9 +184,9 @@ const GlobalStatisticsComponent = ({ onUpdate, refresher }: GlobalStatisticsProp
                     }}
                 >
                     <Typography variant="h5" pb={theme.spacing(2)}>
-                        Матеріалів у сховищі (без клієнтських)
+                        На руках у ювелірів
                     </Typography>
-                    {statsWithoutCustomerData.map((stat) => (
+                    {employeesStats.map((stat) => (
                         <Typography key={stat.materialId} variant="body1">
                             {stat.materialName}:{' '}
                             <span style={{ fontWeight: 900 }}>
@@ -256,9 +256,9 @@ const GlobalStatisticsComponent = ({ onUpdate, refresher }: GlobalStatisticsProp
                     }}
                 >
                     <Typography variant="h5" pb={theme.spacing(2)}>
-                        На руках у ювелірів
+                        Матеріалів у сховищі (без клієнтських)
                     </Typography>
-                    {employeesStats.map((stat) => (
+                    {statsWithoutCustomerData.map((stat) => (
                         <Typography key={stat.materialId} variant="body1">
                             {stat.materialName}:{' '}
                             <span style={{ fontWeight: 900 }}>
