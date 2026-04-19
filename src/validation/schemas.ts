@@ -1,5 +1,13 @@
 import z from 'zod';
 
+/** RHF number fields: empty → undefined; typed `0` kept. */
+function emptyNumberToUndefined(v: unknown): unknown {
+    if (v === undefined || v === null || v === '') return undefined;
+    if (typeof v === 'number') return Number.isNaN(v) ? undefined : v;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+}
+
 export const createMaterialSchema = z.object({
     name: z.string().nonempty({ error: 'Це поле є обовʼязковим' }),
     price: z
@@ -58,17 +66,19 @@ export const orderProductsSchema = z.object({
     productId: z
         .number({ error: 'Оберіть виріб' })
         .nullish()
-        .refine((val) => val !== null),
+        .refine((val) => val !== null, { message: 'Оберіть виріб' }),
     size: z
         .number({ error: 'Введіть число' })
         .multipleOf(0.01, { error: 'Крок значення — 0.01' })
+        .nonnegative({ error: 'Розмір не може бути відʼємним' })
         .nullish()
-        .refine((val) => val !== null),
+        .refine((val) => val !== null, { message: 'Введіть розмір' }),
     count: z
         .number({ error: 'Введіть кількість виробів' })
         .int({ error: 'Введіть ціле число' })
+        .nonnegative({ error: 'Кількість не може бути відʼємною' })
         .nullish()
-        .refine((val) => val !== null),
+        .refine((val) => val !== null, { message: 'Введіть кількість виробів' }),
     notes: z.string().optional(),
 });
 
@@ -150,25 +160,35 @@ export const createWorkUnitSchema = z.object({
     employeeId: z.number({ error: 'Оберіть працівника' }).positive({ error: 'Оберіть працівника' }),
     orderId: z.number().positive().optional(),
     materialId: z.number({ error: 'Оберіть метал' }).positive({ error: 'Оберіть метал' }),
-    weight: z
-        .number({ error: 'Введіть число' })
-        .positive({ error: 'Вага повинна бути додатним числом' })
-        .multipleOf(0.001, { message: 'Крок значення — 0.001' }),
+    weight: z.preprocess(
+        emptyNumberToUndefined,
+        z
+            .number({ error: 'Введіть число' })
+            .positive({ error: 'Вага повинна бути додатним числом' })
+            .multipleOf(0.001, { message: 'Крок значення — 0.001' }),
+    ),
 });
 
 export type CreateWorkUnitFormData = z.infer<typeof createWorkUnitSchema>;
+export type CreateWorkUnitFormInput = z.input<typeof createWorkUnitSchema>;
 
 export const returnWorkUnitSchema = z.object({
     workUnitId: z.number({ error: 'Введіть число' }).positive({ error: 'Введіть додатне число' }),
-    metalWeight: z
-        .number({ error: 'Введіть число' })
-        .nonnegative({ error: 'Введіть невідʼємне число' })
-        .multipleOf(0.001, { message: 'Крок значення — 0.001' }),
-    loss: z
-        .number({ error: 'Введіть число' })
-        .min(0, { error: 'Значення не може бути меншим за 0' })
-        .max(100, { error: 'Значення повинно бути менше 100' })
-        .multipleOf(0.01, { message: 'Крок значення — 0.01' }),
+    metalWeight: z.preprocess(
+        emptyNumberToUndefined,
+        z
+            .number({ error: 'Введіть число' })
+            .nonnegative({ error: 'Введіть невідʼємне число' })
+            .multipleOf(0.001, { message: 'Крок значення — 0.001' }),
+    ),
+    loss: z.preprocess(
+        emptyNumberToUndefined,
+        z
+            .number({ error: 'Введіть число' })
+            .min(0, { error: 'Значення не може бути меншим за 0' })
+            .max(100, { error: 'Значення повинно бути менше 100' })
+            .multipleOf(0.01, { message: 'Крок значення — 0.01' }),
+    ),
     description: z
         .string({ error: 'Введіть опис' })
         .trim()
@@ -177,30 +197,42 @@ export const returnWorkUnitSchema = z.object({
 });
 
 export type ReturnWorkUnitFormData = z.infer<typeof returnWorkUnitSchema>;
+export type ReturnWorkUnitFormInput = z.input<typeof returnWorkUnitSchema>;
 
 export const saveMaterialSchema = z.object({
     employeeId: z.number({ error: 'Оберіть працівника' }).positive({ error: 'Оберіть метал' }),
     materialId: z.number({ error: 'Оберіть метал' }).positive({ error: 'Оберіть метал' }),
-    metalWeight: z
-        .number({ error: 'Введіть число' })
-        .positive({ error: 'Введіть невідʼємне число' })
-        .multipleOf(0.001, { message: 'Крок значення — 0.001' }),
+    metalWeight: z.preprocess(
+        emptyNumberToUndefined,
+        z
+            .number({ error: 'Введіть число' })
+            .positive({ error: 'Введіть невідʼємне число' })
+            .multipleOf(0.001, { message: 'Крок значення — 0.001' }),
+    ),
 });
 
 export type SaveMaterialFormData = z.infer<typeof saveMaterialSchema>;
+export type SaveMaterialFormInput = z.input<typeof saveMaterialSchema>;
 
 export const updateWorkUnitSchema = z.object({
     workUnitId: z.number({ error: 'Невалідний ідентифікатор наряду' }).positive(),
-    metalWeight: z
-        .number({ error: 'Введіть число' })
-        .nonnegative({ error: 'Значення не може бути меншим за 0' })
-        .multipleOf(0.001, { message: 'Крок значення — 0.001' }),
-    loss: z
-        .number({ error: 'Введіть число' })
-        .min(0, { error: 'Значення не може бути меншим за 0' })
-        .max(100, { error: 'Значення повинно бути менше 100' })
-        .multipleOf(0.01, { message: 'Крок значення — 0.01' })
-        .optional(),
+    metalWeight: z.preprocess(
+        emptyNumberToUndefined,
+        z
+            .number({ error: 'Введіть число' })
+            .nonnegative({ error: 'Значення не може бути меншим за 0' })
+            .multipleOf(0.001, { message: 'Крок значення — 0.001' })
+            .optional(),
+    ),
+    loss: z.preprocess(
+        emptyNumberToUndefined,
+        z
+            .number({ error: 'Введіть число' })
+            .min(0, { error: 'Значення не може бути меншим за 0' })
+            .max(100, { error: 'Значення повинно бути менше 100' })
+            .multipleOf(0.01, { message: 'Крок значення — 0.01' })
+            .optional(),
+    ),
     description: z
         .string({ error: 'Введіть опис' })
         .trim()
@@ -209,6 +241,7 @@ export const updateWorkUnitSchema = z.object({
 });
 
 export type UpdateWorkUnitFormData = z.infer<typeof updateWorkUnitSchema>;
+export type UpdateWorkUnitFormInput = z.input<typeof updateWorkUnitSchema>;
 
 export const updateMaterialSchema = z.object({
     name: z.string().nonempty({ error: 'Це поле є обовʼязковим' }),

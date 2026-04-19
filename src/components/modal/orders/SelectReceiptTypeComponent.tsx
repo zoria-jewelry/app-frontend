@@ -112,7 +112,7 @@ const SelectReceiptTypeComponent = (props: SelectReceiptTypeComponentProps) => {
                         </MenuItem>
                     ))}
                 </Select>
-                <FormHelperText error={true} sx={{ minHeight: '30px' }}>
+                <FormHelperText error={!!error} sx={{ margin: 0 }}>
                     {error}
                 </FormHelperText>
             </FormControl>

@@ -1,20 +1,18 @@
-import {
-    Box,
-    Button,
-    FormHelperText,
-    IconButton,
-    TextField,
-    Typography,
-    useTheme,
-} from '@mui/material';
+import { Box, Button, IconButton, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, type Control } from 'react-hook-form';
 import type { WorkUnitDto } from '../../../dto/work-units.ts';
-import { updateWorkUnitSchema, type UpdateWorkUnitFormData } from '../../../validation/schemas.ts';
+import {
+    updateWorkUnitSchema,
+    type UpdateWorkUnitFormData,
+    type UpdateWorkUnitFormInput,
+} from '../../../validation/schemas.ts';
 import { useEffect } from 'react';
+import { EDIT_MODAL_PAPER_MAX, FORM_HELPER_TEXT_ALIGNED_SX } from '../../../constants/createModalLayout.ts';
+import { RhfNumberTextField } from '../../common/RhfNumberTextField.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -23,8 +21,9 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        minWidth: '40%',
-        minHeight: '40%',
+        width: EDIT_MODAL_PAPER_MAX,
+        maxWidth: EDIT_MODAL_PAPER_MAX,
+        boxSizing: 'border-box',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -55,10 +54,29 @@ const getWeightValue = (workUnit?: WorkUnitDto): number => {
     return workUnit.metalIssued ?? 0;
 };
 
+/** Blank field when stored weight is 0; still allow typing 0 via `preserveZero`. */
+const getWeightValueForForm = (workUnit?: WorkUnitDto): number | undefined => {
+    if (!workUnit) {
+        return undefined;
+    }
+    const v = getWeightValue(workUnit);
+    return v === 0 ? undefined : v;
+};
+
+const getLossForForm = (workUnit: WorkUnitDto | undefined, canEdit: boolean): number | undefined => {
+    if (!canEdit || !workUnit) {
+        return undefined;
+    }
+    const l = workUnit.loss;
+    if (l === null || l === undefined) {
+        return undefined;
+    }
+    return l === 0 ? undefined : l;
+};
+
 const DEFAULT_DESCRIPTION = 'Немає опису наряду';
 
 const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnitComponentProps) => {
-    const theme = useTheme();
     const hasReturn = !!workUnit?.returnedDate;
     const hasOrder = !!workUnit?.orderId;
     const canEditLoss = hasReturn && hasOrder;
@@ -71,51 +89,62 @@ const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnit
         register,
         handleSubmit,
         reset,
+        control,
         formState: { errors },
-    } = useForm<UpdateWorkUnitFormData>({
-        resolver: zodResolver(updateWorkUnitSchema),
+    } = useForm<UpdateWorkUnitFormInput, unknown, UpdateWorkUnitFormInput>({
+        resolver: zodResolver(updateWorkUnitSchema, undefined, { raw: true }),
         reValidateMode: 'onSubmit',
         defaultValues: {
             workUnitId: workUnit?.id ?? 0,
-            metalWeight: getWeightValue(workUnit),
-            loss: canEditLoss ? (workUnit?.loss ?? 0) : undefined,
+            metalWeight: getWeightValueForForm(workUnit),
+            loss: getLossForForm(workUnit, canEditLoss),
             description: descriptionValue,
         },
     });
 
     useEffect(() => {
-        if (!workUnit) {
+        if (!open || !workUnit) {
             return;
         }
 
+        const canEditLossInner = !!workUnit.returnedDate && !!workUnit.orderId;
+        const canEditDescriptionInner = !!workUnit.returnedDate && !!workUnit.orderId;
+        const descriptionInner = canEditDescriptionInner
+            ? (workUnit.description ?? DEFAULT_DESCRIPTION)
+            : undefined;
+
         reset({
             workUnitId: workUnit.id,
-            metalWeight: getWeightValue(workUnit),
-            loss: canEditLoss ? (workUnit.loss ?? 0) : undefined,
-            description: descriptionValue,
+            metalWeight: getWeightValueForForm(workUnit),
+            loss: getLossForForm(workUnit, canEditLossInner),
+            description: descriptionInner,
         });
-    }, [workUnit, reset, hasReturn, canEditDescription, canEditLoss, descriptionValue]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- only reset on open / work unit id; not on workUnit reference churn
+    }, [open, workUnit?.id, reset]);
 
     const handleClose = () => {
         reset({
             workUnitId: workUnit?.id ?? 0,
-            metalWeight: getWeightValue(workUnit),
-            loss: canEditLoss ? (workUnit?.loss ?? 0) : undefined,
+            metalWeight: getWeightValueForForm(workUnit),
+            loss: getLossForForm(workUnit, canEditLoss),
             description: descriptionValue,
         });
         onClose();
     };
 
-    const onSubmit = (data: UpdateWorkUnitFormData) => {
-        const payload = hasReturn
+    const onSubmit = (data: UpdateWorkUnitFormInput) => {
+        const metalWeight = (data.metalWeight as number | undefined) ?? 0;
+        const lossValue = (data.loss as number | undefined) ?? 0;
+        const payload: UpdateWorkUnitFormData = hasReturn
             ? {
-                  ...data,
+                  workUnitId: data.workUnitId,
+                  metalWeight,
                   description: canEditDescription ? data.description : undefined,
-                  loss: canEditLoss ? data.loss : undefined,
+                  loss: canEditLoss ? lossValue : undefined,
               }
             : {
                   workUnitId: data.workUnitId,
-                  metalWeight: data.metalWeight,
+                  metalWeight,
               };
         onSave(payload);
         handleClose();
@@ -124,6 +153,8 @@ const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnit
     if (!workUnit) {
         return null;
     }
+
+    const numberControl = control as Control<UpdateWorkUnitFormInput>;
 
     return (
         <BootstrapDialog onClose={handleClose} aria-labelledby="edit-work-unit" open={open}>
@@ -152,43 +183,28 @@ const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnit
                     <Typography>
                         {hasReturn ? 'Повернено металу, г' : 'Видано металу, г'}
                     </Typography>
-                    <TextField
-                        type="number"
+                    <RhfNumberTextField
+                        name="metalWeight"
+                        control={numberControl}
+                        preserveZero
                         fullWidth
-                        {...register('metalWeight', { valueAsNumber: true })}
-                        error={!!errors.metalWeight}
-                    />
-                    <FormHelperText
-                        error={true}
-                        sx={{
-                            margin: 0,
-                            marginBottom: theme.spacing(2),
-                            minHeight: '30px',
+                        slotProps={{
+                            htmlInput: { step: 0.001 },
+                            formHelperText: { sx: FORM_HELPER_TEXT_ALIGNED_SX },
                         }}
-                    >
-                        {errors.metalWeight ? errors.metalWeight.message : ''}
-                    </FormHelperText>
+                    />
                 </Box>
 
                 {canEditLoss && (
                     <Box mt={4}>
                         <Typography>ПН, %</Typography>
-                        <TextField
-                            type="number"
+                        <RhfNumberTextField
+                            name="loss"
+                            control={numberControl}
+                            preserveZero
                             fullWidth
-                            {...register('loss', { valueAsNumber: true })}
-                            error={!!errors.loss}
+                            slotProps={{ htmlInput: { step: 0.01 } }}
                         />
-                        <FormHelperText
-                            error={true}
-                            sx={{
-                                margin: 0,
-                                marginBottom: theme.spacing(2),
-                                minHeight: '30px',
-                            }}
-                        >
-                            {errors.loss ? errors.loss.message : ''}
-                        </FormHelperText>
                     </Box>
                 )}
 
@@ -201,17 +217,11 @@ const EditWorkUnitComponent = ({ open, workUnit, onClose, onSave }: EditWorkUnit
                             minRows={3}
                             {...register('description')}
                             error={!!errors.description}
-                        />
-                        <FormHelperText
-                            error={true}
-                            sx={{
-                                margin: 0,
-                                marginBottom: theme.spacing(2),
-                                minHeight: '30px',
+                            helperText={errors.description?.message}
+                            slotProps={{
+                                formHelperText: { sx: FORM_HELPER_TEXT_ALIGNED_SX },
                             }}
-                        >
-                            {errors.description ? errors.description.message : ''}
-                        </FormHelperText>
+                        />
                     </Box>
                 )}
 

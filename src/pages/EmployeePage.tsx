@@ -2,6 +2,10 @@ import {
     Box,
     Button,
     IconButton,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
     Paper,
     Table,
     TableBody,
@@ -13,12 +17,13 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type MouseEvent } from 'react';
 import type { EmployeeDto } from '../dto/employees.ts';
 import paperStyles from '../styles/Paper.module.css';
 import commonStyles from '../styles/Common.module.css';
 import ArchiveIcon from '@mui/icons-material/Inventory2Outlined';
 import EditIcon from '@mui/icons-material/Edit';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { EmployeesApiClient } from '../api/employeesApiClient.ts';
 import DialogComponent from '../components/modal/DialogComponent.tsx';
 import EmployeesArchiveComponent from '../components/modal/employees/EmployeesArchiveComponent.tsx';
@@ -39,6 +44,20 @@ const EmployeePage = () => {
 
     const [isCreateComponentOpened, setIsCreateComponentOpened] = useState<boolean>(false);
     const [employeeIdToEdit, setEmployeeIdToEdit] = useState<number | null>(null);
+
+    const [actionsMenuAnchor, setActionsMenuAnchor] = useState<null | HTMLElement>(null);
+    const [actionsMenuEmployee, setActionsMenuEmployee] = useState<EmployeeDto | null>(null);
+    const actionsMenuOpen = Boolean(actionsMenuAnchor && actionsMenuEmployee);
+
+    const openActionsMenu = (event: MouseEvent<HTMLElement>, employee: EmployeeDto) => {
+        setActionsMenuAnchor(event.currentTarget);
+        setActionsMenuEmployee(employee);
+    };
+
+    const closeActionsMenu = () => {
+        setActionsMenuAnchor(null);
+        setActionsMenuEmployee(null);
+    };
 
     const loadEmployees = useCallback(() => {
         EmployeesApiClient.get(page).then((employeesList) => {
@@ -170,19 +189,6 @@ const EmployeePage = () => {
             </Box>
 
             {/* Data table */}
-            <Box width="100%" display="flex" justifyContent="flex-end">
-                <TablePagination
-                    count={total}
-                    onPageChange={(_, p) => {
-                        console.log(`SETTING PAGE ${p}`);
-                        setPage(p);
-                    }}
-                    rowsPerPageOptions={[]}
-                    page={page}
-                    rowsPerPage={10}
-                    style={{ border: 0, overflow: 'visible' }}
-                />
-            </Box>
             <TableContainer
                 style={{
                     minWidth: '350px',
@@ -222,37 +228,73 @@ const EmployeePage = () => {
                                 <TableCell>
                                     <Typography variant="body2">{employee.phone}</Typography>
                                 </TableCell>
-                                <TableCell sx={{ textAlign: 'right' }}>
-                                    <Box
-                                        display="inline-flex"
-                                        flexDirection="row"
-                                        justifyContent="flex-end"
-                                        alignItems="center"
-                                        gap={theme.spacing(1)}
+                                <TableCell align="center" sx={{ width: '1%', verticalAlign: 'middle' }}>
+                                    <IconButton
+                                        id={`employee-actions-trigger-${employee.id}`}
+                                        size="medium"
+                                        aria-label="Дії з працівником"
+                                        aria-haspopup="true"
+                                        aria-controls={actionsMenuOpen ? 'employee-actions-menu' : undefined}
+                                        aria-expanded={
+                                            actionsMenuOpen && actionsMenuEmployee?.id === employee.id
+                                                ? true
+                                                : false
+                                        }
+                                        onClick={(e) => openActionsMenu(e, employee)}
                                     >
-                                        <IconButton
-                                            onClick={() => setEmployeeIdToEdit(employee.id)}
-                                            size="small"
-                                            style={{ padding: 0 }}
-                                        >
-                                            <EditIcon />
-                                        </IconButton>
-                                        <IconButton
-                                            onClick={() =>
-                                                handleOpenArchiveEmployeeDialog(employee)
-                                            }
-                                            size="small"
-                                            style={{ padding: 0 }}
-                                        >
-                                            <ArchiveIcon />
-                                        </IconButton>
-                                    </Box>
+                                        <MoreVertIcon />
+                                    </IconButton>
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            <Menu
+                id="employee-actions-menu"
+                anchorEl={actionsMenuAnchor}
+                open={actionsMenuOpen}
+                onClose={closeActionsMenu}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{
+                    list: {
+                        dense: true,
+                        'aria-labelledby': actionsMenuEmployee
+                            ? `employee-actions-trigger-${actionsMenuEmployee.id}`
+                            : undefined,
+                    },
+                }}
+            >
+                {actionsMenuEmployee && (
+                    <>
+                        <MenuItem
+                            onClick={() => {
+                                setEmployeeIdToEdit(actionsMenuEmployee.id);
+                                closeActionsMenu();
+                            }}
+                        >
+                            <ListItemIcon>
+                                <EditIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText primary="Редагувати" />
+                        </MenuItem>
+                        <MenuItem
+                            onClick={() => {
+                                handleOpenArchiveEmployeeDialog(actionsMenuEmployee);
+                                closeActionsMenu();
+                            }}
+                        >
+                            <ListItemIcon>
+                                <ArchiveIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText primary="Архівувати" />
+                        </MenuItem>
+                    </>
+                )}
+            </Menu>
+
             <TablePagination
                 count={total}
                 onPageChange={(_, p) => {

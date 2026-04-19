@@ -5,7 +5,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import {
     Button,
     FormControl,
-    FormHelperText,
     FormLabel,
     TextField,
     Typography,
@@ -16,6 +15,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { type CreateMaterialFormData, createMaterialSchema } from '../../../validation/schemas.ts';
 import { MaterialsApiClient } from '../../../api/materialsApiClient.ts';
 import { showToast } from '../../common/Toast.tsx';
+import { RhfNumberTextField } from '../../common/RhfNumberTextField.tsx';
+import {
+    CREATE_MODAL_PAPER_MAX,
+    FORM_HELPER_TEXT_ALIGNED_SX,
+} from '../../../constants/createModalLayout.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -24,7 +28,9 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        width: '1000px',
+        width: CREATE_MODAL_PAPER_MAX,
+        maxWidth: CREATE_MODAL_PAPER_MAX,
+        boxSizing: 'border-box',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -50,6 +56,7 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
         handleSubmit,
         clearErrors,
         reset,
+        control,
         formState: { errors },
     } = useForm<CreateMaterialFormData>({
         resolver: zodResolver(createMaterialSchema),
@@ -105,7 +112,7 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
             {/* The form */}
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                style={{ marginTop: theme.spacing(8) }}
+                style={{ marginTop: theme.spacing(4) }}
                 noValidate
             >
                 <FormControl fullWidth>
@@ -114,10 +121,14 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
                         id="name"
                         placeholder="Золото 585"
                         fullWidth
-                        margin="normal"
+                        margin="dense"
                         defaultValue=""
                         {...register('name')}
                         error={!!errors.name}
+                        helperText={errors.name?.message}
+                        slotProps={{
+                            formHelperText: { sx: FORM_HELPER_TEXT_ALIGNED_SX },
+                        }}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -125,24 +136,20 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
                             },
                         }}
                     />
-                    <FormHelperText
-                        error={!!errors.name}
-                        sx={{ margin: 0, marginBottom: theme.spacing(2), minHeight: '30px' }}
-                    >
-                        {errors?.name?.message}
-                    </FormHelperText>
                 </FormControl>
                 <FormControl fullWidth>
                     <FormLabel htmlFor="price">Вартість (грн за г)</FormLabel>
-                    <TextField
+                    <RhfNumberTextField
+                        name="price"
+                        control={control}
+                        emptyBlurFallback={0}
                         id="price"
                         placeholder="1234.00"
-                        type="number"
                         fullWidth
-                        margin="normal"
-                        defaultValue=""
-                        {...register('price', { valueAsNumber: true })}
-                        error={!!errors.price}
+                        margin="dense"
+                        slotProps={{
+                            htmlInput: { step: 0.01 },
+                        }}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -150,9 +157,6 @@ const CreateMaterialComponent = (props: CreateMaterialComponentProps) => {
                             },
                         }}
                     />
-                    <FormHelperText error={!!errors.price} sx={{ margin: 0, minHeight: '30px' }}>
-                        {errors?.price?.message}
-                    </FormHelperText>
                 </FormControl>
                 <FormControl
                     fullWidth

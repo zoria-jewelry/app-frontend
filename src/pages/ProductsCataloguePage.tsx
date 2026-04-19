@@ -180,20 +180,15 @@ const ProductsCataloguePage = () => {
                 </Box>
             </Box>
 
-            {/* Cards container */}
+            {/* Cards container — scroll with <main>; avoid max-height so rows aren’t clipped */}
             <Box
                 display="flex"
                 flexWrap="wrap"
                 gap={theme.spacing(5)}
                 justifyContent="flex-start"
                 minHeight="240px"
-                maxHeight="60vh"
                 padding={theme.spacing(1)}
                 width="100%"
-                sx={{
-                    overflowX: 'auto',
-                    overflowY: 'auto',
-                }}
             >
                 {entries.map((p) => (
                     <Box

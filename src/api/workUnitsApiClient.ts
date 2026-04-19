@@ -1,6 +1,6 @@
 import { AbstractApiClient } from './abstractApiClient.ts';
 import type { WorkUnitDto, WorkUnitsReportDto } from '../dto/work-units.ts';
-import type { WorkUnitsFilterData } from '../components/modal/work-units/WorkUnitsFilterComponent.tsx';
+import type { WorkUnitsFilterData } from '../dto/work-units.ts';
 import type {
     CreateWorkUnitFormData,
     ReturnWorkUnitFormData,

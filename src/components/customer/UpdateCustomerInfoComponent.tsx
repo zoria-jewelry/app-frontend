@@ -63,7 +63,7 @@ const UpdateCustomerInfoComponent = () => {
     return (
         <form
             onSubmit={handleSubmit(onSubmit)}
-            style={{ marginTop: theme.spacing(8), width: '100%', overflow: 'auto' }}
+            style={{ marginTop: theme.spacing(4), width: '100%', overflow: 'auto' }}
             noValidate
         >
             <FormControl fullWidth>
@@ -72,7 +72,7 @@ const UpdateCustomerInfoComponent = () => {
                     id="full-name"
                     placeholder="Шевченко Тарас Григорович"
                     fullWidth
-                    margin="normal"
+                    margin="dense"
                     {...register('fullName')}
                     error={!!errors.fullName}
                     sx={{
@@ -84,7 +84,6 @@ const UpdateCustomerInfoComponent = () => {
                 />
                 <FormHelperText
                     error={!!errors.fullName}
-                    sx={{ margin: 0, marginBottom: theme.spacing(2), minHeight: '30px' }}
                 >
                     {errors?.fullName?.message}
                 </FormHelperText>
@@ -95,7 +94,7 @@ const UpdateCustomerInfoComponent = () => {
                     id="phone-number"
                     placeholder="+380961234567"
                     fullWidth
-                    margin="normal"
+                    margin="dense"
                     {...register('phone')}
                     error={!!errors.phone}
                     sx={{
@@ -105,7 +104,7 @@ const UpdateCustomerInfoComponent = () => {
                         },
                     }}
                 />
-                <FormHelperText error={!!errors.phone} sx={{ margin: 0, minHeight: '30px' }}>
+                <FormHelperText error={!!errors.phone} sx={{ margin: 0 }}>
                     {errors?.phone?.message}
                 </FormHelperText>
             </FormControl>
@@ -115,7 +114,7 @@ const UpdateCustomerInfoComponent = () => {
                     display: 'flex',
                     alignItems: 'center',
                     marginTop: theme.spacing(2),
-                    marginBottom: theme.spacing(2),
+                    marginBottom: theme.spacing(1),
                 }}
             >
                 <Button variant="contained" color="primary" type="submit">

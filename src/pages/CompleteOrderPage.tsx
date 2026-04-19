@@ -26,18 +26,20 @@ import {
     useTheme,
 } from '@mui/material';
 import paperStyles from '../styles/Paper.module.css';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { type Resolver, useFieldArray, useForm } from 'react-hook-form';
 import { type CompleteOrderFormData, completeOrderSchema } from '../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toFixedNumber } from '../utils.ts';
 import { paymentTypes, type CompleteOrderCalculationsDto, type OrderDto } from '../dto/orders.ts';
 import { OrdersApiClient } from '../api/ordersApiClient.ts';
+import { CustomersApiClient } from '../api/customersApiClient.ts';
 import SuccessIcon from '@mui/icons-material/CheckCircle';
 import WarningIcon from '@mui/icons-material/Warning';
 import { VchasnoApiClient } from '../api/vchasnoApiClient.ts';
 import { showToast } from '../components/common/Toast.tsx';
+import { RhfNumberTextField } from '../components/common/RhfNumberTextField.tsx';
+import EditCustomerBalancesComponent from '../components/modal/customers/EditCustomerBalancesComponent.tsx';
 
 const evaluateExpression = (expr: string): number | null => {
     if (!expr || !expr.toString().trim()) return null;
@@ -116,9 +118,29 @@ const CompleteOrderPage = () => {
     const orderId: number = Number(params.orderId);
 
     const [searchParams] = useSearchParams();
-    const customerId = searchParams.get('customerId');
+    const customerIdParam = searchParams.get('customerId');
 
     const [order, setOrder] = useState<OrderDto | undefined>();
+
+    const customerIdForBalances = useMemo(() => {
+        if (
+            customerIdParam != null &&
+            customerIdParam !== '' &&
+            Number.isFinite(Number(customerIdParam))
+        ) {
+            return Number(customerIdParam);
+        }
+        const oid = order?.customerId;
+        if (oid != null && Number.isFinite(Number(oid))) {
+            return Number(oid);
+        }
+        return null;
+    }, [customerIdParam, order?.customerId]);
+
+    const [isEditCustomerBalancesModalOpen, setIsEditCustomerBalancesModalOpen] =
+        useState<boolean>(false);
+    /** `null` = loading; `''` = fetch failed or empty name; otherwise full name. */
+    const [customerNameForBalances, setCustomerNameForBalances] = useState<string | null>(null);
     const [orderCalculations, setOrderCalculations] = useState<
         CompleteOrderCalculationsDto | undefined
     >();
@@ -175,46 +197,52 @@ const CompleteOrderPage = () => {
               );
               if (currencyIndex === -1) return 0;
 
-              const rawValue = rawPaymentInputs[currencyIndex] ?? '0';
+              const rawValue = rawPaymentInputs[currencyIndex] ?? '';
               const evaluated = evaluateExpression(rawValue);
               return evaluated !== null && evaluated !== undefined ? evaluated : 0;
           })()
         : 0;
 
-    useEffect(() => {
-        // Collapse steps 2 and 3 when step 1 inputs change
-        setExpandedAccordions((prev) => {
-            const newSet = new Set(prev);
-            newSet.delete('panel2');
-            newSet.delete('panel3');
-            return newSet;
-        });
-
-        console.log('effect');
-        if (loss > 0 && totalMetalWeight > 0) {
-            console.log('entered');
-            setIsCalculationsLoading(true);
-            OrdersApiClient.getCompleteOrderCalculations(orderId, {
-                lossPercentage: Number(toFixedNumber(loss, 2)),
-                finalMetalWeight: Number(toFixedNumber(totalMetalWeight, 3)),
-                discount: discount != null ? Number(toFixedNumber(discount, 2)) : 0,
-                stoneCost: stonesPrice != null ? Number(toFixedNumber(stonesPrice, 2)) : 0,
-            })
-                .then((data) => {
-                    console.log(data);
-                    setOrderCalculations(data);
-                    setIsCalculationsLoading(false);
-                })
-                .catch((err) => {
-                    showToast('Не вдалось обчислити вартість замовлення', 'error');
-                    console.log(err);
-                    setIsCalculationsLoading(false);
-                });
+    const fetchOrderCalculations = useCallback(() => {
+        if (!(loss > 0 && totalMetalWeight > 0)) {
+            return;
         }
-    }, [discount, loss, totalMetalWeight, stonesPrice]);
+        setIsCalculationsLoading(true);
+        OrdersApiClient.getCompleteOrderCalculations(orderId, {
+            lossPercentage: Number(toFixedNumber(loss, 2)),
+            finalMetalWeight: Number(toFixedNumber(totalMetalWeight, 3)),
+            discount: discount != null ? Number(toFixedNumber(discount, 2)) : 0,
+            stoneCost: stonesPrice != null ? Number(toFixedNumber(stonesPrice, 2)) : 0,
+        })
+            .then((data) => {
+                setOrderCalculations(data);
+                setIsCalculationsLoading(false);
+            })
+            .catch((err) => {
+                showToast('Не вдалось обчислити вартість замовлення', 'error');
+                console.log(err);
+                setIsCalculationsLoading(false);
+            });
+    }, [orderId, discount, loss, totalMetalWeight, stonesPrice]);
+
+    useEffect(() => {
+        fetchOrderCalculations();
+    }, [fetchOrderCalculations]);
 
     const enableSections =
         !!loss && !!totalMetalWeight && !!Number(loss) && !!Number(totalMetalWeight);
+
+    /** Steps 2–3 open automatically when step 1 has valid loss and metal weight; accordions are not user-toggleable. */
+    useEffect(() => {
+        setExpandedAccordions(() => {
+            const next = new Set<string>(['panel1']);
+            if (enableSections) {
+                next.add('panel2');
+                next.add('panel3');
+            }
+            return next;
+        });
+    }, [enableSections]);
 
     const handleRawPaymentInputChange = (index: number, value: string) => {
         setRawPaymentInputs((prev) => ({ ...prev, [index]: value }));
@@ -300,7 +328,11 @@ const CompleteOrderPage = () => {
                     }
                     clearErrors();
                     reset();
-                    navigate(customerId ? `/customers/${customerId}` : '/orders');
+                    navigate(
+                        customerIdForBalances != null
+                            ? `/customers/${customerIdForBalances}`
+                            : '/orders',
+                    );
                 })
                 .catch((err) => {
                     showToast(`Не вдалось створити чек до замовлення`, 'error');
@@ -324,6 +356,21 @@ const CompleteOrderPage = () => {
     }, [orderId]);
 
     useEffect(() => {
+        if (customerIdForBalances == null) {
+            setCustomerNameForBalances(null);
+            return;
+        }
+        setCustomerNameForBalances(null);
+        CustomersApiClient.getInfoById(customerIdForBalances)
+            .then((data) => {
+                setCustomerNameForBalances(data?.fullName?.trim() ?? '');
+            })
+            .catch(() => {
+                setCustomerNameForBalances('');
+            });
+    }, [customerIdForBalances]);
+
+    useEffect(() => {
         if (orderCalculations) {
             reset({
                 ...watch(),
@@ -335,7 +382,7 @@ const CompleteOrderPage = () => {
 
             const raw: Record<number, string> = {};
             (orderCalculations.entries ?? []).forEach((_entry, idx) => {
-                raw[idx] = '0';
+                raw[idx] = '';
             });
             setRawPaymentInputs(raw);
         }
@@ -354,6 +401,7 @@ const CompleteOrderPage = () => {
     }, []);
 
     return (
+        <>
         <form
             onSubmit={handleSubmit(onSubmit)}
             style={{
@@ -411,36 +459,27 @@ const CompleteOrderPage = () => {
                 className={paperStyles.paper}
                 sx={{ padding: theme.spacing(4) }}
                 expanded={expandedAccordions.has('panel1')}
-                onChange={(_, isExpanded) => {
-                    setExpandedAccordions((prev) => {
-                        const newSet = new Set(prev);
-                        if (isExpanded) {
-                            newSet.add('panel1');
-                        } else {
-                            newSet.delete('panel1');
-                        }
-                        return newSet;
-                    });
-                }}
+                onChange={() => {}}
             >
                 <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
+                    expandIcon={null}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
+                    sx={{ cursor: 'default', '& .MuiAccordionSummary-expandIconWrapper': { display: 'none' } }}
                 >
                     <Typography variant="h5">Крок 1. Загальні відомості</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <FormControl fullWidth>
                         <FormLabel htmlFor="discount">Знижка (грн)</FormLabel>
-                        <TextField
+                        <RhfNumberTextField
+                            name="discount"
+                            control={control}
                             id="discount"
                             placeholder="999"
                             fullWidth
-                            margin="normal"
-                            type="number"
-                            {...register('discount', { valueAsNumber: true })}
-                            error={!!errors.discount}
+                            margin="dense"
+                            slotProps={{ htmlInput: { step: 0.01 } }}
                             sx={{
                                 margin: 0,
                                 '& .MuiOutlinedInput-root': {
@@ -450,7 +489,6 @@ const CompleteOrderPage = () => {
                         />
                         <FormHelperText
                             error={!!errors.discount}
-                            sx={{ margin: 0, minHeight: '30px' }}
                         >
                             {errors?.discount?.message}
                         </FormHelperText>
@@ -458,14 +496,15 @@ const CompleteOrderPage = () => {
 
                     <FormControl fullWidth>
                         <FormLabel htmlFor="loss">Угар (%)</FormLabel>
-                        <TextField
+                        <RhfNumberTextField
+                            name="lossPercentage"
+                            control={control}
+                            emptyBlurFallback={0}
                             id="loss"
                             placeholder="7.5"
                             fullWidth
-                            margin="normal"
-                            type="number"
-                            {...register('lossPercentage', { valueAsNumber: true })}
-                            error={!!errors.lossPercentage}
+                            margin="dense"
+                            slotProps={{ htmlInput: { step: 0.01 } }}
                             sx={{
                                 margin: 0,
                                 '& .MuiOutlinedInput-root': {
@@ -475,7 +514,6 @@ const CompleteOrderPage = () => {
                         />
                         <FormHelperText
                             error={!!errors.lossPercentage}
-                            sx={{ margin: 0, minHeight: '30px' }}
                         >
                             {errors?.lossPercentage?.message}
                         </FormHelperText>
@@ -485,14 +523,15 @@ const CompleteOrderPage = () => {
                         <FormLabel htmlFor="total-metal-weight">
                             Кінцева вага металу у виробах (г)
                         </FormLabel>
-                        <TextField
+                        <RhfNumberTextField
+                            name="finalMetalWeight"
+                            control={control}
+                            emptyBlurFallback={0}
                             id="total-metal-weight"
                             placeholder="42.140"
                             fullWidth
-                            margin="normal"
-                            type="number"
-                            {...register('finalMetalWeight', { valueAsNumber: true })}
-                            error={!!errors.finalMetalWeight}
+                            margin="dense"
+                            slotProps={{ htmlInput: { step: 0.001 } }}
                             sx={{
                                 margin: 0,
                                 '& .MuiOutlinedInput-root': {
@@ -502,7 +541,6 @@ const CompleteOrderPage = () => {
                         />
                         <FormHelperText
                             error={!!errors.finalMetalWeight}
-                            sx={{ margin: 0, minHeight: '30px' }}
                         >
                             {errors?.finalMetalWeight?.message}
                         </FormHelperText>
@@ -512,14 +550,14 @@ const CompleteOrderPage = () => {
                         <FormLabel htmlFor="total-stones-price">
                             Загальна вартість камінців у виробах (грн)
                         </FormLabel>
-                        <TextField
+                        <RhfNumberTextField
+                            name="stoneCost"
+                            control={control}
                             id="total-stones-price"
                             placeholder="5400.00"
                             fullWidth
-                            margin="normal"
-                            type="number"
-                            {...register('stoneCost', { valueAsNumber: true })}
-                            error={!!errors.stoneCost}
+                            margin="dense"
+                            slotProps={{ htmlInput: { step: 0.01 } }}
                             sx={{
                                 margin: 0,
                                 '& .MuiOutlinedInput-root': {
@@ -529,7 +567,6 @@ const CompleteOrderPage = () => {
                         />
                         <FormHelperText
                             error={!!errors.stoneCost}
-                            sx={{ margin: 0, minHeight: '30px' }}
                         >
                             {errors?.stoneCost?.message}
                         </FormHelperText>
@@ -543,25 +580,17 @@ const CompleteOrderPage = () => {
                 className={paperStyles.paper}
                 sx={{ padding: theme.spacing(4) }}
                 expanded={expandedAccordions.has('panel2')}
-                onChange={(_, isExpanded) => {
-                    if (!isCalculationsLoading) {
-                        setExpandedAccordions((prev) => {
-                            const newSet = new Set(prev);
-                            if (isExpanded) {
-                                newSet.add('panel2');
-                            } else {
-                                newSet.delete('panel2');
-                            }
-                            return newSet;
-                        });
-                    }
-                }}
+                onChange={() => {}}
             >
                 <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
+                    expandIcon={null}
                     aria-controls="panel2a-content"
                     id="panel2a-header"
-                    disabled={!enableSections || isCalculationsLoading}
+                    sx={{
+                        cursor: 'default',
+                        '& .MuiAccordionSummary-expandIconWrapper': { display: 'none' },
+                        opacity: enableSections ? 1 : 0.55,
+                    }}
                 >
                     <Box display="flex" alignItems="center" gap={theme.spacing(1)}>
                         <Typography variant="h5">Крок 2. Розрахунок вартості</Typography>
@@ -730,26 +759,18 @@ const CompleteOrderPage = () => {
                 className={paperStyles.paper}
                 sx={{ padding: theme.spacing(4) }}
                 expanded={expandedAccordions.has('panel3')}
-                onChange={(_, isExpanded) => {
-                    if (!isCalculationsLoading) {
-                        setExpandedAccordions((prev) => {
-                            const newSet = new Set(prev);
-                            if (isExpanded) {
-                                newSet.add('panel3');
-                            } else {
-                                newSet.delete('panel3');
-                            }
-                            return newSet;
-                        });
-                    }
-                }}
+                onChange={() => {}}
             >
                 <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
+                    expandIcon={null}
                     aria-controls="panel3a-content"
                     id="panel3a-header"
-                    disabled={!enableSections || isCalculationsLoading}
-                    sx={{ backgroundColor: 'white' }}
+                    sx={{
+                        backgroundColor: 'white',
+                        cursor: 'default',
+                        '& .MuiAccordionSummary-expandIconWrapper': { display: 'none' },
+                        opacity: enableSections ? 1 : 0.55,
+                    }}
                 >
                     <Box display="flex" alignItems="center" gap={theme.spacing(1)}>
                         <Typography variant="h5">Крок 3. Оплата замовлення</Typography>
@@ -761,6 +782,46 @@ const CompleteOrderPage = () => {
                 <AccordionDetails>
                     {orderCalculations && (
                         <>
+                            {customerIdForBalances != null && (
+                                <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    justifyContent="space-between"
+                                    gap={2}
+                                    width="100%"
+                                    marginBottom={theme.spacing(2)}
+                                >
+                                    <Typography
+                                        variant="body1"
+                                        component="span"
+                                        sx={{
+                                            fontWeight: 600,
+                                            flex: 1,
+                                            minWidth: 0,
+                                            mr: 1,
+                                        }}
+                                        noWrap
+                                        title={
+                                            customerNameForBalances === null
+                                                ? undefined
+                                                : customerNameForBalances || undefined
+                                        }
+                                    >
+                                        {customerNameForBalances === null
+                                            ? 'Завантаження…'
+                                            : customerNameForBalances || 'Клієнт'}
+                                    </Typography>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        type="button"
+                                        onClick={() => setIsEditCustomerBalancesModalOpen(true)}
+                                        sx={{ flexShrink: 0 }}
+                                    >
+                                        Оновити баланси клієнта
+                                    </Button>
+                                </Box>
+                            )}
                             <TableContainer
                                 sx={{
                                     overflowX: 'auto',
@@ -825,22 +886,22 @@ const CompleteOrderPage = () => {
                                     <TableBody>
                                         {(orderCalculations.entries ?? []).map((entry) => (
                                             <TableRow key={entry.materialId}>
-                                                <TableCell sx={{ padding: theme.spacing(2) }}>
+                                                <TableCell sx={{ padding: theme.spacing(1) }}>
                                                     <Typography variant="body2">
                                                         {entry.materialName}
                                                     </Typography>
                                                 </TableCell>
-                                                <TableCell sx={{ padding: theme.spacing(2) }}>
+                                                <TableCell sx={{ padding: theme.spacing(1) }}>
                                                     <Typography variant="body2">
                                                         {entry.materialCountOwnedByCustomer}
                                                     </Typography>
                                                 </TableCell>
-                                                <TableCell sx={{ padding: theme.spacing(2) }}>
+                                                <TableCell sx={{ padding: theme.spacing(1) }}>
                                                     <Typography variant="body2">
                                                         {entry.materialPrice}
                                                     </Typography>
                                                 </TableCell>
-                                                <TableCell sx={{ padding: theme.spacing(2) }}>
+                                                <TableCell sx={{ padding: theme.spacing(1) }}>
                                                     <Typography variant="body2" textAlign="right">
                                                         {toFixedNumber(entry.totalMaterialCost, 2)}
                                                     </Typography>
@@ -947,7 +1008,7 @@ const CompleteOrderPage = () => {
                                             const entry = orderCalculations?.entries.find(
                                                 (e) => e.materialId === field.materialId,
                                             );
-                                            const rawValue = rawPaymentInputs[index] ?? '0';
+                                            const rawValue = rawPaymentInputs[index] ?? '';
                                             const evaluated = evaluateExpression(rawValue);
 
                                             return (
@@ -987,7 +1048,7 @@ const CompleteOrderPage = () => {
                                                                 id={`material-${field.materialId}`}
                                                                 placeholder="наприклад: 100*2 або 50+10"
                                                                 fullWidth
-                                                                margin="normal"
+                                                                margin="dense"
                                                                 type="text"
                                                                 value={rawValue}
                                                                 onChange={(e) =>
@@ -1054,7 +1115,6 @@ const CompleteOrderPage = () => {
                                                                 }
                                                                 sx={{
                                                                     margin: 0,
-                                                                    minHeight: '30px',
                                                                 }}
                                                             >
                                                                 {
@@ -1205,6 +1265,18 @@ const CompleteOrderPage = () => {
                 </AccordionDetails>
             </Accordion>
         </form>
+
+        {customerIdForBalances != null && (
+            <EditCustomerBalancesComponent
+                isOpen={isEditCustomerBalancesModalOpen}
+                handleClose={() => setIsEditCustomerBalancesModalOpen(false)}
+                customerId={customerIdForBalances}
+                onUpdate={() => {
+                    fetchOrderCalculations();
+                }}
+            />
+        )}
+        </>
     );
 };
 

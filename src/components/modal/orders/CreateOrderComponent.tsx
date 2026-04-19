@@ -21,7 +21,7 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type CreateOrderFormData, createUpdateOrderSchema } from '../../../validation/schemas.ts';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useEffect, useState, useCallback, useMemo, memo } from 'react';
+import { useEffect, useLayoutEffect, useState, useCallback, useMemo, memo } from 'react';
 import type { MaterialDto } from '../../../dto/materials.ts';
 import type { EmployeeDto } from '../../../dto/employees.ts';
 import type { ProductEntryDto } from '../../../dto/products.ts';
@@ -31,6 +31,12 @@ import { ProductsApiClient } from '../../../api/productsApiClient.ts';
 import ListItemText from '@mui/material/ListItemText';
 import { OrdersApiClient } from '../../../api/ordersApiClient.ts';
 import { showToast } from '../../common/Toast.tsx';
+import { RhfNumberTextField } from '../../common/RhfNumberTextField.tsx';
+import {
+    orderFormOutlinedSelectUniformSx,
+    orderFormOutlinedUniformSx,
+} from './orderFormInputUniform.ts';
+import { FORM_HELPER_TEXT_ALIGNED_SX } from '../../../constants/createModalLayout.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -147,6 +153,9 @@ const ProductAutocompleteField = memo(
             (params: any) => (
                 <TextField
                     {...params}
+                    size="small"
+                    variant="outlined"
+                    margin="none"
                     placeholder="Виберіть виріб"
                     error={!!errors.products?.[index]?.productId}
                 />
@@ -156,6 +165,7 @@ const ProductAutocompleteField = memo(
 
         return (
             <Autocomplete
+                fullWidth
                 options={products}
                 noOptionsText="Нічого не знайдено"
                 getOptionLabel={getOptionLabel}
@@ -163,7 +173,12 @@ const ProductAutocompleteField = memo(
                 value={selectedProduct}
                 onInputChange={handleInputChange}
                 onChange={handleChange}
-                sx={{ flex: 3, minWidth: '40%' }}
+                sx={{
+                    flex: 3,
+                    minWidth: 0,
+                    width: '100%',
+                    ...orderFormOutlinedUniformSx,
+                }}
                 renderOption={renderOption}
                 renderInput={renderInput}
             />
@@ -189,6 +204,8 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
         clearErrors,
         reset,
         control,
+        getValues,
+        setValue,
         formState: { errors },
     } = useForm<CreateOrderFormData>({
         resolver: zodResolver(createUpdateOrderSchema),
@@ -216,6 +233,16 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
         MaterialsApiClient.getAll().then((data) => data && setMaterials(data));
         EmployeesApiClient.getAllActive().then((data) => data && setEmployees(data));
     }, []);
+
+    useLayoutEffect(() => {
+        if (!props.isOpen || materials.length === 0) {
+            return;
+        }
+        const id = getValues('materialId');
+        if (!id || !materials.some((m) => m.id === id)) {
+            setValue('materialId', materials[0].id);
+        }
+    }, [props.isOpen, materials, getValues, setValue]);
 
     const handleClose = (): void => {
         clearErrors();
@@ -278,13 +305,19 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                     }}
                 >
                     {/* Metal */}
-                    <FormControl sx={{ flex: 1, minWidth: 250 }}>
+                    <FormControl sx={{ flex: 1, minWidth: 250 }} margin="none">
                         <FormLabel>Метал</FormLabel>
                         <Controller
                             control={control}
                             name="materialId"
                             render={({ field }) => (
-                                <Select {...field} fullWidth>
+                                <Select
+                                    {...field}
+                                    fullWidth
+                                    size="small"
+                                    variant="outlined"
+                                    sx={orderFormOutlinedSelectUniformSx}
+                                >
                                     {materials.map((m) => (
                                         <MenuItem key={m.id} value={m.id}>
                                             {m.name}
@@ -293,23 +326,28 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                                 </Select>
                             )}
                         />
-                        <FormHelperText error={!!errors.materialId}>
+                        <FormHelperText
+                            error={!!errors.materialId}
+                            sx={FORM_HELPER_TEXT_ALIGNED_SX}
+                        >
                             {errors?.materialId?.message as string}
                         </FormHelperText>
                     </FormControl>
 
                     {/* Work price */}
-                    <FormControl sx={{ flex: 1, minWidth: 250 }}>
+                    <FormControl sx={{ flex: 1, minWidth: 250 }} margin="none">
                         <FormLabel>Вартість роботи (грн за г)</FormLabel>
-                        <TextField
-                            type="number"
+                        <RhfNumberTextField
+                            name="workPrice"
+                            control={control}
+                            emptyBlurFallback={0}
                             fullWidth
-                            {...register('workPrice', { valueAsNumber: true })}
-                            error={!!errors.workPrice}
+                            size="small"
+                            variant="outlined"
+                            margin="none"
+                            slotProps={{ htmlInput: { step: 0.01 } }}
+                            sx={orderFormOutlinedUniformSx}
                         />
-                        <FormHelperText error={!!errors.workPrice}>
-                            {errors?.workPrice?.message}
-                        </FormHelperText>
                     </FormControl>
                 </Box>
 
@@ -346,7 +384,7 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                                     }}
                                 >
                                     {/* Product */}
-                                    <Box sx={{ flex: 3, minWidth: '40%' }}>
+                                    <Box sx={{ flex: 3, minWidth: 0, width: '100%' }}>
                                         <Controller
                                             control={control}
                                             name={`products.${index}.productId`}
@@ -372,40 +410,62 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                                     </Box>
 
                                     {/* Size */}
-                                    <TextField
-                                        type="number"
+                                    <RhfNumberTextField
+                                        name={`products.${index}.size`}
+                                        control={control}
+                                        emptyBlurFallback={null}
+                                        size="small"
+                                        variant="outlined"
+                                        margin="none"
                                         placeholder="Розмір"
-                                        {...register(`products.${index}.size`, {
-                                            valueAsNumber: true,
-                                        })}
-                                        error={!!errors.products?.[index]?.size}
-                                        sx={{ flex: 0.5, minWidth: 100 }}
+                                        slotProps={{ htmlInput: { step: 0.01, min: 0 } }}
+                                        sx={{
+                                            flex: 0.5,
+                                            minWidth: 100,
+                                            alignSelf: 'flex-start',
+                                            ...orderFormOutlinedUniformSx,
+                                        }}
                                     />
 
                                     {/* Quantity */}
-                                    <TextField
-                                        type="number"
+                                    <RhfNumberTextField
+                                        name={`products.${index}.count`}
+                                        control={control}
+                                        emptyBlurFallback={null}
+                                        size="small"
+                                        variant="outlined"
+                                        margin="none"
                                         placeholder="К-ть"
-                                        {...register(`products.${index}.count`, {
-                                            valueAsNumber: true,
-                                        })}
-                                        error={!!errors.products?.[index]?.count}
-                                        sx={{ flex: 0.5, minWidth: 100 }}
+                                        slotProps={{ htmlInput: { step: 1, min: 0 } }}
+                                        sx={{
+                                            flex: 0.5,
+                                            minWidth: 100,
+                                            alignSelf: 'flex-start',
+                                            ...orderFormOutlinedUniformSx,
+                                        }}
                                     />
 
                                     {/* Notes */}
                                     <TextField
                                         placeholder="Примітки"
+                                        size="small"
+                                        variant="outlined"
+                                        margin="none"
                                         {...register(`products.${index}.notes`)}
                                         error={!!errors.products?.[index]?.notes}
-                                        sx={{ flex: 2 }}
-                                        multiline
-                                        maxRows={4}
+                                        sx={{
+                                            flex: 2,
+                                            minWidth: 120,
+                                            alignSelf: 'flex-start',
+                                            ...orderFormOutlinedUniformSx,
+                                        }}
                                     />
 
                                     <IconButton
                                         onClick={() => remove(index)}
-                                        sx={{ alignSelf: 'center' }}
+                                        size="small"
+                                        aria-label="Видалити позицію"
+                                        sx={{ alignSelf: 'flex-start', flexShrink: 0 }}
                                     >
                                         <DeleteIcon />
                                     </IconButton>
@@ -413,7 +473,10 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                             </Box>
                         );
                     })}
-                    <FormHelperText error={!!errors.products}>
+                    <FormHelperText
+                        error={!!errors.products}
+                        sx={FORM_HELPER_TEXT_ALIGNED_SX}
+                    >
                         {errors.products?.root?.message || errors.products?.message}
                     </FormHelperText>
                 </Box>
@@ -435,7 +498,7 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                 </Button>
 
                 {/* Executors */}
-                <FormControl fullWidth margin="normal">
+                <FormControl fullWidth margin="normal" size="small">
                     <FormLabel>Виконавці</FormLabel>
                     <Controller
                         control={control}
@@ -444,6 +507,8 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                             <Select
                                 {...field}
                                 fullWidth
+                                size="small"
+                                variant="outlined"
                                 multiple
                                 value={field.value || []}
                                 error={!!fieldState.error}
@@ -474,7 +539,7 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                             </Select>
                         )}
                     />
-                    <FormHelperText error={!!errors.executorsIds}>
+                    <FormHelperText error={!!errors.executorsIds} sx={FORM_HELPER_TEXT_ALIGNED_SX}>
                         {errors?.executorsIds?.message as string}
                     </FormHelperText>
                 </FormControl>

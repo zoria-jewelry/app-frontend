@@ -79,7 +79,7 @@ const UpdateCustomerBalancesComponent = ({ onUpdate }: UpdateCustomerBalancesCom
 
                 const raw: Record<number, string> = {};
                 balancesResp.entries.forEach((e, idx) => {
-                    raw[idx] = String(e.value ?? '');
+                    raw[idx] = e.value === 0 ? '' : String(e.value ?? '');
                 });
                 setRawInputs(raw);
 
@@ -146,13 +146,14 @@ const UpdateCustomerBalancesComponent = ({ onUpdate }: UpdateCustomerBalancesCom
     return (
         <form
             onSubmit={handleSubmit(onSubmit)}
-            style={{ marginTop: theme.spacing(8), height: '100%', overflowY: 'scroll' }}
+            style={{ marginTop: theme.spacing(4), height: '100%', overflowY: 'scroll' }}
             noValidate
         >
             {/* Each customer balance entry, fetched from the backend */}
             {balances.map((entry, index) => {
                 const key = String(entry.materialId);
-                const rawValue = rawInputs[index] ?? String(entry.value ?? '');
+                const rawValue =
+                    rawInputs[index] ?? (entry.value === 0 ? '' : String(entry.value ?? ''));
 
                 const evaluated = evaluateExpression(rawValue);
 
@@ -166,7 +167,7 @@ const UpdateCustomerBalancesComponent = ({ onUpdate }: UpdateCustomerBalancesCom
                             id={`material-${key}`}
                             fullWidth
                             type="text"
-                            margin="normal"
+                            margin="dense"
                             placeholder="e.g. 100+10 or 50-5"
                             value={rawValue}
                             onChange={(e) => handleRawInputChange(index, e.target.value)}
@@ -203,8 +204,7 @@ const UpdateCustomerBalancesComponent = ({ onUpdate }: UpdateCustomerBalancesCom
                             error={!!errors.entries?.[index]?.newValue}
                             sx={{
                                 margin: 0,
-                                marginBottom: theme.spacing(2),
-                                minHeight: '30px',
+                                marginBottom: theme.spacing(1),
                             }}
                         >
                             {errors?.entries?.[index]?.newValue?.message}
@@ -222,7 +222,7 @@ const UpdateCustomerBalancesComponent = ({ onUpdate }: UpdateCustomerBalancesCom
                     type="textarea"
                     multiline
                     minRows={4}
-                    margin="normal"
+                    margin="dense"
                     {...register('description')}
                     error={!!errors.description}
                     sx={{
@@ -236,8 +236,7 @@ const UpdateCustomerBalancesComponent = ({ onUpdate }: UpdateCustomerBalancesCom
                     error={!!errors.description}
                     sx={{
                         margin: 0,
-                        marginBottom: theme.spacing(2),
-                        minHeight: '30px',
+                        marginBottom: theme.spacing(1),
                     }}
                 >
                     {errors?.description?.message}
@@ -250,7 +249,7 @@ const UpdateCustomerBalancesComponent = ({ onUpdate }: UpdateCustomerBalancesCom
                     display: 'flex',
                     alignItems: 'center',
                     marginTop: theme.spacing(2),
-                    marginBottom: theme.spacing(2),
+                    marginBottom: theme.spacing(1),
                 }}
             >
                 <Button variant="contained" color="primary" type="submit">

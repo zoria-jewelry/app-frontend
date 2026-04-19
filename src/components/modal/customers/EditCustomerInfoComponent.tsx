@@ -8,18 +8,14 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import {
-    Button,
-    FormControl,
-    FormHelperText,
-    FormLabel,
-    TextField,
-    Typography,
-    useTheme,
-} from '@mui/material';
+import { Button, FormControl, FormLabel, TextField, Typography, useTheme } from '@mui/material';
 import { CustomersApiClient } from '../../../api/customersApiClient.ts';
 import { showToast } from '../../common/Toast.tsx';
 import { useEffect, useCallback } from 'react';
+import {
+    EDIT_MODAL_PAPER_MAX,
+    FORM_HELPER_TEXT_ALIGNED_SX,
+} from '../../../constants/createModalLayout.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -28,7 +24,9 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        minWidth: '40%',
+        width: EDIT_MODAL_PAPER_MAX,
+        maxWidth: EDIT_MODAL_PAPER_MAX,
+        boxSizing: 'border-box',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -129,7 +127,7 @@ const EditCustomerInfoComponent = (props: EditCustomerInfoComponentProps) => {
             {/* The form */}
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                style={{ marginTop: theme.spacing(8) }}
+                style={{ marginTop: theme.spacing(4) }}
                 noValidate
             >
                 <FormControl fullWidth>
@@ -138,9 +136,13 @@ const EditCustomerInfoComponent = (props: EditCustomerInfoComponentProps) => {
                         id="full-name"
                         placeholder="Шевченко Тарас Григорович"
                         fullWidth
-                        margin="normal"
+                        margin="dense"
                         {...register('fullName')}
                         error={!!errors.fullName}
+                        helperText={errors.fullName?.message}
+                        slotProps={{
+                            formHelperText: { sx: FORM_HELPER_TEXT_ALIGNED_SX },
+                        }}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -148,12 +150,6 @@ const EditCustomerInfoComponent = (props: EditCustomerInfoComponentProps) => {
                             },
                         }}
                     />
-                    <FormHelperText
-                        error={!!errors.fullName}
-                        sx={{ margin: 0, marginBottom: theme.spacing(2), minHeight: '30px' }}
-                    >
-                        {errors?.fullName?.message}
-                    </FormHelperText>
                 </FormControl>
                 <FormControl fullWidth>
                     <FormLabel htmlFor="phone-number">Номер телефону</FormLabel>
@@ -161,9 +157,13 @@ const EditCustomerInfoComponent = (props: EditCustomerInfoComponentProps) => {
                         id="phone-number"
                         placeholder="+380961234567"
                         fullWidth
-                        margin="normal"
+                        margin="dense"
                         {...register('phone')}
                         error={!!errors.phone}
+                        helperText={errors.phone?.message}
+                        slotProps={{
+                            formHelperText: { sx: FORM_HELPER_TEXT_ALIGNED_SX },
+                        }}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -171,19 +171,13 @@ const EditCustomerInfoComponent = (props: EditCustomerInfoComponentProps) => {
                             },
                         }}
                     />
-                    <FormHelperText
-                        error={!!errors.phone}
-                        sx={{ margin: 0, marginBottom: theme.spacing(2), minHeight: '30px' }}
-                    >
-                        {errors?.phone?.message}
-                    </FormHelperText>
                 </FormControl>
                 <FormControl
                     fullWidth
                     style={{
                         display: 'flex',
                         alignItems: 'center',
-                        marginTop: theme.spacing(10),
+                        marginTop: theme.spacing(4),
                     }}
                 >
                     <Button variant="contained" color="primary" type="submit">

@@ -1,20 +1,21 @@
-import {
-    Box,
-    Button,
-    FormHelperText,
-    IconButton,
-    TextField,
-    Typography,
-    useTheme,
-} from '@mui/material';
+import { Box, Button, IconButton, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
-import { returnWorkUnitSchema, type ReturnWorkUnitFormData } from '../../../validation/schemas.ts';
+import {
+    returnWorkUnitSchema,
+    type ReturnWorkUnitFormData,
+    type ReturnWorkUnitFormInput,
+} from '../../../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
 import type { WorkUnitDto } from '../../../dto/work-units.ts';
+import {
+    FORM_HELPER_TEXT_ALIGNED_SX,
+    RETURN_METAL_MODAL_PAPER_MAX,
+} from '../../../constants/createModalLayout.ts';
+import { RhfNumberTextField } from '../../common/RhfNumberTextField.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -23,8 +24,9 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
-        minWidth: '40%',
-        minHeight: '40%',
+        width: RETURN_METAL_MODAL_PAPER_MAX,
+        maxWidth: RETURN_METAL_MODAL_PAPER_MAX,
+        boxSizing: 'border-box',
         padding: theme.spacing(12),
         display: 'flex',
         flexDirection: 'column',
@@ -46,7 +48,6 @@ export interface ReturnWorkUnitModalProps {
 const DEFAULT_DESCRIPTION = 'Немає опису наряду';
 
 const ReturnWorkUnitComponent = ({ workUnit, open, onClose, onSave }: ReturnWorkUnitModalProps) => {
-    const theme = useTheme();
     const requiresDescription = !!workUnit.orderId;
     const descriptionValue = requiresDescription
         ? (workUnit.description ?? DEFAULT_DESCRIPTION)
@@ -56,8 +57,9 @@ const ReturnWorkUnitComponent = ({ workUnit, open, onClose, onSave }: ReturnWork
         register,
         handleSubmit,
         reset,
+        control,
         formState: { errors },
-    } = useForm<ReturnWorkUnitFormData>({
+    } = useForm<ReturnWorkUnitFormInput, unknown, ReturnWorkUnitFormData>({
         resolver: zodResolver(returnWorkUnitSchema),
         reValidateMode: 'onSubmit',
         defaultValues: {
@@ -123,42 +125,24 @@ const ReturnWorkUnitComponent = ({ workUnit, open, onClose, onSave }: ReturnWork
 
                 <Box mt={4}>
                     <Typography>Метал, (г)</Typography>
-                    <TextField
-                        type="number"
+                    <RhfNumberTextField
+                        name="metalWeight"
+                        control={control}
+                        preserveZero
                         fullWidth
-                        {...register('metalWeight', { valueAsNumber: true })}
-                        error={!!errors.metalWeight}
+                        slotProps={{ htmlInput: { step: 0.001 } }}
                     />
-                    <FormHelperText
-                        error={true}
-                        sx={{
-                            margin: 0,
-                            marginBottom: theme.spacing(2),
-                            minHeight: '30px',
-                        }}
-                    >
-                        {errors.metalWeight ? errors.metalWeight.message : ''}
-                    </FormHelperText>
                 </Box>
 
                 <Box mt={4}>
                     <Typography>ПН, %</Typography>
-                    <TextField
-                        type="number"
+                    <RhfNumberTextField
+                        name="loss"
+                        control={control}
+                        preserveZero
                         fullWidth
-                        {...register('loss', { valueAsNumber: true })}
-                        error={!!errors.loss}
+                        slotProps={{ htmlInput: { step: 0.01 } }}
                     />
-                    <FormHelperText
-                        error={true}
-                        sx={{
-                            margin: 0,
-                            marginBottom: theme.spacing(2),
-                            minHeight: '30px',
-                        }}
-                    >
-                        {errors.loss ? errors.loss.message : ''}
-                    </FormHelperText>
                 </Box>
 
                 {requiresDescription && (
@@ -172,17 +156,11 @@ const ReturnWorkUnitComponent = ({ workUnit, open, onClose, onSave }: ReturnWork
                                 required: requiresDescription ? 'Опис є обовʼязковим' : false,
                             })}
                             error={!!descriptionError}
-                        />
-                        <FormHelperText
-                            error={true}
-                            sx={{
-                                margin: 0,
-                                marginBottom: theme.spacing(2),
-                                minHeight: '30px',
+                            helperText={descriptionError}
+                            slotProps={{
+                                formHelperText: { sx: FORM_HELPER_TEXT_ALIGNED_SX },
                             }}
-                        >
-                            {descriptionError || ''}
-                        </FormHelperText>
+                        />
                     </Box>
                 )}
 

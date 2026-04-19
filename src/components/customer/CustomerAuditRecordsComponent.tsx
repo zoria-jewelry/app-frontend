@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import type { AuditRecord } from '../../dto/audit.ts';
 import { CustomersApiClient } from '../../api/customersApiClient.ts';
 import { Box, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { toFixedNumber, toLocalDateTime } from '../../utils.ts';
+import { toFixedNumber, toTableDate } from '../../utils.ts';
 
 export interface CustomerAuditRecordsProps {
     refresher: number;
@@ -50,7 +50,7 @@ const CustomerAuditRecordsComponent = ({ refresher }: CustomerAuditRecordsProps)
                         height="fit-content"
                     >
                         <Typography variant="body1" color="textPrimary" fontWeight={900}>
-                            {toLocalDateTime(record.time)}
+                            {toTableDate(record.time)}
                         </Typography>
                         <Typography variant="body1" color="textPrimary">
                             Виконавець дії: {record.actorFullName}

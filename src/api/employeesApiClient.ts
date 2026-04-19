@@ -16,10 +16,11 @@ export class EmployeesApiClient extends AbstractApiClient {
         return response?.entries;
     }
 
-    public static async getArchived(page: number): Promise<EmployeesListDto | undefined> {
-        console.log(`EmployeesApiClient.getArchived: page - ${page}`);
-        const params = { page: page + 1, isArchived: true, page_size: 10 };
-        return await this.apiRequest<EmployeesListDto>({ url: `/employees/`, params });
+    public static async getAllArchived(): Promise<EmployeeDto[] | undefined> {
+        console.log(`EmployeesApiClient.getAllArchived`);
+        const params = { page: 1, isArchived: true, page_size: 500 };
+        const response = await this.apiRequest<EmployeesListDto>({ url: `/employees/`, params });
+        return response?.entries;
     }
 
     public static async create(data: CreateEmployeeFormData): Promise<void> {

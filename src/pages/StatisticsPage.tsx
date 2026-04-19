@@ -1,15 +1,12 @@
 import GlobalStatisticsComponent from '../components/stats/GlobalStatisticsComponent.tsx';
 import GlobalAuditRecordsComponent from '../components/stats/GlobalAuditRecordsComponent.tsx';
 import { useState } from 'react';
-import { useAuth, UserRole } from '../auth/AuthContext.tsx';
-import { Navigate } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext.tsx';
 import { CircularProgress, Box } from '@mui/material';
 
 const StatisticsPage = () => {
     const [refresher, setRefresher] = useState<number>(0);
-    const { user, loading } = useAuth();
-
-    console.log('StatisticsPage - user:', user, 'loading:', loading);
+    const { loading } = useAuth();
 
     if (loading) {
         return (
@@ -27,11 +24,6 @@ const StatisticsPage = () => {
         );
     }
 
-    if (user?.role !== UserRole.OWNER) {
-        return <Navigate to="/work-units" replace />;
-    }
-
-    console.log('User is OWNER, showing statistics page');
     return (
         <>
             <GlobalStatisticsComponent

@@ -89,7 +89,7 @@ const CancelOrderComponent = ({
                 Вкажіть причину, чому ви хочете скасувати це замовлення.
             </Typography>
 
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="dense">
                 <TextField
                     value={reason}
                     onChange={(e) => {
@@ -101,7 +101,7 @@ const CancelOrderComponent = ({
                     minRows={3}
                     fullWidth
                 />
-                <FormHelperText error sx={{ minHeight: '2em', margin: 0 }}>
+                <FormHelperText error sx={{ margin: 0 }}>
                     {error ?? ''}
                 </FormHelperText>
             </FormControl>
@@ -112,7 +112,7 @@ const CancelOrderComponent = ({
                 mt={4}
                 sx={{
                     flexDirection: { xs: 'column', sm: 'row' },
-                    gap: 2,
+                    gap: 1,
                 }}
             >
                 <Button variant="contained" color="secondary" onClick={handleClose}>

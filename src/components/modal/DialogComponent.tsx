@@ -3,6 +3,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Button, DialogActions, DialogContent, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
+import { CONFIRMATION_DIALOG_PAPER_MAX } from '../../constants/createModalLayout.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -11,6 +12,9 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
     '& .MuiPaper-root': {
         borderRadius: 20,
+        width: CONFIRMATION_DIALOG_PAPER_MAX,
+        maxWidth: CONFIRMATION_DIALOG_PAPER_MAX,
+        boxSizing: 'border-box',
     },
     '& .MuiDialogActions-root': {
         padding: theme.spacing(10),

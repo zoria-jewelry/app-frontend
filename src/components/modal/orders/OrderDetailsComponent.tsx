@@ -20,12 +20,16 @@ import type { OrderDto } from '../../../dto/orders.ts';
 import { orderStatusToHumanText, toLocalDateTime } from '../../../utils.ts';
 import { showToast } from '../../common/Toast.tsx';
 
+const ORDER_DETAILS_DIALOG_MAX = 1200;
+
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialog-container': {
-        overflowX: 'scroll',
+        overflowX: 'auto',
     },
     '& .MuiDialog-paper': {
-        minWidth: '1000px',
+        width: `min(${ORDER_DETAILS_DIALOG_MAX}px, calc(100vw - 2rem))`,
+        maxWidth: `min(${ORDER_DETAILS_DIALOG_MAX}px, calc(100vw - 2rem))`,
+        boxSizing: 'border-box',
         display: 'block',
         borderRadius: 20,
         padding: theme.spacing(8),

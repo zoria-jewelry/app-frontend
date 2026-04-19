@@ -88,7 +88,7 @@ const LoginPage = () => {
                             marginTop: theme.spacing(8),
                         }}
                     >
-                        <FormLabel htmlFor="email" sx={{ marginBottom: theme.spacing(2) }}>
+                        <FormLabel htmlFor="email" sx={{ marginBottom: theme.spacing(1) }}>
                             Логін
                         </FormLabel>
                         <TextField
@@ -96,7 +96,7 @@ const LoginPage = () => {
                             type="email"
                             placeholder="zoria@gmail.com"
                             fullWidth
-                            margin="normal"
+                            margin="dense"
                             defaultValue=""
                             {...register('username')}
                             error={!!errors.username}
@@ -109,14 +109,13 @@ const LoginPage = () => {
                         />
                         <FormHelperText
                             error={!!errors.username}
-                            sx={{ margin: 0, marginBottom: theme.spacing(2), minHeight: '30px' }}
                         >
                             {errors.username?.message}
                         </FormHelperText>
                     </FormControl>
 
                     <FormControl fullWidth>
-                        <FormLabel htmlFor="password" sx={{ marginBottom: theme.spacing(2) }}>
+                        <FormLabel htmlFor="password" sx={{ marginBottom: theme.spacing(1) }}>
                             Пароль
                         </FormLabel>
                         <TextField
@@ -124,7 +123,7 @@ const LoginPage = () => {
                             type="password"
                             placeholder="••••••••••"
                             fullWidth
-                            margin="normal"
+                            margin="dense"
                             defaultValue=""
                             {...register('password')}
                             error={!!errors.password}
@@ -137,7 +136,6 @@ const LoginPage = () => {
                         />
                         <FormHelperText
                             error={!!errors.password}
-                            sx={{ margin: 0, minHeight: '30px' }}
                         >
                             {errors.password?.message}
                         </FormHelperText>

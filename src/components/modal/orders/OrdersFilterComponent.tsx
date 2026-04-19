@@ -8,10 +8,11 @@ import {
     FormHelperText,
     IconButton,
     MenuItem,
+    Popover,
     Select,
+    Stack,
     TextField,
     Typography,
-    useTheme,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import type { EmployeeDto } from '../../../dto/employees.ts';
@@ -19,38 +20,17 @@ import { EmployeesApiClient } from '../../../api/employeesApiClient.ts';
 import type { OrdersFilterData } from '../../../api/ordersApiClient.ts';
 import { OrderStatus } from '../../../dto/orders.ts';
 import ListItemText from '@mui/material/ListItemText';
-import { styled } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
 import { showToast } from '../../common/Toast.tsx';
 
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-    '& .MuiDialogContent-root': {
-        padding: theme.spacing(10),
-        marginTop: theme.spacing(8),
-    },
-    '& .MuiPaper-root': {
-        borderRadius: 20,
-        minWidth: '40%',
-        minHeight: '60%',
-        padding: theme.spacing(12),
-        display: 'flex',
-        flexDirection: 'column',
-        overflowX: 'hidden',
-    },
-    '& .MuiDialogActions-root': {
-        padding: theme.spacing(10),
-        paddingTop: 0,
-    },
-}));
-
 export interface OrdersFilterModalProps {
-    open: boolean;
+    /** Anchor element (e.g. filter button); popover is closed when null */
+    anchorEl: HTMLElement | null;
     onClose: () => void;
     onApply: (filterData: OrdersFilterData) => void;
 }
 
-const OrdersFilterModal = ({ open, onClose, onApply }: OrdersFilterModalProps) => {
-    const theme = useTheme();
+const OrdersFilterModal = ({ anchorEl, onClose, onApply }: OrdersFilterModalProps) => {
+    const open = Boolean(anchorEl);
 
     const [fromDate, setFromDate] = useState<Date | undefined>();
     const [toDate, setToDate] = useState<Date | undefined>();
@@ -69,7 +49,15 @@ const OrdersFilterModal = ({ open, onClose, onApply }: OrdersFilterModalProps) =
         setStatuses({ ...statuses, [event.target.name]: event.target.checked });
     };
 
-    const handleApply = () => {
+    const resetFilters = () => {
+        setDatesError(undefined);
+        setFromDate(undefined);
+        setToDate(undefined);
+        setStatuses({ inProgress: false, completed: false, canceled: false });
+        setExecutors(undefined);
+    };
+
+    useEffect(() => {
         const composedStatuses: OrderStatus[] = [];
         if (statuses.inProgress) composedStatuses.push(OrderStatus.IN_PROGRESS);
         if (statuses.completed) composedStatuses.push(OrderStatus.COMPLETED);
@@ -79,6 +67,7 @@ const OrdersFilterModal = ({ open, onClose, onApply }: OrdersFilterModalProps) =
             setDatesError('Дата кінця не може бути раніше дати початку');
             return;
         }
+        setDatesError(undefined);
 
         onApply({
             executorsIds: executors?.map((e) => Number(e)),
@@ -86,8 +75,7 @@ const OrdersFilterModal = ({ open, onClose, onApply }: OrdersFilterModalProps) =
             toDate,
             statuses: composedStatuses,
         });
-        onClose();
-    };
+    }, [fromDate, toDate, statuses, executors, onApply]);
 
     useEffect(() => {
         EmployeesApiClient.getAllActive().then((employees) => {
@@ -100,134 +88,203 @@ const OrdersFilterModal = ({ open, onClose, onApply }: OrdersFilterModalProps) =
     }, []);
 
     return (
-        <BootstrapDialog
-            onClose={handleApply}
-            aria-labelledby="customized-dialog-title"
+        <Popover
             open={open}
+            anchorEl={anchorEl}
+            onClose={onClose}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            slotProps={{
+                backdrop: {
+                    sx: { backgroundColor: 'rgba(0, 0, 0, 0.12)' },
+                },
+                paper: {
+                    sx: {
+                        p: 2.5,
+                        borderRadius: 2,
+                        maxWidth: 'min(calc(100vw - 24px), 380px)',
+                        width: 'min(calc(100vw - 24px), 440px)',
+                        maxHeight: 'min(90dvh, 720px)',
+                        overflow: 'auto',
+                        boxShadow: 12,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        mt: 1,
+                    },
+                },
+            }}
+            disableRestoreFocus
         >
-            <IconButton
-                aria-label="close"
-                onClick={handleApply}
-                size="large"
-                sx={(theme) => ({
-                    position: 'absolute',
-                    right: 16,
-                    top: 16,
-                    color: theme.palette.grey[500],
-                })}
+            <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                gap={1}
+                sx={{ mb: 1.5 }}
             >
-                <CloseIcon />
-            </IconButton>
-            <Typography variant="h3">Фільтр</Typography>
+                <Typography id="orders-filter-title" variant="h6" fontWeight={600} component="h2">
+                    Фільтр
+                </Typography>
+                <IconButton
+                    aria-label="Закрити"
+                    onClick={onClose}
+                    size="small"
+                    sx={{ color: 'text.secondary' }}
+                >
+                    <CloseIcon />
+                </IconButton>
+            </Box>
 
-            <Typography marginTop={theme.spacing(4)}>За період:</Typography>
+            <Stack spacing={5} sx={{ width: '100%' }}>
+                <Box sx={{ width: '100%' }}>
+                    <Typography variant="body1" component="div" sx={{ mb: 1.5 }}>
+                        За період
+                    </Typography>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: { xs: 'column', md: 'row' },
+                            flexWrap: 'wrap',
+                            alignItems: { xs: 'stretch', md: 'flex-start' },
+                            gap: { xs: 3, md: 4 },
+                        }}
+                    >
+                        <Box sx={{ flex: { md: '1 1 200px' }, minWidth: 0, maxWidth: '100%' }}>
+                            <Typography variant="body2" component="div" sx={{ mb: 1 }}>
+                                З дати включно
+                            </Typography>
+                            <TextField
+                                type="date"
+                                fullWidth
+                                value={fromDate ? fromDate.toISOString().split('T')[0] : ''}
+                                onChange={(e) => {
+                                    setFromDate(
+                                        e.target.value ? new Date(e.target.value) : undefined,
+                                    );
+                                    setDatesError(undefined);
+                                }}
+                            />
+                        </Box>
 
-            <Box mt={2}>
-                <Typography>З дати включно</Typography>
-                <TextField
-                    type="date"
+                        <Box sx={{ flex: { md: '1 1 200px' }, minWidth: 0, maxWidth: '100%' }}>
+                            <Typography variant="body2" component="div" sx={{ mb: 1 }}>
+                                До дати включно
+                            </Typography>
+                            <TextField
+                                type="date"
+                                fullWidth
+                                value={toDate ? toDate.toISOString().split('T')[0] : ''}
+                                onChange={(e) => {
+                                    setToDate(e.target.value ? new Date(e.target.value) : undefined);
+                                    setDatesError(undefined);
+                                }}
+                                error={!!datesError}
+                            />
+                            <FormHelperText error={!!datesError} sx={{ margin: 0 }}>
+                                {datesError ? datesError : ''}
+                            </FormHelperText>
+                        </Box>
+                    </Box>
+                </Box>
+
+                <Box sx={{ width: '100%' }}>
+                    <Typography variant="body1" component="div" sx={{ mb: 1.5 }}>
+                        Стан
+                    </Typography>
+                    <FormGroup
+                        sx={{
+                            display: 'flex',
+                            flexDirection: { xs: 'column', sm: 'row' },
+                            flexWrap: 'wrap',
+                            alignItems: { sm: 'center' },
+                            gap: { xs: 1.25, sm: 2, md: 2.5 },
+                            m: 0,
+                        }}
+                    >
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={statuses.inProgress}
+                                    onChange={handleStatusChange}
+                                    name="inProgress"
+                                />
+                            }
+                            label="У процесі"
+                            sx={{ mr: { sm: 0 } }}
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={statuses.completed}
+                                    onChange={handleStatusChange}
+                                    name="completed"
+                                />
+                            }
+                            label="Виконані"
+                            sx={{ mr: { sm: 0 } }}
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={statuses.canceled}
+                                    onChange={handleStatusChange}
+                                    name="canceled"
+                                />
+                            }
+                            label="Скасовані"
+                            sx={{ mr: { sm: 0 } }}
+                        />
+                    </FormGroup>
+                </Box>
+
+                <Box sx={{ width: '100%' }}>
+                    <Typography variant="body1" component="div" sx={{ mb: 1.5 }}>
+                        Виконавець
+                    </Typography>
+                    <Select
+                        fullWidth
+                        multiple
+                        value={executors || []}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setExecutors(
+                                typeof value === 'string' ? value.split(',').map(Number) : value,
+                            );
+                        }}
+                        renderValue={(selected) => {
+                            if (!selected || selected.length === 0) return 'Виконавець';
+                            return employees
+                                .filter((emp) => selected.includes(emp.id))
+                                .map((emp) => emp.name)
+                                .join(', ');
+                        }}
+                    >
+                        {employees.map((emp) => (
+                            <MenuItem key={emp.id} value={emp.id}>
+                                <Checkbox checked={executors?.includes(emp.id) || false} />
+                                <ListItemText primary={emp.name} />
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </Box>
+            </Stack>
+
+            <Box sx={{ mt: 3, width: '100%' }}>
+                <Button
+                    variant="contained"
                     fullWidth
-                    value={fromDate ? fromDate.toISOString().split('T')[0] : ''}
-                    onChange={(e) => {
-                        setFromDate(e.target.value ? new Date(e.target.value) : undefined);
-                        setDatesError(undefined);
-                    }}
-                />
-
-                <Typography marginTop={theme.spacing(4)}>До дати включно</Typography>
-                <TextField
-                    type="date"
-                    fullWidth
-                    value={toDate ? toDate.toISOString().split('T')[0] : ''}
-                    onChange={(e) => {
-                        setToDate(e.target.value ? new Date(e.target.value) : undefined);
-                        setDatesError(undefined);
-                    }}
-                    error={!!datesError}
-                />
-                <FormHelperText
-                    error={!!datesError}
+                    onClick={resetFilters}
+                    disableElevation
                     sx={{
-                        margin: 0,
-                        marginBottom: theme.spacing(2),
-                        minHeight: '30px',
+                        bgcolor: 'grey.400',
+                        color: 'grey.900',
+                        '&:hover': { bgcolor: 'grey.500' },
                     }}
                 >
-                    {datesError ? datesError : ''}
-                </FormHelperText>
-            </Box>
-
-            <Box mt={2}>
-                <Typography>Стан</Typography>
-                <FormGroup>
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={statuses.inProgress}
-                                onChange={handleStatusChange}
-                                name="inProgress"
-                            />
-                        }
-                        label="У процесі"
-                    />
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={statuses.completed}
-                                onChange={handleStatusChange}
-                                name="completed"
-                            />
-                        }
-                        label="Виконані"
-                    />
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={statuses.canceled}
-                                onChange={handleStatusChange}
-                                name="canceled"
-                            />
-                        }
-                        label="Скасовані"
-                    />
-                </FormGroup>
-            </Box>
-
-            <Box mt={2}>
-                <Typography>Виконавець</Typography>
-                <Select
-                    fullWidth
-                    multiple
-                    value={executors || []}
-                    onChange={(e) => {
-                        const value = e.target.value;
-                        setExecutors(
-                            typeof value === 'string' ? value.split(',').map(Number) : value,
-                        );
-                    }}
-                    renderValue={(selected) => {
-                        if (!selected || selected.length === 0) return 'Виконавець';
-                        return employees
-                            .filter((emp) => selected.includes(emp.id))
-                            .map((emp) => emp.name)
-                            .join(', ');
-                    }}
-                >
-                    {employees.map((emp) => (
-                        <MenuItem key={emp.id} value={emp.id}>
-                            <Checkbox checked={executors?.includes(emp.id) || false} />
-                            <ListItemText primary={emp.name} />
-                        </MenuItem>
-                    ))}
-                </Select>
-            </Box>
-
-            <Box mt={8} display="flex" justifyContent="center">
-                <Button variant="contained" onClick={handleApply}>
-                    Застосувати
+                    Скинути фільтри
                 </Button>
             </Box>
-        </BootstrapDialog>
+        </Popover>
     );
 };
 
