@@ -1,11 +1,4 @@
-import {
-    useCallback,
-    useEffect,
-    useImperativeHandle,
-    useRef,
-    useState,
-    forwardRef,
-} from 'react';
+import { useCallback, useEffect, useImperativeHandle, useRef, useState, forwardRef } from 'react';
 import { Box, FormControl, FormLabel, Slider, Stack, Typography } from '@mui/material';
 import Cropper, { type Area } from 'react-easy-crop';
 import 'react-easy-crop/react-easy-crop.css';

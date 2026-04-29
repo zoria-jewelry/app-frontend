@@ -85,11 +85,7 @@ export function RhfNumberTextField<T extends FieldValues>({
                 ...(typeof userFht === 'object' && userFht !== null ? userFht : {}),
                 sx: [
                     FORM_HELPER_TEXT_ALIGNED_SX,
-                    ...(userSx !== undefined
-                        ? Array.isArray(userSx)
-                            ? userSx
-                            : [userSx]
-                        : []),
+                    ...(userSx !== undefined ? (Array.isArray(userSx) ? userSx : [userSx]) : []),
                 ],
             },
         } satisfies TextFieldProps['slotProps'];
@@ -136,10 +132,7 @@ export function RhfNumberTextField<T extends FieldValues>({
     );
 }
 
-function mergeRefs<T>(
-    a: Ref<T> | undefined,
-    b: Ref<T> | undefined,
-): Ref<T> | undefined {
+function mergeRefs<T>(a: Ref<T> | undefined, b: Ref<T> | undefined): Ref<T> | undefined {
     if (!a) {
         return b;
     }

@@ -228,15 +228,21 @@ const EmployeePage = () => {
                                 <TableCell>
                                     <Typography variant="body2">{employee.phone}</Typography>
                                 </TableCell>
-                                <TableCell align="center" sx={{ width: '1%', verticalAlign: 'middle' }}>
+                                <TableCell
+                                    align="center"
+                                    sx={{ width: '1%', verticalAlign: 'middle' }}
+                                >
                                     <IconButton
                                         id={`employee-actions-trigger-${employee.id}`}
                                         size="medium"
                                         aria-label="Дії з працівником"
                                         aria-haspopup="true"
-                                        aria-controls={actionsMenuOpen ? 'employee-actions-menu' : undefined}
+                                        aria-controls={
+                                            actionsMenuOpen ? 'employee-actions-menu' : undefined
+                                        }
                                         aria-expanded={
-                                            actionsMenuOpen && actionsMenuEmployee?.id === employee.id
+                                            actionsMenuOpen &&
+                                            actionsMenuEmployee?.id === employee.id
                                                 ? true
                                                 : false
                                         }

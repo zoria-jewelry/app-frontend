@@ -52,8 +52,7 @@ const Sidebar = ({ expanded, setExpanded }: SidebarProps) => {
     const width = expanded ? SIDEBAR_WIDTH_EXPANDED : SIDEBAR_WIDTH_COLLAPSED;
 
     const NavButton = ({ path, label, Icon }: NavItem) => {
-        const selected =
-            pathname === path || (path !== '/' && pathname.startsWith(path + '/'));
+        const selected = pathname === path || (path !== '/' && pathname.startsWith(path + '/'));
         const button = (
             <ListItemButton
                 onClick={() => navigate(path)}

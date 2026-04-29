@@ -138,14 +138,19 @@ const ExpiredPriceListsComponent = ({ refreshTrigger }: ExpiredPriceListsCompone
                                     <TableCell>{entry.id}</TableCell>
                                     <TableCell>{toTableDate(entry.startDate)}</TableCell>
                                     <TableCell>{toTableDate(entry.endDate)}</TableCell>
-                                    <TableCell align="center" sx={{ width: '1%', verticalAlign: 'middle' }}>
+                                    <TableCell
+                                        align="center"
+                                        sx={{ width: '1%', verticalAlign: 'middle' }}
+                                    >
                                         <IconButton
                                             id={`expired-pricelist-actions-trigger-${entry.id}`}
                                             size="medium"
                                             aria-label="Дії з прайс-листом"
                                             aria-haspopup="true"
                                             aria-controls={
-                                                actionsMenuOpen ? 'expired-pricelist-actions-menu' : undefined
+                                                actionsMenuOpen
+                                                    ? 'expired-pricelist-actions-menu'
+                                                    : undefined
                                             }
                                             aria-expanded={
                                                 actionsMenuOpen && actionsMenuEntry?.id === entry.id

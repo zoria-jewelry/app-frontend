@@ -402,797 +402,541 @@ const CompleteOrderPage = () => {
 
     return (
         <>
-        <form
-            onSubmit={handleSubmit(onSubmit)}
-            style={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginBottom: theme.spacing(8),
-                gap: theme.spacing(4),
-            }}
-            noValidate
-        >
-            <Paper className={paperStyles.paper} sx={{ padding: theme.spacing(4) }}>
-                <Box
-                    display="flex"
-                    flexDirection={{ xs: 'column', md: 'row' }}
-                    justifyContent="space-between"
-                    alignItems={{ xs: 'stretch', md: 'center' }}
-                    width="100%"
-                    gap={{ xs: 3, sm: 2, md: 4 }}
-                    sx={{
-                        padding: { xs: 2, sm: 3 },
-                        backgroundColor: 'rgba(0, 0, 0, 0.02)',
-                        borderRadius: 2,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                    }}
-                >
+            <form
+                onSubmit={handleSubmit(onSubmit)}
+                style={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginBottom: theme.spacing(8),
+                    gap: theme.spacing(4),
+                }}
+                noValidate
+            >
+                <Paper className={paperStyles.paper} sx={{ padding: theme.spacing(4) }}>
                     <Box
                         display="flex"
-                        flexDirection="column"
-                        flex={1}
-                        minWidth={0}
-                        sx={{ textAlign: { xs: 'center', md: 'left' } }}
+                        flexDirection={{ xs: 'column', md: 'row' }}
+                        justifyContent="space-between"
+                        alignItems={{ xs: 'stretch', md: 'center' }}
+                        width="100%"
+                        gap={{ xs: 3, sm: 2, md: 4 }}
+                        sx={{
+                            padding: { xs: 2, sm: 3 },
+                            backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                            borderRadius: 2,
+                            border: '1px solid',
+                            borderColor: 'divider',
+                        }}
                     >
-                        <Typography
-                            variant="h3"
-                            sx={{
-                                fontWeight: 600,
-                                lineHeight: 1.2,
-                                marginBottom: 0.5,
-                                wordBreak: 'break-word',
-                            }}
+                        <Box
+                            display="flex"
+                            flexDirection="column"
+                            flex={1}
+                            minWidth={0}
+                            sx={{ textAlign: { xs: 'center', md: 'left' } }}
                         >
-                            Завершення замовлення №{orderId}
-                        </Typography>
-                    </Box>
-                </Box>
-            </Paper>
-
-            <Accordion
-                disableGutters
-                square
-                className={paperStyles.paper}
-                sx={{ padding: theme.spacing(4) }}
-                expanded={expandedAccordions.has('panel1')}
-                onChange={() => {}}
-            >
-                <AccordionSummary
-                    expandIcon={null}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
-                    sx={{ cursor: 'default', '& .MuiAccordionSummary-expandIconWrapper': { display: 'none' } }}
-                >
-                    <Typography variant="h5">Крок 1. Загальні відомості</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <FormControl fullWidth>
-                        <FormLabel htmlFor="discount">Знижка (грн)</FormLabel>
-                        <RhfNumberTextField
-                            name="discount"
-                            control={control}
-                            id="discount"
-                            placeholder="999"
-                            fullWidth
-                            margin="dense"
-                            slotProps={{ htmlInput: { step: 0.01 } }}
-                            sx={{
-                                margin: 0,
-                                '& .MuiOutlinedInput-root': {
-                                    borderRadius: '6px',
-                                },
-                            }}
-                        />
-                        <FormHelperText
-                            error={!!errors.discount}
-                        >
-                            {errors?.discount?.message}
-                        </FormHelperText>
-                    </FormControl>
-
-                    <FormControl fullWidth>
-                        <FormLabel htmlFor="loss">Угар (%)</FormLabel>
-                        <RhfNumberTextField
-                            name="lossPercentage"
-                            control={control}
-                            emptyBlurFallback={0}
-                            id="loss"
-                            placeholder="7.5"
-                            fullWidth
-                            margin="dense"
-                            slotProps={{ htmlInput: { step: 0.01 } }}
-                            sx={{
-                                margin: 0,
-                                '& .MuiOutlinedInput-root': {
-                                    borderRadius: '6px',
-                                },
-                            }}
-                        />
-                        <FormHelperText
-                            error={!!errors.lossPercentage}
-                        >
-                            {errors?.lossPercentage?.message}
-                        </FormHelperText>
-                    </FormControl>
-
-                    <FormControl fullWidth>
-                        <FormLabel htmlFor="total-metal-weight">
-                            Кінцева вага металу у виробах (г)
-                        </FormLabel>
-                        <RhfNumberTextField
-                            name="finalMetalWeight"
-                            control={control}
-                            emptyBlurFallback={0}
-                            id="total-metal-weight"
-                            placeholder="42.140"
-                            fullWidth
-                            margin="dense"
-                            slotProps={{ htmlInput: { step: 0.001 } }}
-                            sx={{
-                                margin: 0,
-                                '& .MuiOutlinedInput-root': {
-                                    borderRadius: '6px',
-                                },
-                            }}
-                        />
-                        <FormHelperText
-                            error={!!errors.finalMetalWeight}
-                        >
-                            {errors?.finalMetalWeight?.message}
-                        </FormHelperText>
-                    </FormControl>
-
-                    <FormControl fullWidth>
-                        <FormLabel htmlFor="total-stones-price">
-                            Загальна вартість камінців у виробах (грн)
-                        </FormLabel>
-                        <RhfNumberTextField
-                            name="stoneCost"
-                            control={control}
-                            id="total-stones-price"
-                            placeholder="5400.00"
-                            fullWidth
-                            margin="dense"
-                            slotProps={{ htmlInput: { step: 0.01 } }}
-                            sx={{
-                                margin: 0,
-                                '& .MuiOutlinedInput-root': {
-                                    borderRadius: '6px',
-                                },
-                            }}
-                        />
-                        <FormHelperText
-                            error={!!errors.stoneCost}
-                        >
-                            {errors?.stoneCost?.message}
-                        </FormHelperText>
-                    </FormControl>
-                </AccordionDetails>
-            </Accordion>
-
-            <Accordion
-                disableGutters
-                square
-                className={paperStyles.paper}
-                sx={{ padding: theme.spacing(4) }}
-                expanded={expandedAccordions.has('panel2')}
-                onChange={() => {}}
-            >
-                <AccordionSummary
-                    expandIcon={null}
-                    aria-controls="panel2a-content"
-                    id="panel2a-header"
-                    sx={{
-                        cursor: 'default',
-                        '& .MuiAccordionSummary-expandIconWrapper': { display: 'none' },
-                        opacity: enableSections ? 1 : 0.55,
-                    }}
-                >
-                    <Box display="flex" alignItems="center" gap={theme.spacing(1)}>
-                        <Typography variant="h5">Крок 2. Розрахунок вартості</Typography>
-                        {isCalculationsLoading && (
-                            <CircularProgress size={32} sx={{ color: '#000000' }} />
-                        )}
-                    </Box>
-                </AccordionSummary>
-                <AccordionDetails>
-                    {enableSections && order && (
-                        <>
-                            <TableContainer
+                            <Typography
+                                variant="h3"
                                 sx={{
-                                    overflowX: 'auto',
-                                    borderTopLeftRadius: '10px',
-                                    borderTopRightRadius: '10px',
-                                    boxShadow: 1,
+                                    fontWeight: 600,
+                                    lineHeight: 1.2,
+                                    marginBottom: 0.5,
+                                    wordBreak: 'break-word',
                                 }}
                             >
-                                <Table stickyHeader>
-                                    <TableHead>
-                                        <TableRow sx={{ backgroundColor: '#e5f3e5' }}>
-                                            <TableCell
-                                                sx={{
-                                                    backgroundColor: '#b7cfd2',
-                                                    textAlign: 'center',
-                                                    width: '50%',
-                                                }}
-                                            >
-                                                Характеристика
-                                            </TableCell>
-                                            <TableCell
-                                                sx={{
-                                                    backgroundColor: '#b7cfd2',
-                                                    textAlign: 'center',
-                                                    width: '50%',
-                                                }}
-                                            >
-                                                Значення
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        <TableRow>
-                                            <TableCell
-                                                sx={{
-                                                    borderRight: `1px solid ${theme.palette.divider}`,
-                                                }}
-                                            >
-                                                Загальна маса металу у виробах
-                                            </TableCell>
-                                            <TableCell>
-                                                <span style={{ fontWeight: 900 }}>
-                                                    {toFixedNumber(totalMetalWeight, 3)} г
-                                                </span>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell
-                                                sx={{
-                                                    borderRight: `1px solid ${theme.palette.divider}`,
-                                                }}
-                                            >
-                                                Загальна маса металу у виробах з угаром
-                                            </TableCell>
-                                            <TableCell>
-                                                {`${toFixedNumber(totalMetalWeight, 3)} * (1 + ${loss} ÷ 100) = `}
-                                                <span style={{ fontWeight: 900 }}>
-                                                    {toFixedNumber(
-                                                        orderCalculations?.metalMassWithLoss ?? 0,
-                                                        3,
-                                                    )}{' '}
-                                                    г
-                                                </span>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell
-                                                sx={{
-                                                    borderRight: `1px solid ${theme.palette.divider}`,
-                                                }}
-                                            >
-                                                Вартість обробки металу
-                                            </TableCell>
-                                            <TableCell>
-                                                {`${order.workPrice} * ${toFixedNumber(orderCalculations?.metalMassWithLoss ?? 0, 3)} = `}
-                                                <span style={{ fontWeight: 900 }}>
-                                                    {toFixedNumber(
-                                                        orderCalculations?.workCost ?? 0,
-                                                        2,
-                                                    )}{' '}
-                                                    грн
-                                                </span>
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell
-                                                sx={{
-                                                    borderRight: `1px solid ${theme.palette.divider}`,
-                                                }}
-                                            >
-                                                Вартість використаного металу
-                                            </TableCell>
-                                            <TableCell>
-                                                {`${toFixedNumber(orderCalculations?.metalMassWithLoss, 3)} * ${toFixedNumber(order.materialPrice, 2)} = `}
-                                                <span style={{ fontWeight: 900 }}>
-                                                    {toFixedNumber(
-                                                        orderCalculations?.usedMetalCost ?? 0,
-                                                        2,
-                                                    )}{' '}
-                                                    грн
-                                                </span>
-                                            </TableCell>
-                                        </TableRow>
-
-                                        <TableRow>
-                                            <TableCell
-                                                sx={{
-                                                    borderRight: `1px solid ${theme.palette.divider}`,
-                                                }}
-                                            >
-                                                Вартість камінців
-                                            </TableCell>
-                                            <TableCell>
-                                                <span style={{ fontWeight: 900 }}>
-                                                    {toFixedNumber(
-                                                        orderCalculations?.stoneCost ?? 0,
-                                                        2,
-                                                    )}{' '}
-                                                    грн
-                                                </span>
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                            <Box
-                                width="100%"
-                                display="flex"
-                                flexDirection="column"
-                                alignItems="flex-end"
-                                marginTop={theme.spacing(4)}
-                            >
-                                <Typography variant="body1">
-                                    Сума без знижки –{' '}
-                                    {toFixedNumber(orderCalculations?.sumWithoutDiscount ?? 0, 2)}{' '}
-                                    грн
-                                </Typography>
-                                <Typography variant="body1">
-                                    Знижка – {toFixedNumber(orderCalculations?.discount ?? 0, 2)}{' '}
-                                    грн
-                                </Typography>
-                                <Typography variant="body1" fontWeight={900}>
-                                    Сума зі знижкою –{' '}
-                                    {toFixedNumber(orderCalculations?.totalSum ?? 0, 2)} грн
-                                </Typography>
-                            </Box>
-                        </>
-                    )}
-                </AccordionDetails>
-            </Accordion>
-
-            <Accordion
-                disableGutters
-                square
-                className={paperStyles.paper}
-                sx={{ padding: theme.spacing(4) }}
-                expanded={expandedAccordions.has('panel3')}
-                onChange={() => {}}
-            >
-                <AccordionSummary
-                    expandIcon={null}
-                    aria-controls="panel3a-content"
-                    id="panel3a-header"
-                    sx={{
-                        backgroundColor: 'white',
-                        cursor: 'default',
-                        '& .MuiAccordionSummary-expandIconWrapper': { display: 'none' },
-                        opacity: enableSections ? 1 : 0.55,
-                    }}
-                >
-                    <Box display="flex" alignItems="center" gap={theme.spacing(1)}>
-                        <Typography variant="h5">Крок 3. Оплата замовлення</Typography>
-                        {isCalculationsLoading && (
-                            <CircularProgress size={32} sx={{ color: '#000000' }} />
-                        )}
+                                Завершення замовлення №{orderId}
+                            </Typography>
+                        </Box>
                     </Box>
-                </AccordionSummary>
-                <AccordionDetails>
-                    {orderCalculations && (
-                        <>
-                            {customerIdForBalances != null && (
-                                <Box
-                                    display="flex"
-                                    alignItems="center"
-                                    justifyContent="space-between"
-                                    gap={2}
-                                    width="100%"
-                                    marginBottom={theme.spacing(2)}
-                                >
-                                    <Typography
-                                        variant="body1"
-                                        component="span"
-                                        sx={{
-                                            fontWeight: 600,
-                                            flex: 1,
-                                            minWidth: 0,
-                                            mr: 1,
-                                        }}
-                                        noWrap
-                                        title={
-                                            customerNameForBalances === null
-                                                ? undefined
-                                                : customerNameForBalances || undefined
-                                        }
-                                    >
-                                        {customerNameForBalances === null
-                                            ? 'Завантаження…'
-                                            : customerNameForBalances || 'Клієнт'}
-                                    </Typography>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        type="button"
-                                        onClick={() => setIsEditCustomerBalancesModalOpen(true)}
-                                        sx={{ flexShrink: 0 }}
-                                    >
-                                        Оновити баланси клієнта
-                                    </Button>
-                                </Box>
+                </Paper>
+
+                <Accordion
+                    disableGutters
+                    square
+                    className={paperStyles.paper}
+                    sx={{ padding: theme.spacing(4) }}
+                    expanded={expandedAccordions.has('panel1')}
+                    onChange={() => {}}
+                >
+                    <AccordionSummary
+                        expandIcon={null}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                        sx={{
+                            cursor: 'default',
+                            '& .MuiAccordionSummary-expandIconWrapper': { display: 'none' },
+                        }}
+                    >
+                        <Typography variant="h5">Крок 1. Загальні відомості</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <FormControl fullWidth>
+                            <FormLabel htmlFor="discount">Знижка (грн)</FormLabel>
+                            <RhfNumberTextField
+                                name="discount"
+                                control={control}
+                                id="discount"
+                                placeholder="999"
+                                fullWidth
+                                margin="dense"
+                                slotProps={{ htmlInput: { step: 0.01 } }}
+                                sx={{
+                                    margin: 0,
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '6px',
+                                    },
+                                }}
+                            />
+                            <FormHelperText error={!!errors.discount}>
+                                {errors?.discount?.message}
+                            </FormHelperText>
+                        </FormControl>
+
+                        <FormControl fullWidth>
+                            <FormLabel htmlFor="loss">Угар (%)</FormLabel>
+                            <RhfNumberTextField
+                                name="lossPercentage"
+                                control={control}
+                                emptyBlurFallback={0}
+                                id="loss"
+                                placeholder="7.5"
+                                fullWidth
+                                margin="dense"
+                                slotProps={{ htmlInput: { step: 0.01 } }}
+                                sx={{
+                                    margin: 0,
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '6px',
+                                    },
+                                }}
+                            />
+                            <FormHelperText error={!!errors.lossPercentage}>
+                                {errors?.lossPercentage?.message}
+                            </FormHelperText>
+                        </FormControl>
+
+                        <FormControl fullWidth>
+                            <FormLabel htmlFor="total-metal-weight">
+                                Кінцева вага металу у виробах (г)
+                            </FormLabel>
+                            <RhfNumberTextField
+                                name="finalMetalWeight"
+                                control={control}
+                                emptyBlurFallback={0}
+                                id="total-metal-weight"
+                                placeholder="42.140"
+                                fullWidth
+                                margin="dense"
+                                slotProps={{ htmlInput: { step: 0.001 } }}
+                                sx={{
+                                    margin: 0,
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '6px',
+                                    },
+                                }}
+                            />
+                            <FormHelperText error={!!errors.finalMetalWeight}>
+                                {errors?.finalMetalWeight?.message}
+                            </FormHelperText>
+                        </FormControl>
+
+                        <FormControl fullWidth>
+                            <FormLabel htmlFor="total-stones-price">
+                                Загальна вартість камінців у виробах (грн)
+                            </FormLabel>
+                            <RhfNumberTextField
+                                name="stoneCost"
+                                control={control}
+                                id="total-stones-price"
+                                placeholder="5400.00"
+                                fullWidth
+                                margin="dense"
+                                slotProps={{ htmlInput: { step: 0.01 } }}
+                                sx={{
+                                    margin: 0,
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '6px',
+                                    },
+                                }}
+                            />
+                            <FormHelperText error={!!errors.stoneCost}>
+                                {errors?.stoneCost?.message}
+                            </FormHelperText>
+                        </FormControl>
+                    </AccordionDetails>
+                </Accordion>
+
+                <Accordion
+                    disableGutters
+                    square
+                    className={paperStyles.paper}
+                    sx={{ padding: theme.spacing(4) }}
+                    expanded={expandedAccordions.has('panel2')}
+                    onChange={() => {}}
+                >
+                    <AccordionSummary
+                        expandIcon={null}
+                        aria-controls="panel2a-content"
+                        id="panel2a-header"
+                        sx={{
+                            cursor: 'default',
+                            '& .MuiAccordionSummary-expandIconWrapper': { display: 'none' },
+                            opacity: enableSections ? 1 : 0.55,
+                        }}
+                    >
+                        <Box display="flex" alignItems="center" gap={theme.spacing(1)}>
+                            <Typography variant="h5">Крок 2. Розрахунок вартості</Typography>
+                            {isCalculationsLoading && (
+                                <CircularProgress size={32} sx={{ color: '#000000' }} />
                             )}
-                            <TableContainer
-                                sx={{
-                                    overflowX: 'auto',
-                                    borderTopLeftRadius: '10px',
-                                    borderTopRightRadius: '10px',
-                                    borderBottomLeftRadius: '10px',
-                                    borderBottomRightRadius: '10px',
-                                    boxShadow: 1,
-                                    backgroundColor: '#d9d9d9',
-                                }}
-                            >
-                                <Table stickyHeader>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell
-                                                sx={{
-                                                    backgroundColor: '#d9d9d9',
-                                                    padding: theme.spacing(2),
-                                                    paddingY: theme.spacing(4),
-                                                }}
-                                            >
-                                                <Typography variant="body2" fontWeight={900}>
-                                                    Ресурс
-                                                </Typography>
-                                            </TableCell>
-                                            <TableCell
-                                                sx={{
-                                                    backgroundColor: '#d9d9d9',
-                                                    padding: theme.spacing(2),
-                                                    paddingY: theme.spacing(4),
-                                                }}
-                                            >
-                                                <Typography variant="body2" fontWeight={900}>
-                                                    Кількість
-                                                </Typography>
-                                            </TableCell>
-                                            <TableCell
-                                                sx={{
-                                                    backgroundColor: '#d9d9d9',
-                                                    padding: theme.spacing(2),
-                                                    paddingY: theme.spacing(4),
-                                                }}
-                                            >
-                                                <Typography variant="body2" fontWeight={900}>
-                                                    Курс у прайс-листі
-                                                </Typography>
-                                            </TableCell>
-                                            <TableCell
-                                                sx={{
-                                                    backgroundColor: '#d9d9d9',
-                                                    padding: theme.spacing(2),
-                                                    paddingY: theme.spacing(4),
-                                                    textAlign: 'right',
-                                                }}
-                                            >
-                                                <Typography variant="body2" fontWeight={900}>
-                                                    Вартість (грн)
-                                                </Typography>
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {(orderCalculations.entries ?? []).map((entry) => (
-                                            <TableRow key={entry.materialId}>
-                                                <TableCell sx={{ padding: theme.spacing(1) }}>
-                                                    <Typography variant="body2">
-                                                        {entry.materialName}
+                        </Box>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        {enableSections && order && (
+                            <>
+                                <TableContainer
+                                    sx={{
+                                        overflowX: 'auto',
+                                        borderTopLeftRadius: '10px',
+                                        borderTopRightRadius: '10px',
+                                        boxShadow: 1,
+                                    }}
+                                >
+                                    <Table stickyHeader>
+                                        <TableHead>
+                                            <TableRow sx={{ backgroundColor: '#e5f3e5' }}>
+                                                <TableCell
+                                                    sx={{
+                                                        backgroundColor: '#b7cfd2',
+                                                        textAlign: 'center',
+                                                        width: '50%',
+                                                    }}
+                                                >
+                                                    Характеристика
+                                                </TableCell>
+                                                <TableCell
+                                                    sx={{
+                                                        backgroundColor: '#b7cfd2',
+                                                        textAlign: 'center',
+                                                        width: '50%',
+                                                    }}
+                                                >
+                                                    Значення
+                                                </TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            <TableRow>
+                                                <TableCell
+                                                    sx={{
+                                                        borderRight: `1px solid ${theme.palette.divider}`,
+                                                    }}
+                                                >
+                                                    Загальна маса металу у виробах
+                                                </TableCell>
+                                                <TableCell>
+                                                    <span style={{ fontWeight: 900 }}>
+                                                        {toFixedNumber(totalMetalWeight, 3)} г
+                                                    </span>
+                                                </TableCell>
+                                            </TableRow>
+                                            <TableRow>
+                                                <TableCell
+                                                    sx={{
+                                                        borderRight: `1px solid ${theme.palette.divider}`,
+                                                    }}
+                                                >
+                                                    Загальна маса металу у виробах з угаром
+                                                </TableCell>
+                                                <TableCell>
+                                                    {`${toFixedNumber(totalMetalWeight, 3)} * (1 + ${loss} ÷ 100) = `}
+                                                    <span style={{ fontWeight: 900 }}>
+                                                        {toFixedNumber(
+                                                            orderCalculations?.metalMassWithLoss ??
+                                                                0,
+                                                            3,
+                                                        )}{' '}
+                                                        г
+                                                    </span>
+                                                </TableCell>
+                                            </TableRow>
+                                            <TableRow>
+                                                <TableCell
+                                                    sx={{
+                                                        borderRight: `1px solid ${theme.palette.divider}`,
+                                                    }}
+                                                >
+                                                    Вартість обробки металу
+                                                </TableCell>
+                                                <TableCell>
+                                                    {`${order.workPrice} * ${toFixedNumber(orderCalculations?.metalMassWithLoss ?? 0, 3)} = `}
+                                                    <span style={{ fontWeight: 900 }}>
+                                                        {toFixedNumber(
+                                                            orderCalculations?.workCost ?? 0,
+                                                            2,
+                                                        )}{' '}
+                                                        грн
+                                                    </span>
+                                                </TableCell>
+                                            </TableRow>
+                                            <TableRow>
+                                                <TableCell
+                                                    sx={{
+                                                        borderRight: `1px solid ${theme.palette.divider}`,
+                                                    }}
+                                                >
+                                                    Вартість використаного металу
+                                                </TableCell>
+                                                <TableCell>
+                                                    {`${toFixedNumber(orderCalculations?.metalMassWithLoss, 3)} * ${toFixedNumber(order.materialPrice, 2)} = `}
+                                                    <span style={{ fontWeight: 900 }}>
+                                                        {toFixedNumber(
+                                                            orderCalculations?.usedMetalCost ?? 0,
+                                                            2,
+                                                        )}{' '}
+                                                        грн
+                                                    </span>
+                                                </TableCell>
+                                            </TableRow>
+
+                                            <TableRow>
+                                                <TableCell
+                                                    sx={{
+                                                        borderRight: `1px solid ${theme.palette.divider}`,
+                                                    }}
+                                                >
+                                                    Вартість камінців
+                                                </TableCell>
+                                                <TableCell>
+                                                    <span style={{ fontWeight: 900 }}>
+                                                        {toFixedNumber(
+                                                            orderCalculations?.stoneCost ?? 0,
+                                                            2,
+                                                        )}{' '}
+                                                        грн
+                                                    </span>
+                                                </TableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                                <Box
+                                    width="100%"
+                                    display="flex"
+                                    flexDirection="column"
+                                    alignItems="flex-end"
+                                    marginTop={theme.spacing(4)}
+                                >
+                                    <Typography variant="body1">
+                                        Сума без знижки –{' '}
+                                        {toFixedNumber(
+                                            orderCalculations?.sumWithoutDiscount ?? 0,
+                                            2,
+                                        )}{' '}
+                                        грн
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        Знижка –{' '}
+                                        {toFixedNumber(orderCalculations?.discount ?? 0, 2)} грн
+                                    </Typography>
+                                    <Typography variant="body1" fontWeight={900}>
+                                        Сума зі знижкою –{' '}
+                                        {toFixedNumber(orderCalculations?.totalSum ?? 0, 2)} грн
+                                    </Typography>
+                                </Box>
+                            </>
+                        )}
+                    </AccordionDetails>
+                </Accordion>
+
+                <Accordion
+                    disableGutters
+                    square
+                    className={paperStyles.paper}
+                    sx={{ padding: theme.spacing(4) }}
+                    expanded={expandedAccordions.has('panel3')}
+                    onChange={() => {}}
+                >
+                    <AccordionSummary
+                        expandIcon={null}
+                        aria-controls="panel3a-content"
+                        id="panel3a-header"
+                        sx={{
+                            backgroundColor: 'white',
+                            cursor: 'default',
+                            '& .MuiAccordionSummary-expandIconWrapper': { display: 'none' },
+                            opacity: enableSections ? 1 : 0.55,
+                        }}
+                    >
+                        <Box display="flex" alignItems="center" gap={theme.spacing(1)}>
+                            <Typography variant="h5">Крок 3. Оплата замовлення</Typography>
+                            {isCalculationsLoading && (
+                                <CircularProgress size={32} sx={{ color: '#000000' }} />
+                            )}
+                        </Box>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        {orderCalculations && (
+                            <>
+                                {customerIdForBalances != null && (
+                                    <Box
+                                        display="flex"
+                                        alignItems="center"
+                                        justifyContent="space-between"
+                                        gap={2}
+                                        width="100%"
+                                        marginBottom={theme.spacing(2)}
+                                    >
+                                        <Typography
+                                            variant="body1"
+                                            component="span"
+                                            sx={{
+                                                fontWeight: 600,
+                                                flex: 1,
+                                                minWidth: 0,
+                                                mr: 1,
+                                            }}
+                                            noWrap
+                                            title={
+                                                customerNameForBalances === null
+                                                    ? undefined
+                                                    : customerNameForBalances || undefined
+                                            }
+                                        >
+                                            {customerNameForBalances === null
+                                                ? 'Завантаження…'
+                                                : customerNameForBalances || 'Клієнт'}
+                                        </Typography>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            type="button"
+                                            onClick={() => setIsEditCustomerBalancesModalOpen(true)}
+                                            sx={{ flexShrink: 0 }}
+                                        >
+                                            Оновити баланси клієнта
+                                        </Button>
+                                    </Box>
+                                )}
+                                <TableContainer
+                                    sx={{
+                                        overflowX: 'auto',
+                                        borderTopLeftRadius: '10px',
+                                        borderTopRightRadius: '10px',
+                                        borderBottomLeftRadius: '10px',
+                                        borderBottomRightRadius: '10px',
+                                        boxShadow: 1,
+                                        backgroundColor: '#d9d9d9',
+                                    }}
+                                >
+                                    <Table stickyHeader>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell
+                                                    sx={{
+                                                        backgroundColor: '#d9d9d9',
+                                                        padding: theme.spacing(2),
+                                                        paddingY: theme.spacing(4),
+                                                    }}
+                                                >
+                                                    <Typography variant="body2" fontWeight={900}>
+                                                        Ресурс
                                                     </Typography>
                                                 </TableCell>
-                                                <TableCell sx={{ padding: theme.spacing(1) }}>
-                                                    <Typography variant="body2">
-                                                        {entry.materialCountOwnedByCustomer}
+                                                <TableCell
+                                                    sx={{
+                                                        backgroundColor: '#d9d9d9',
+                                                        padding: theme.spacing(2),
+                                                        paddingY: theme.spacing(4),
+                                                    }}
+                                                >
+                                                    <Typography variant="body2" fontWeight={900}>
+                                                        Кількість
                                                     </Typography>
                                                 </TableCell>
-                                                <TableCell sx={{ padding: theme.spacing(1) }}>
-                                                    <Typography variant="body2">
-                                                        {entry.materialPrice}
+                                                <TableCell
+                                                    sx={{
+                                                        backgroundColor: '#d9d9d9',
+                                                        padding: theme.spacing(2),
+                                                        paddingY: theme.spacing(4),
+                                                    }}
+                                                >
+                                                    <Typography variant="body2" fontWeight={900}>
+                                                        Курс у прайс-листі
                                                     </Typography>
                                                 </TableCell>
-                                                <TableCell sx={{ padding: theme.spacing(1) }}>
-                                                    <Typography variant="body2" textAlign="right">
-                                                        {toFixedNumber(entry.totalMaterialCost, 2)}
+                                                <TableCell
+                                                    sx={{
+                                                        backgroundColor: '#d9d9d9',
+                                                        padding: theme.spacing(2),
+                                                        paddingY: theme.spacing(4),
+                                                        textAlign: 'right',
+                                                    }}
+                                                >
+                                                    <Typography variant="body2" fontWeight={900}>
+                                                        Вартість (грн)
                                                     </Typography>
                                                 </TableCell>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                                <Typography
-                                    variant="body1"
-                                    fontWeight={900}
-                                    textAlign="right"
-                                    marginTop={theme.spacing(4)}
-                                    marginBottom={theme.spacing(4)}
-                                    paddingRight={theme.spacing(2)}
-                                >
-                                    Усього {toFixedNumber(orderCalculations.allMaterialsCost, 2)}
-                                </Typography>
-                            </TableContainer>
-
-                            <Paper
-                                elevation={3}
-                                sx={{
-                                    backgroundColor: orderCalculations.clientIsAbleToFullyPay
-                                        ? theme.palette.success.main
-                                        : theme.palette.warning.main,
-                                    color: orderCalculations.clientIsAbleToFullyPay
-                                        ? theme.palette.success.main
-                                        : theme.palette.warning.contrastText,
-                                    width: '100%',
-                                    my: theme.spacing(4),
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 2,
-                                    px: theme.spacing(4),
-                                    py: theme.spacing(2),
-                                    borderRadius: 2,
-                                }}
-                            >
-                                {orderCalculations.clientIsAbleToFullyPay ? (
-                                    <SuccessIcon
-                                        sx={{
-                                            width: 40,
-                                            height: 40,
-                                            flexShrink: 0,
-                                            mr: theme.spacing(2),
-                                            color: 'darkgreen',
-                                        }}
-                                    />
-                                ) : (
-                                    <WarningIcon
-                                        sx={{
-                                            width: 40,
-                                            height: 40,
-                                            flexShrink: 0,
-                                            mr: theme.spacing(2),
-                                        }}
-                                    />
-                                )}
-                                <Typography variant="body1" fontWeight={500}>
-                                    {orderCalculations.clientIsAbleToFullyPay
-                                        ? 'Клієнт може повністю сплатити замовлення'
-                                        : 'У клієнта недостатньо ресурсів для сплати замовлення'}
-                                </Typography>
-                            </Paper>
-
-                            <Typography
-                                variant="body1"
-                                marginBottom={theme.spacing(2)}
-                                marginTop={theme.spacing(12)}
-                            >
-                                Вибір ресурсів для сплати замовлення
-                            </Typography>
-                            <TableContainer
-                                sx={{
-                                    '& .MuiTableCell-root': {
-                                        border: 'none',
-                                    },
-                                }}
-                            >
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell sx={{ paddingX: 0, borderBottom: 'none' }}>
-                                                <Typography textAlign="center">
-                                                    Ресурс (грн)
-                                                </Typography>
-                                            </TableCell>
-                                            <TableCell
-                                                sx={{
-                                                    paddingX: 0,
-                                                    width: '160px',
-                                                    borderBottom: 'none',
-                                                }}
-                                            >
-                                                <Typography textAlign="center">
-                                                    Доступно (грн)
-                                                </Typography>
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {fields.map((field, index) => {
-                                            const entry = orderCalculations?.entries.find(
-                                                (e) => e.materialId === field.materialId,
-                                            );
-                                            const rawValue = rawPaymentInputs[index] ?? '';
-                                            const evaluated = evaluateExpression(rawValue);
-
-                                            return (
-                                                <TableRow key={entry?.materialId}>
-                                                    <TableCell
-                                                        sx={{ borderBottom: 'none', padding: 0 }}
-                                                    >
-                                                        <FormControl key={field.id} fullWidth>
-                                                            <FormLabel
-                                                                htmlFor={`material-${field.materialId}`}
-                                                            >
-                                                                {entry?.materialName}
-                                                                {entry?.materialName !== 'Валюта' &&
-                                                                    entry?.materialPrice != null &&
-                                                                    typeof entry.materialPrice ===
-                                                                        'number' && (
-                                                                        <span
-                                                                            style={{
-                                                                                marginLeft: '8px',
-                                                                                color: '#666',
-                                                                                fontSize:
-                                                                                    '0.875rem',
-                                                                                fontWeight:
-                                                                                    'normal',
-                                                                            }}
-                                                                        >
-                                                                            (1 г ={' '}
-                                                                            {toFixedNumber(
-                                                                                entry.materialPrice,
-                                                                                2,
-                                                                            )}{' '}
-                                                                            грн)
-                                                                        </span>
-                                                                    )}
-                                                            </FormLabel>
-                                                            <TextField
-                                                                id={`material-${field.materialId}`}
-                                                                placeholder="наприклад: 100*2 або 50+10"
-                                                                fullWidth
-                                                                margin="dense"
-                                                                type="text"
-                                                                value={rawValue}
-                                                                onChange={(e) =>
-                                                                    handleRawPaymentInputChange(
-                                                                        index,
-                                                                        e.target.value,
-                                                                    )
-                                                                }
-                                                                error={
-                                                                    !!errors.paymentData?.[index]
-                                                                        ?.amountToPay
-                                                                }
-                                                                sx={{
-                                                                    margin: 0,
-                                                                    '& .MuiOutlinedInput-root': {
-                                                                        borderRadius: '6px',
-                                                                    },
-                                                                }}
-                                                            />
-                                                            <Typography
-                                                                variant="caption"
-                                                                sx={{
-                                                                    marginLeft: '4px',
-                                                                    minHeight: 20,
-                                                                }}
-                                                            >
-                                                                {rawValue.trim() === '' ? (
-                                                                    <span style={{ color: '#666' }}>
-                                                                        Поточне значення:{' '}
-                                                                        {toFixedNumber(0, 2)}
-                                                                    </span>
-                                                                ) : evaluated === null ? (
-                                                                    <span style={{ color: '#c43' }}>
-                                                                        Невалідний вираз
-                                                                    </span>
-                                                                ) : (
-                                                                    <span style={{ color: '#666' }}>
-                                                                        ={' '}
-                                                                        {toFixedNumber(
-                                                                            evaluated,
-                                                                            2,
-                                                                        )}
-                                                                    </span>
-                                                                )}
-                                                            </Typography>
-                                                            <input
-                                                                type="hidden"
-                                                                {...register(
-                                                                    `paymentData.${index}.amountToPay`,
-                                                                    {
-                                                                        valueAsNumber: true,
-                                                                        setValueAs: (v) =>
-                                                                            typeof v === 'string' &&
-                                                                            v !== ''
-                                                                                ? parseFloat(v) || 0
-                                                                                : v,
-                                                                    },
-                                                                )}
-                                                            />
-                                                            <FormHelperText
-                                                                error={
-                                                                    !!errors.paymentData?.[index]
-                                                                        ?.amountToPay
-                                                                }
-                                                                sx={{
-                                                                    margin: 0,
-                                                                }}
-                                                            >
-                                                                {
-                                                                    errors.paymentData?.[index]
-                                                                        ?.amountToPay?.message
-                                                                }
-                                                            </FormHelperText>
-                                                        </FormControl>
+                                        </TableHead>
+                                        <TableBody>
+                                            {(orderCalculations.entries ?? []).map((entry) => (
+                                                <TableRow key={entry.materialId}>
+                                                    <TableCell sx={{ padding: theme.spacing(1) }}>
+                                                        <Typography variant="body2">
+                                                            {entry.materialName}
+                                                        </Typography>
                                                     </TableCell>
-                                                    <TableCell
-                                                        sx={{ borderBottom: 'none', padding: 0 }}
-                                                    >
-                                                        <Typography textAlign="right">
+                                                    <TableCell sx={{ padding: theme.spacing(1) }}>
+                                                        <Typography variant="body2">
+                                                            {entry.materialCountOwnedByCustomer}
+                                                        </Typography>
+                                                    </TableCell>
+                                                    <TableCell sx={{ padding: theme.spacing(1) }}>
+                                                        <Typography variant="body2">
+                                                            {entry.materialPrice}
+                                                        </Typography>
+                                                    </TableCell>
+                                                    <TableCell sx={{ padding: theme.spacing(1) }}>
+                                                        <Typography
+                                                            variant="body2"
+                                                            textAlign="right"
+                                                        >
                                                             {toFixedNumber(
-                                                                entry?.totalMaterialCost,
+                                                                entry.totalMaterialCost,
                                                                 2,
                                                             )}
                                                         </Typography>
                                                     </TableCell>
                                                 </TableRow>
-                                            );
-                                        })}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                    <Typography
+                                        variant="body1"
+                                        fontWeight={900}
+                                        textAlign="right"
+                                        marginTop={theme.spacing(4)}
+                                        marginBottom={theme.spacing(4)}
+                                        paddingRight={theme.spacing(2)}
+                                    >
+                                        Усього{' '}
+                                        {toFixedNumber(orderCalculations.allMaterialsCost, 2)}
+                                    </Typography>
+                                </TableContainer>
 
-                            {currencyAmount > 0 && (
-                                <>
-                                    <FormControlLabel
-                                        sx={{ mt: 2 }}
-                                        control={
-                                            <Checkbox
-                                                checked={disableKasa}
-                                                onChange={(e) => setDisableKasa(e.target.checked)}
-                                            />
-                                        }
-                                        label="Закрити замовлення без створення фіскального чеку (Vchasno Kasa)"
-                                    />
-
-                                    {!disableKasa && (
-                                        <>
-                                            <Typography variant="body1" sx={{ mt: 2 }}>
-                                                Вкажіть тип оплати
-                                            </Typography>
-
-                                            <FormControl fullWidth sx={{ mt: 3 }}>
-                                                <InputLabel id="payment-type-label">
-                                                    Тип оплати
-                                                </InputLabel>
-                                                <Select
-                                                    labelId="payment-type-label"
-                                                    value={paymentType}
-                                                    label="Тип оплати"
-                                                    onChange={(e) =>
-                                                        setPaymentType(Number(e.target.value))
-                                                    }
-                                                >
-                                                    {paymentTypes.map((option) => (
-                                                        <MenuItem
-                                                            key={option.value}
-                                                            value={option.value}
-                                                        >
-                                                            {option.label}
-                                                        </MenuItem>
-                                                    ))}
-                                                </Select>
-                                            </FormControl>
-                                        </>
-                                    )}
-                                </>
-                            )}
-
-                            {orderPaymentDifference && !!orderCalculations && (
                                 <Paper
                                     elevation={3}
                                     sx={{
-                                        backgroundColor: theme.palette.warning.main,
-                                        color: theme.palette.warning.contrastText,
+                                        backgroundColor: orderCalculations.clientIsAbleToFullyPay
+                                            ? theme.palette.success.main
+                                            : theme.palette.warning.main,
+                                        color: orderCalculations.clientIsAbleToFullyPay
+                                            ? theme.palette.success.main
+                                            : theme.palette.warning.contrastText,
                                         width: '100%',
                                         my: theme.spacing(4),
                                         display: 'flex',
@@ -1203,79 +947,372 @@ const CompleteOrderPage = () => {
                                         borderRadius: 2,
                                     }}
                                 >
-                                    <WarningIcon
-                                        sx={{
-                                            width: 40,
-                                            height: 40,
-                                            flexShrink: 0,
-                                            mr: theme.spacing(2),
-                                        }}
-                                    />
-                                    <Typography variant="body1">
-                                        {orderPaymentDifference > 0
-                                            ? 'Обрана сума оплати менша за вартість замовлення. Необхідно додати '
-                                            : 'Обрана сума оплати перевищує вартість замовлення. Необхідно прибрати '}
-                                        <span style={{ fontWeight: 900 }}>
-                                            {toFixedNumber(Math.abs(orderPaymentDifference), 2)}
-                                        </span>{' '}
-                                        грн
-                                        <br />
-                                        {selectedOrderPaymentEntries.length
-                                            ? `${toFixedNumber(orderCalculations.totalSum, 2)}${selectedOrderPaymentEntries.map((p) => ` – ${toFixedNumber(p, 2)}`).join('')} = ${toFixedNumber(orderPaymentDifference, 2)} грн`
-                                            : `Жоден матеріал ще не був обраний для оплати`}
+                                    {orderCalculations.clientIsAbleToFullyPay ? (
+                                        <SuccessIcon
+                                            sx={{
+                                                width: 40,
+                                                height: 40,
+                                                flexShrink: 0,
+                                                mr: theme.spacing(2),
+                                                color: 'darkgreen',
+                                            }}
+                                        />
+                                    ) : (
+                                        <WarningIcon
+                                            sx={{
+                                                width: 40,
+                                                height: 40,
+                                                flexShrink: 0,
+                                                mr: theme.spacing(2),
+                                            }}
+                                        />
+                                    )}
+                                    <Typography variant="body1" fontWeight={500}>
+                                        {orderCalculations.clientIsAbleToFullyPay
+                                            ? 'Клієнт може повністю сплатити замовлення'
+                                            : 'У клієнта недостатньо ресурсів для сплати замовлення'}
                                     </Typography>
                                 </Paper>
-                            )}
 
-                            <Box
-                                width="100%"
-                                display="flex"
-                                justifyContent="center"
-                                marginY={theme.spacing(4)}
-                            >
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    type="submit"
-                                    disabled={
-                                        isSubmitting ||
-                                        (currencyAmount > 0 &&
-                                            !disableKasa &&
-                                            (paymentType == null ||
-                                                paymentType === '' ||
-                                                !isShiftOpen))
-                                    }
-                                    startIcon={
-                                        isSubmitting ? (
-                                            <CircularProgress size={18} color="inherit" />
-                                        ) : undefined
-                                    }
+                                <Typography
+                                    variant="body1"
+                                    marginBottom={theme.spacing(2)}
+                                    marginTop={theme.spacing(12)}
                                 >
-                                    Закрити замовлення
-                                </Button>
-                            </Box>
-                            <FormHelperText error={true} sx={{ textAlign: 'center' }}>
-                                {currencyAmount > 0 &&
-                                    !disableKasa &&
-                                    !isShiftOpen &&
-                                    `Відкрийте зміну, щоб закрити замовлення або увімкніть закриття без фіскального чеку`}
-                            </FormHelperText>
-                        </>
-                    )}
-                </AccordionDetails>
-            </Accordion>
-        </form>
+                                    Вибір ресурсів для сплати замовлення
+                                </Typography>
+                                <TableContainer
+                                    sx={{
+                                        '& .MuiTableCell-root': {
+                                            border: 'none',
+                                        },
+                                    }}
+                                >
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell
+                                                    sx={{ paddingX: 0, borderBottom: 'none' }}
+                                                >
+                                                    <Typography textAlign="center">
+                                                        Ресурс (грн)
+                                                    </Typography>
+                                                </TableCell>
+                                                <TableCell
+                                                    sx={{
+                                                        paddingX: 0,
+                                                        width: '160px',
+                                                        borderBottom: 'none',
+                                                    }}
+                                                >
+                                                    <Typography textAlign="center">
+                                                        Доступно (грн)
+                                                    </Typography>
+                                                </TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {fields.map((field, index) => {
+                                                const entry = orderCalculations?.entries.find(
+                                                    (e) => e.materialId === field.materialId,
+                                                );
+                                                const rawValue = rawPaymentInputs[index] ?? '';
+                                                const evaluated = evaluateExpression(rawValue);
 
-        {customerIdForBalances != null && (
-            <EditCustomerBalancesComponent
-                isOpen={isEditCustomerBalancesModalOpen}
-                handleClose={() => setIsEditCustomerBalancesModalOpen(false)}
-                customerId={customerIdForBalances}
-                onUpdate={() => {
-                    fetchOrderCalculations();
-                }}
-            />
-        )}
+                                                return (
+                                                    <TableRow key={entry?.materialId}>
+                                                        <TableCell
+                                                            sx={{
+                                                                borderBottom: 'none',
+                                                                padding: 0,
+                                                            }}
+                                                        >
+                                                            <FormControl key={field.id} fullWidth>
+                                                                <FormLabel
+                                                                    htmlFor={`material-${field.materialId}`}
+                                                                >
+                                                                    {entry?.materialName}
+                                                                    {entry?.materialName !==
+                                                                        'Валюта' &&
+                                                                        entry?.materialPrice !=
+                                                                            null &&
+                                                                        typeof entry.materialPrice ===
+                                                                            'number' && (
+                                                                            <span
+                                                                                style={{
+                                                                                    marginLeft:
+                                                                                        '8px',
+                                                                                    color: '#666',
+                                                                                    fontSize:
+                                                                                        '0.875rem',
+                                                                                    fontWeight:
+                                                                                        'normal',
+                                                                                }}
+                                                                            >
+                                                                                (1 г ={' '}
+                                                                                {toFixedNumber(
+                                                                                    entry.materialPrice,
+                                                                                    2,
+                                                                                )}{' '}
+                                                                                грн)
+                                                                            </span>
+                                                                        )}
+                                                                </FormLabel>
+                                                                <TextField
+                                                                    id={`material-${field.materialId}`}
+                                                                    placeholder="наприклад: 100*2 або 50+10"
+                                                                    fullWidth
+                                                                    margin="dense"
+                                                                    type="text"
+                                                                    value={rawValue}
+                                                                    onChange={(e) =>
+                                                                        handleRawPaymentInputChange(
+                                                                            index,
+                                                                            e.target.value,
+                                                                        )
+                                                                    }
+                                                                    error={
+                                                                        !!errors.paymentData?.[
+                                                                            index
+                                                                        ]?.amountToPay
+                                                                    }
+                                                                    sx={{
+                                                                        margin: 0,
+                                                                        '& .MuiOutlinedInput-root':
+                                                                            {
+                                                                                borderRadius: '6px',
+                                                                            },
+                                                                    }}
+                                                                />
+                                                                <Typography
+                                                                    variant="caption"
+                                                                    sx={{
+                                                                        marginLeft: '4px',
+                                                                        minHeight: 20,
+                                                                    }}
+                                                                >
+                                                                    {rawValue.trim() === '' ? (
+                                                                        <span
+                                                                            style={{
+                                                                                color: '#666',
+                                                                            }}
+                                                                        >
+                                                                            Поточне значення:{' '}
+                                                                            {toFixedNumber(0, 2)}
+                                                                        </span>
+                                                                    ) : evaluated === null ? (
+                                                                        <span
+                                                                            style={{
+                                                                                color: '#c43',
+                                                                            }}
+                                                                        >
+                                                                            Невалідний вираз
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span
+                                                                            style={{
+                                                                                color: '#666',
+                                                                            }}
+                                                                        >
+                                                                            ={' '}
+                                                                            {toFixedNumber(
+                                                                                evaluated,
+                                                                                2,
+                                                                            )}
+                                                                        </span>
+                                                                    )}
+                                                                </Typography>
+                                                                <input
+                                                                    type="hidden"
+                                                                    {...register(
+                                                                        `paymentData.${index}.amountToPay`,
+                                                                        {
+                                                                            valueAsNumber: true,
+                                                                            setValueAs: (v) =>
+                                                                                typeof v ===
+                                                                                    'string' &&
+                                                                                v !== ''
+                                                                                    ? parseFloat(
+                                                                                          v,
+                                                                                      ) || 0
+                                                                                    : v,
+                                                                        },
+                                                                    )}
+                                                                />
+                                                                <FormHelperText
+                                                                    error={
+                                                                        !!errors.paymentData?.[
+                                                                            index
+                                                                        ]?.amountToPay
+                                                                    }
+                                                                    sx={{
+                                                                        margin: 0,
+                                                                    }}
+                                                                >
+                                                                    {
+                                                                        errors.paymentData?.[index]
+                                                                            ?.amountToPay?.message
+                                                                    }
+                                                                </FormHelperText>
+                                                            </FormControl>
+                                                        </TableCell>
+                                                        <TableCell
+                                                            sx={{
+                                                                borderBottom: 'none',
+                                                                padding: 0,
+                                                            }}
+                                                        >
+                                                            <Typography textAlign="right">
+                                                                {toFixedNumber(
+                                                                    entry?.totalMaterialCost,
+                                                                    2,
+                                                                )}
+                                                            </Typography>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+
+                                {currencyAmount > 0 && (
+                                    <>
+                                        <FormControlLabel
+                                            sx={{ mt: 2 }}
+                                            control={
+                                                <Checkbox
+                                                    checked={disableKasa}
+                                                    onChange={(e) =>
+                                                        setDisableKasa(e.target.checked)
+                                                    }
+                                                />
+                                            }
+                                            label="Закрити замовлення без створення фіскального чеку (Vchasno Kasa)"
+                                        />
+
+                                        {!disableKasa && (
+                                            <>
+                                                <Typography variant="body1" sx={{ mt: 2 }}>
+                                                    Вкажіть тип оплати
+                                                </Typography>
+
+                                                <FormControl fullWidth sx={{ mt: 3 }}>
+                                                    <InputLabel id="payment-type-label">
+                                                        Тип оплати
+                                                    </InputLabel>
+                                                    <Select
+                                                        labelId="payment-type-label"
+                                                        value={paymentType}
+                                                        label="Тип оплати"
+                                                        onChange={(e) =>
+                                                            setPaymentType(Number(e.target.value))
+                                                        }
+                                                    >
+                                                        {paymentTypes.map((option) => (
+                                                            <MenuItem
+                                                                key={option.value}
+                                                                value={option.value}
+                                                            >
+                                                                {option.label}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                </FormControl>
+                                            </>
+                                        )}
+                                    </>
+                                )}
+
+                                {orderPaymentDifference && !!orderCalculations && (
+                                    <Paper
+                                        elevation={3}
+                                        sx={{
+                                            backgroundColor: theme.palette.warning.main,
+                                            color: theme.palette.warning.contrastText,
+                                            width: '100%',
+                                            my: theme.spacing(4),
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 2,
+                                            px: theme.spacing(4),
+                                            py: theme.spacing(2),
+                                            borderRadius: 2,
+                                        }}
+                                    >
+                                        <WarningIcon
+                                            sx={{
+                                                width: 40,
+                                                height: 40,
+                                                flexShrink: 0,
+                                                mr: theme.spacing(2),
+                                            }}
+                                        />
+                                        <Typography variant="body1">
+                                            {orderPaymentDifference > 0
+                                                ? 'Обрана сума оплати менша за вартість замовлення. Необхідно додати '
+                                                : 'Обрана сума оплати перевищує вартість замовлення. Необхідно прибрати '}
+                                            <span style={{ fontWeight: 900 }}>
+                                                {toFixedNumber(Math.abs(orderPaymentDifference), 2)}
+                                            </span>{' '}
+                                            грн
+                                            <br />
+                                            {selectedOrderPaymentEntries.length
+                                                ? `${toFixedNumber(orderCalculations.totalSum, 2)}${selectedOrderPaymentEntries.map((p) => ` – ${toFixedNumber(p, 2)}`).join('')} = ${toFixedNumber(orderPaymentDifference, 2)} грн`
+                                                : `Жоден матеріал ще не був обраний для оплати`}
+                                        </Typography>
+                                    </Paper>
+                                )}
+
+                                <Box
+                                    width="100%"
+                                    display="flex"
+                                    justifyContent="center"
+                                    marginY={theme.spacing(4)}
+                                >
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        type="submit"
+                                        disabled={
+                                            isSubmitting ||
+                                            (currencyAmount > 0 &&
+                                                !disableKasa &&
+                                                (paymentType == null ||
+                                                    paymentType === '' ||
+                                                    !isShiftOpen))
+                                        }
+                                        startIcon={
+                                            isSubmitting ? (
+                                                <CircularProgress size={18} color="inherit" />
+                                            ) : undefined
+                                        }
+                                    >
+                                        Закрити замовлення
+                                    </Button>
+                                </Box>
+                                <FormHelperText error={true} sx={{ textAlign: 'center' }}>
+                                    {currencyAmount > 0 &&
+                                        !disableKasa &&
+                                        !isShiftOpen &&
+                                        `Відкрийте зміну, щоб закрити замовлення або увімкніть закриття без фіскального чеку`}
+                                </FormHelperText>
+                            </>
+                        )}
+                    </AccordionDetails>
+                </Accordion>
+            </form>
+
+            {customerIdForBalances != null && (
+                <EditCustomerBalancesComponent
+                    isOpen={isEditCustomerBalancesModalOpen}
+                    handleClose={() => setIsEditCustomerBalancesModalOpen(false)}
+                    customerId={customerIdForBalances}
+                    onUpdate={() => {
+                        fetchOrderCalculations();
+                    }}
+                />
+            )}
         </>
     );
 };

@@ -145,10 +145,10 @@ const CurrentPriceListComponent = ({ onPriceListCreated }: CurrentPriceListCompo
                         {entries &&
                             entries.map((entry) => (
                                 <TableRow key={`current-pricing-entry-${entry.materialName}`}>
-                                    <TableCell sx={priceListTableCellSx}>{entry.materialName}</TableCell>
-                                    <TableCell
-                                        sx={{ ...priceListTableCellSx, textAlign: 'right' }}
-                                    >
+                                    <TableCell sx={priceListTableCellSx}>
+                                        {entry.materialName}
+                                    </TableCell>
+                                    <TableCell sx={{ ...priceListTableCellSx, textAlign: 'right' }}>
                                         {entry.materialPrice}
                                     </TableCell>
                                 </TableRow>

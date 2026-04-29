@@ -28,7 +28,7 @@ export async function getCroppedImageDataUrl(
         throw new Error('Canvas 2D context unavailable');
     }
 
-    let { width, height, x, y } = pixelCrop;
+    const { width, height, x, y } = pixelCrop;
     const maxSide = Math.max(width, height);
     const scale = maxSide > maxOutputSize ? maxOutputSize / maxSide : 1;
     const outW = Math.round(width * scale);

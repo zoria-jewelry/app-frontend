@@ -37,33 +37,21 @@ export interface OrdersTableProps {
     onUpdate: () => void;
 }
 
-/** Badge colors: blue — in progress, green — completed, grey — canceled */
-const orderStatusBadgeSx = (status: OrderStatus) => {
+/** Status column: colored text only (no chip background/outline) */
+const orderStatusTextSx = (status: OrderStatus) => {
     switch (status) {
         case OrderStatus.IN_PROGRESS:
-            return {
-                bgcolor: '#e3f2fd',
-                color: '#0d47a1',
-                border: '1px solid #90caf9',
-            };
+            return { color: '#0d47a1' };
         case OrderStatus.COMPLETED:
-            return {
-                bgcolor: '#e8f5e9',
-                color: '#1b5e20',
-                border: '1px solid #a5d6a7',
-            };
+            return { color: '#1b5e20' };
         case OrderStatus.CANCELED:
-            return {
-                bgcolor: '#f5f5f5',
-                color: '#424242',
-                border: '1px solid #e0e0e0',
-            };
+            return { color: '#616161' };
         default:
             return {};
     }
 };
 
-/** «Стан»: badge + «Скасовано» + info icon; tight but not clipped */
+/** «Стан»: colored label (+ cancel info icon); tight but not clipped */
 const STATUS_COLUMN_WIDTH_PX = 122;
 
 /** «Чек» chip (icon + label + padding) + tight cell padding */
@@ -223,7 +211,9 @@ const OrdersTableComponent = ({ customerId, orders, setPage, onUpdate }: OrdersT
                                 </TableCell>
 
                                 {/* Products */}
-                                <TableCell sx={{ minWidth: 0, overflow: 'hidden', verticalAlign: 'top' }}>
+                                <TableCell
+                                    sx={{ minWidth: 0, overflow: 'hidden', verticalAlign: 'top' }}
+                                >
                                     {order.entries.map((entry) => (
                                         <Typography
                                             key={`product-name-${entry.productId}-${order.id}`}
@@ -286,14 +276,14 @@ const OrdersTableComponent = ({ customerId, orders, setPage, onUpdate }: OrdersT
                                                 justifyContent: 'center',
                                                 gap: 0.25,
                                                 maxWidth: '100%',
-                                                px: 1.25,
-                                                py: 0.5,
-                                                borderRadius: 1,
-                                                textAlign: 'center',
-                                                ...orderStatusBadgeSx(order.status),
                                             }}
                                         >
-                                            <Typography variant="body2" component="span" fontWeight={700}>
+                                            <Typography
+                                                variant="body2"
+                                                component="span"
+                                                fontWeight={700}
+                                                sx={orderStatusTextSx(order.status)}
+                                            >
                                                 {orderStatusToHumanText(order.status)}
                                             </Typography>
                                             <Tooltip
@@ -309,7 +299,7 @@ const OrdersTableComponent = ({ customerId, orders, setPage, onUpdate }: OrdersT
                                                     aria-label="Причина скасування"
                                                     sx={{
                                                         p: 0.25,
-                                                        color: 'inherit',
+                                                        color: '#616161',
                                                         opacity: 0.85,
                                                         '&:hover': { opacity: 1 },
                                                     }}
@@ -319,21 +309,13 @@ const OrdersTableComponent = ({ customerId, orders, setPage, onUpdate }: OrdersT
                                             </Tooltip>
                                         </Box>
                                     ) : (
-                                        <Box
-                                            sx={{
-                                                display: 'inline-block',
-                                                maxWidth: '100%',
-                                                px: 1.25,
-                                                py: 0.5,
-                                                borderRadius: 1,
-                                                textAlign: 'center',
-                                                ...orderStatusBadgeSx(order.status),
-                                            }}
+                                        <Typography
+                                            variant="body2"
+                                            fontWeight={700}
+                                            sx={orderStatusTextSx(order.status)}
                                         >
-                                            <Typography variant="body2" component="div" fontWeight={700}>
-                                                {orderStatusToHumanText(order.status)}
-                                            </Typography>
-                                        </Box>
+                                            {orderStatusToHumanText(order.status)}
+                                        </Typography>
                                     )}
                                 </TableCell>
 
@@ -406,7 +388,9 @@ const OrdersTableComponent = ({ customerId, orders, setPage, onUpdate }: OrdersT
                                         size="medium"
                                         aria-label="Дії з замовленням"
                                         aria-haspopup="true"
-                                        aria-controls={actionsMenuOpen ? 'order-actions-menu' : undefined}
+                                        aria-controls={
+                                            actionsMenuOpen ? 'order-actions-menu' : undefined
+                                        }
                                         aria-expanded={
                                             actionsMenuOpen && actionsMenuOrder?.id === order.id
                                                 ? true

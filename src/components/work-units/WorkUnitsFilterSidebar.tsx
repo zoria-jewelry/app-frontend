@@ -19,10 +19,7 @@ import type { MaterialDto } from '../../dto/materials.ts';
 import { MaterialsApiClient } from '../../api/materialsApiClient.ts';
 import { OrdersApiClient } from '../../api/ordersApiClient.ts';
 import type { WorkUnitsFilterData } from '../../dto/work-units.ts';
-import {
-    workUnitsFilterSchema,
-    type WorkUnitsFilterFormData,
-} from '../../validation/schemas.ts';
+import { workUnitsFilterSchema, type WorkUnitsFilterFormData } from '../../validation/schemas.ts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 import { formatDateToYYYYMMDD, getCurrentMonthRange } from '../../utils.ts';
@@ -35,10 +32,7 @@ export interface WorkUnitsFilterSidebarProps {
     onApply: (filterData: WorkUnitsFilterData) => void;
 }
 
-function snapshotWorkUnitsForm(
-    data: WorkUnitsFilterFormData,
-    employees: EmployeeDto[],
-): string {
+function snapshotWorkUnitsForm(data: WorkUnitsFilterFormData, employees: EmployeeDto[]): string {
     const emp =
         data.employeeId && data.employeeId > 0
             ? employees.find((e) => e.id === data.employeeId)
@@ -48,8 +42,7 @@ function snapshotWorkUnitsForm(
         employeeFullName: emp?.name ?? null,
         materialId: data.materialId,
         orderId: data.orderId ?? null,
-        periodStart:
-            data.periodStart instanceof Date ? data.periodStart.getTime() : null,
+        periodStart: data.periodStart instanceof Date ? data.periodStart.getTime() : null,
         periodEnd: data.periodEnd instanceof Date ? data.periodEnd.getTime() : null,
     });
 }
@@ -234,7 +227,9 @@ const WorkUnitsFilterSidebar = ({ onApply }: WorkUnitsFilterSidebarProps) => {
                     <IconButton
                         size="medium"
                         onClick={() => setExpanded(!expanded)}
-                        aria-label={expanded ? 'Згорнути панель фільтрів' : 'Розгорнути панель фільтрів'}
+                        aria-label={
+                            expanded ? 'Згорнути панель фільтрів' : 'Розгорнути панель фільтрів'
+                        }
                         sx={{
                             p: 1.25,
                             borderRadius: 1,
@@ -307,7 +302,11 @@ const WorkUnitsFilterSidebar = ({ onApply }: WorkUnitsFilterSidebarProps) => {
                         </Box>
 
                         <Box sx={{ width: '100%' }}>
-                            <Typography variant="body2" component="div" sx={{ mb: 1, fontWeight: 600 }}>
+                            <Typography
+                                variant="body2"
+                                component="div"
+                                sx={{ mb: 1, fontWeight: 600 }}
+                            >
                                 За період
                             </Typography>
                             <Stack spacing={1.25}>
@@ -336,7 +335,10 @@ const WorkUnitsFilterSidebar = ({ onApply }: WorkUnitsFilterSidebarProps) => {
                                         error={!!errors.periodStart}
                                         sx={{ mt: 0.25 }}
                                     />
-                                    <FormHelperText error={!!errors.periodStart} sx={{ mx: 0, mt: 0.25 }}>
+                                    <FormHelperText
+                                        error={!!errors.periodStart}
+                                        sx={{ mx: 0, mt: 0.25 }}
+                                    >
                                         {errors.periodStart ? errors.periodStart.message : ''}
                                     </FormHelperText>
                                 </Box>
@@ -365,7 +367,10 @@ const WorkUnitsFilterSidebar = ({ onApply }: WorkUnitsFilterSidebarProps) => {
                                         error={!!errors.periodEnd}
                                         sx={{ mt: 0.25 }}
                                     />
-                                    <FormHelperText error={!!errors.periodEnd} sx={{ mx: 0, mt: 0.25 }}>
+                                    <FormHelperText
+                                        error={!!errors.periodEnd}
+                                        sx={{ mx: 0, mt: 0.25 }}
+                                    >
                                         {errors.periodEnd ? errors.periodEnd.message : ''}
                                     </FormHelperText>
                                 </Box>
@@ -373,7 +378,11 @@ const WorkUnitsFilterSidebar = ({ onApply }: WorkUnitsFilterSidebarProps) => {
                         </Box>
 
                         <Box sx={{ width: '100%' }}>
-                            <Typography variant="body2" component="div" sx={{ mb: 1, fontWeight: 600 }}>
+                            <Typography
+                                variant="body2"
+                                component="div"
+                                sx={{ mb: 1, fontWeight: 600 }}
+                            >
                                 Тип металу
                             </Typography>
                             <FormControl
@@ -405,7 +414,11 @@ const WorkUnitsFilterSidebar = ({ onApply }: WorkUnitsFilterSidebarProps) => {
                         </Box>
 
                         <Box sx={{ width: '100%' }}>
-                            <Typography variant="body2" component="div" sx={{ mb: 1, fontWeight: 600 }}>
+                            <Typography
+                                variant="body2"
+                                component="div"
+                                sx={{ mb: 1, fontWeight: 600 }}
+                            >
                                 Замовлення (№)
                             </Typography>
                             <FormControl

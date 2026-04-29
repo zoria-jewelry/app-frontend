@@ -11,7 +11,10 @@ import {
     type UpdateWorkUnitFormInput,
 } from '../../../validation/schemas.ts';
 import { useEffect } from 'react';
-import { EDIT_MODAL_PAPER_MAX, FORM_HELPER_TEXT_ALIGNED_SX } from '../../../constants/createModalLayout.ts';
+import {
+    EDIT_MODAL_PAPER_MAX,
+    FORM_HELPER_TEXT_ALIGNED_SX,
+} from '../../../constants/createModalLayout.ts';
 import { RhfNumberTextField } from '../../common/RhfNumberTextField.tsx';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -63,7 +66,10 @@ const getWeightValueForForm = (workUnit?: WorkUnitDto): number | undefined => {
     return v === 0 ? undefined : v;
 };
 
-const getLossForForm = (workUnit: WorkUnitDto | undefined, canEdit: boolean): number | undefined => {
+const getLossForForm = (
+    workUnit: WorkUnitDto | undefined,
+    canEdit: boolean,
+): number | undefined => {
     if (!canEdit || !workUnit) {
         return undefined;
     }

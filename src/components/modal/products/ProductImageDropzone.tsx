@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
@@ -18,7 +18,11 @@ export interface ProductImageDropzoneProps {
  * Dashed drop area with drag-over highlight; hidden file input for accessibility and click-to-browse.
  * Inner content uses `pointer-events: none` so drag enter/leave do not flicker across child nodes.
  */
-const ProductImageDropzone = ({ inputId, onImageFile, isActive = true }: ProductImageDropzoneProps) => {
+const ProductImageDropzone = ({
+    inputId,
+    onImageFile,
+    isActive = true,
+}: ProductImageDropzoneProps) => {
     const theme = useTheme();
     const [isDragging, setIsDragging] = useState(false);
     const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
@@ -86,7 +90,9 @@ const ProductImageDropzone = ({ inputId, onImageFile, isActive = true }: Product
         [applyFile],
     );
 
-    const borderColor = isDragging ? theme.palette.primary.main : alpha(theme.palette.text.primary, 0.26);
+    const borderColor = isDragging
+        ? theme.palette.primary.main
+        : alpha(theme.palette.text.primary, 0.26);
     const bgColor = isDragging
         ? alpha(theme.palette.primary.main, 0.07)
         : theme.palette.common.white;
@@ -116,9 +122,12 @@ const ProductImageDropzone = ({ inputId, onImageFile, isActive = true }: Product
                     borderWidth: 2,
                     borderColor,
                     bgcolor: bgColor,
-                    transition: theme.transitions.create(['border-color', 'background-color', 'box-shadow'], {
-                        duration: theme.transitions.duration.shorter,
-                    }),
+                    transition: theme.transitions.create(
+                        ['border-color', 'background-color', 'box-shadow'],
+                        {
+                            duration: theme.transitions.duration.shorter,
+                        },
+                    ),
                     ...(isDragging && {
                         boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.25)}`,
                     }),
@@ -162,7 +171,13 @@ const ProductImageDropzone = ({ inputId, onImageFile, isActive = true }: Product
                     )}
                     <Typography
                         variant="body2"
-                        color={isDragging ? 'primary' : selectedFileName ? 'text.primary' : 'text.secondary'}
+                        color={
+                            isDragging
+                                ? 'primary'
+                                : selectedFileName
+                                  ? 'text.primary'
+                                  : 'text.secondary'
+                        }
                         textAlign="center"
                         title={selectedFileName ?? undefined}
                         sx={{

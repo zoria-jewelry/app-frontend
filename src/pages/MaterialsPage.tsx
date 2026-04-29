@@ -196,15 +196,21 @@ const MaterialsPage = () => {
                                         {toFixedNumber(material.price, 2)}
                                     </Typography>
                                 </TableCell>
-                                <TableCell align="center" sx={{ width: '1%', verticalAlign: 'middle' }}>
+                                <TableCell
+                                    align="center"
+                                    sx={{ width: '1%', verticalAlign: 'middle' }}
+                                >
                                     <IconButton
                                         id={`material-actions-trigger-${material.id}`}
                                         size="medium"
                                         aria-label="Дії з матеріалом"
                                         aria-haspopup="true"
-                                        aria-controls={actionsMenuOpen ? 'material-actions-menu' : undefined}
+                                        aria-controls={
+                                            actionsMenuOpen ? 'material-actions-menu' : undefined
+                                        }
                                         aria-expanded={
-                                            actionsMenuOpen && actionsMenuMaterial?.id === material.id
+                                            actionsMenuOpen &&
+                                            actionsMenuMaterial?.id === material.id
                                                 ? true
                                                 : false
                                         }

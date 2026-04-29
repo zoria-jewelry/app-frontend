@@ -5,7 +5,15 @@ import { type CreateProductFormData, createProductSchema } from '../../../valida
 import { zodResolver } from '@hookform/resolvers/zod';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Button, FormControl, FormLabel, TextField, Typography, useTheme } from '@mui/material';
+import {
+    Box,
+    Button,
+    FormControl,
+    FormLabel,
+    TextField,
+    Typography,
+    useTheme,
+} from '@mui/material';
 import { useCallback, useRef, useState } from 'react';
 import { ProductsApiClient } from '../../../api/productsApiClient.ts';
 import { showToast } from '../../common/Toast.tsx';
@@ -96,10 +104,7 @@ const CreateProductComponent = (props: CreateProductComponentProps) => {
         if (trimmedFresh.length > 0) {
             setValue('pictureBase64', trimmedFresh, { shouldDirty: true, shouldValidate: true });
         }
-        const pictureBase64 =
-            trimmedFresh ||
-            getValues('pictureBase64')?.trim() ||
-            undefined;
+        const pictureBase64 = trimmedFresh || getValues('pictureBase64')?.trim() || undefined;
 
         ProductsApiClient.create({
             ...data,

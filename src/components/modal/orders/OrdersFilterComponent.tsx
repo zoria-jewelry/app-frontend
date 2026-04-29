@@ -175,7 +175,9 @@ const OrdersFilterModal = ({ anchorEl, onClose, onApply }: OrdersFilterModalProp
                                 fullWidth
                                 value={toDate ? toDate.toISOString().split('T')[0] : ''}
                                 onChange={(e) => {
-                                    setToDate(e.target.value ? new Date(e.target.value) : undefined);
+                                    setToDate(
+                                        e.target.value ? new Date(e.target.value) : undefined,
+                                    );
                                     setDatesError(undefined);
                                 }}
                                 error={!!datesError}
