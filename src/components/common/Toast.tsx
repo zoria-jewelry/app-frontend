@@ -1,10 +1,7 @@
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export const showToast = (
-    message: string,
-    type: 'success' | 'error' | 'warning' = 'success',
-) => {
+export const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
     toast(message, { type, autoClose: type === 'success' ? 3000 : 6000 });
 };
 

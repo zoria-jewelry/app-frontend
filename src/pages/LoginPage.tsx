@@ -69,7 +69,7 @@ const LoginPage = () => {
                     maxWidth: '500px',
                     height: 'fit-content',
                     borderRadius: '25px !important',
-                    backgroundColor: 'white !important'
+                    backgroundColor: 'white !important',
                 }}
             >
                 <Typography variant="h3" sx={{ textAlign: 'center', marginTop: theme.spacing(8) }}>
@@ -107,9 +107,7 @@ const LoginPage = () => {
                                 },
                             }}
                         />
-                        <FormHelperText
-                            error={!!errors.username}
-                        >
+                        <FormHelperText error={!!errors.username}>
                             {errors.username?.message}
                         </FormHelperText>
                     </FormControl>
@@ -134,9 +132,7 @@ const LoginPage = () => {
                                 },
                             }}
                         />
-                        <FormHelperText
-                            error={!!errors.password}
-                        >
+                        <FormHelperText error={!!errors.password}>
                             {errors.password?.message}
                         </FormHelperText>
                     </FormControl>

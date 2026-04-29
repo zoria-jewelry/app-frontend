@@ -185,10 +185,13 @@ const EmployeesArchiveComponent = (props: EmployeesArchiveComponentProps) => {
                                         aria-label="Дії з працівником"
                                         aria-haspopup="true"
                                         aria-controls={
-                                            actionsMenuOpen ? 'archived-employee-actions-menu' : undefined
+                                            actionsMenuOpen
+                                                ? 'archived-employee-actions-menu'
+                                                : undefined
                                         }
                                         aria-expanded={
-                                            actionsMenuOpen && actionsMenuEmployee?.id === employee.id
+                                            actionsMenuOpen &&
+                                            actionsMenuEmployee?.id === employee.id
                                                 ? true
                                                 : false
                                         }

@@ -47,7 +47,6 @@ export interface UpdateBalanceModalProps {
 }
 
 const UpdateBalanceModal = ({ onUpdate, handleClose, isOpen }: UpdateBalanceModalProps) => {
-
     const [materials, setMaterials] = useState<MaterialDto[]>([]);
 
     const {

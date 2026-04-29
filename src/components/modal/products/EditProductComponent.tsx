@@ -5,7 +5,15 @@ import { type UpdateProductFormData, updateProductSchema } from '../../../valida
 import { zodResolver } from '@hookform/resolvers/zod';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Button, FormControl, FormLabel, TextField, Typography, useTheme } from '@mui/material';
+import {
+    Box,
+    Button,
+    FormControl,
+    FormLabel,
+    TextField,
+    Typography,
+    useTheme,
+} from '@mui/material';
 import { ProductsApiClient } from '../../../api/productsApiClient.ts';
 import { showToast } from '../../common/Toast.tsx';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -178,10 +186,7 @@ const EditProductComponent = (props: EditProductComponentProps) => {
         if (trimmedFresh.length > 0) {
             setValue('pictureBase64', trimmedFresh, { shouldDirty: true, shouldValidate: true });
         }
-        const pictureBase64 =
-            trimmedFresh ||
-            getValues('pictureBase64')?.trim() ||
-            undefined;
+        const pictureBase64 = trimmedFresh || getValues('pictureBase64')?.trim() || undefined;
 
         const payload: UpdateProductFormData = {
             name: data.name,

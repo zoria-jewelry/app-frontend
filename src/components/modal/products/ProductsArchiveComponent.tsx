@@ -199,7 +199,9 @@ const ProductsArchiveComponent = (props: ProductsArchiveComponentProps) => {
                                         aria-label="Дії з виробом"
                                         aria-haspopup="true"
                                         aria-controls={
-                                            actionsMenuOpen ? 'archived-product-actions-menu' : undefined
+                                            actionsMenuOpen
+                                                ? 'archived-product-actions-menu'
+                                                : undefined
                                         }
                                         aria-expanded={
                                             actionsMenuOpen && actionsMenuProduct?.id === product.id

@@ -82,9 +82,7 @@ const UpdateCustomerInfoComponent = () => {
                         },
                     }}
                 />
-                <FormHelperText
-                    error={!!errors.fullName}
-                >
+                <FormHelperText error={!!errors.fullName}>
                     {errors?.fullName?.message}
                 </FormHelperText>
             </FormControl>

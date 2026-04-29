@@ -103,10 +103,7 @@ const ShiftSidebarActions = ({ collapsed = false }: ShiftSidebarActionsProps) =>
                                 }}
                             >
                                 {loading ? (
-                                    <CircularProgress
-                                        size={SIDEBAR_ICON_FONT_PX}
-                                        color="inherit"
-                                    />
+                                    <CircularProgress size={SIDEBAR_ICON_FONT_PX} color="inherit" />
                                 ) : (
                                     <PlayArrowIcon />
                                 )}
@@ -128,10 +125,7 @@ const ShiftSidebarActions = ({ collapsed = false }: ShiftSidebarActionsProps) =>
                                 }}
                             >
                                 {loading ? (
-                                    <CircularProgress
-                                        size={SIDEBAR_ICON_FONT_PX}
-                                        color="inherit"
-                                    />
+                                    <CircularProgress size={SIDEBAR_ICON_FONT_PX} color="inherit" />
                                 ) : (
                                     <StopIcon />
                                 )}

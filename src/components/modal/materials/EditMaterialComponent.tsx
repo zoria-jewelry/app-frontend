@@ -10,7 +10,10 @@ import { MaterialsApiClient } from '../../../api/materialsApiClient.ts';
 import { showToast } from '../../common/Toast.tsx';
 import { useEffect, useState } from 'react';
 import type { MaterialDto } from '../../../dto/materials.ts';
-import { EDIT_MODAL_PAPER_MAX, FORM_HELPER_TEXT_ALIGNED_SX } from '../../../constants/createModalLayout.ts';
+import {
+    EDIT_MODAL_PAPER_MAX,
+    FORM_HELPER_TEXT_ALIGNED_SX,
+} from '../../../constants/createModalLayout.ts';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {

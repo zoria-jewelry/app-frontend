@@ -473,10 +473,7 @@ const CreateOrderComponent = (props: CreateOrderComponentProps) => {
                             </Box>
                         );
                     })}
-                    <FormHelperText
-                        error={!!errors.products}
-                        sx={FORM_HELPER_TEXT_ALIGNED_SX}
-                    >
+                    <FormHelperText error={!!errors.products} sx={FORM_HELPER_TEXT_ALIGNED_SX}>
                         {errors.products?.root?.message || errors.products?.message}
                     </FormHelperText>
                 </Box>
