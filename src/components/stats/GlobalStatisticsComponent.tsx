@@ -124,7 +124,15 @@ const GlobalStatisticsComponent = ({ onUpdate, refresher }: GlobalStatisticsProp
                         type="date"
                         fullWidth
                         value={date && formatDateToYYYYMMDD(date)}
-                        onChange={(e) => setDate(new Date(e.target.value))}
+                        onChange={(e) => {
+                            if (!e.target.value) {
+                                const now = new Date();
+                                now.setSeconds(0, 0);
+                                setDate(now);
+                            } else {
+                                setDate(new Date(e.target.value));
+                            }
+                        }}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
