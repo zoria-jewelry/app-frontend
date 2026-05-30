@@ -111,7 +111,13 @@ const GlobalAuditRecordsComponent = ({ refresher }: GlobalAuditRecordsComponentP
                         fullWidth
                         error={error}
                         value={formatDateToYYYYMMDD(fromDate)}
-                        onChange={(e) => setFromDate(new Date(e.target.value))}
+                        onChange={(e) => {
+                            if (!e.target.value) {
+                                setFromDate(getCurrentMonthRange().start);
+                            } else {
+                                setFromDate(new Date(e.target.value));
+                            }
+                        }}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {
@@ -128,7 +134,13 @@ const GlobalAuditRecordsComponent = ({ refresher }: GlobalAuditRecordsComponentP
                         fullWidth
                         error={error}
                         value={formatDateToYYYYMMDD(toDate)}
-                        onChange={(e) => setToDate(new Date(e.target.value))}
+                        onChange={(e) => {
+                            if (!e.target.value) {
+                                setToDate(getCurrentMonthRange().end);
+                            } else {
+                                setToDate(new Date(e.target.value));
+                            }
+                        }}
                         sx={{
                             margin: 0,
                             '& .MuiOutlinedInput-root': {

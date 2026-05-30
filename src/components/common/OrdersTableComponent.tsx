@@ -180,7 +180,9 @@ const OrdersTableComponent = ({ customerId, orders, setPage, onUpdate }: OrdersT
                                     whiteSpace: 'nowrap',
                                 }}
                                 align="center"
-                            />
+                            >
+                                Чек
+                            </TableCell>
                             <TableCell
                                 sx={{
                                     backgroundColor: '#b7cfd2',

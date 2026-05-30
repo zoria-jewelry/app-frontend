@@ -137,7 +137,7 @@ const UpdateBalanceModal = ({ onUpdate, handleClose, isOpen }: UpdateBalanceModa
                 </Typography>
 
                 <Box mt={4}>
-                    <Typography>Валюта (грн)</Typography>
+                    <Typography>Кошти (грн)</Typography>
                     <RhfNumberTextField
                         name="entries.0.delta"
                         control={control}

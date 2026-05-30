@@ -184,11 +184,11 @@ const CompleteOrderPage = () => {
     const totalMetalWeight = watch('finalMetalWeight') || 0;
     const stonesPrice = watch('stoneCost') || 0;
 
-    // Calculate amount paid in "Валюта" (currency) only
+    // Calculate amount paid in "Кошти" (currency) only
     const currencyAmount = orderCalculations
         ? (() => {
               const currencyEntry = orderCalculations.entries.find(
-                  (entry) => entry.materialName === 'Валюта',
+                  (entry) => entry.materialName === 'Кошти',
               );
               if (!currencyEntry) return 0;
 
@@ -273,7 +273,7 @@ const CompleteOrderPage = () => {
                 return;
             }
 
-            // Check if payment type is required (only if "Валюта" amount > 0 and kasa is enabled)
+            // Check if payment type is required (only if "Кошти" amount > 0 and kasa is enabled)
             if (currencyAmount > 0 && !disableKasa && paymentType === '') {
                 console.log('Payment type is not selected');
                 return;
@@ -295,9 +295,9 @@ const CompleteOrderPage = () => {
                 .then(async () => {
                     showToast('Замовлення було успішно закрите');
 
-                    // Find the "Валюта" payment entry
+                    // Find the "Кошти" payment entry
                     const currencyEntry = orderCalculations.entries.find(
-                        (entry) => entry.materialName === 'Валюта',
+                        (entry) => entry.materialName === 'Кошти',
                     );
                     const currencyPayment = currencyEntry
                         ? paymentDataWithEvaluated.find(
@@ -1033,7 +1033,7 @@ const CompleteOrderPage = () => {
                                                                 >
                                                                     {entry?.materialName}
                                                                     {entry?.materialName !==
-                                                                        'Валюта' &&
+                                                                        'Кошти' &&
                                                                         entry?.materialPrice !=
                                                                             null &&
                                                                         typeof entry.materialPrice ===
